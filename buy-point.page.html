@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+    <div>
+        <img
+        src="assets/imgs_test/bolsita-con-fondo.png"
+        height="45px"
+        width="45px"
+        alt="No Image" slot="start" style="margin-left: 100px; margin-top: 5px;"/>
+    </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-item>
+  <form>
+    <ion-label style="color:#000030; margin-top: 10px;" *ngIf="selectsaldo === 'Num_Transf_Saldo'">Mínimo a comprar: <strong>{{ min_Punto_Saldo_Telefonico.Valor }}</strong></ion-label>
+    <ion-label style="color:#000030; margin-top: 10px;" *ngIf="selectsaldo === 'Num_Transf_Banco'">Mínimo a comprar: <strong>{{ min_Punto_Trans_Bancaria.Valor }}</strong></ion-label>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Monto a transferir CUP</ion-label>
+      <ion-input [(ngModel)]="monto" name="monto" type="number" #montov="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-grid style="color: #000030">
+          <strong>Equivale a: {{monto}} ptos</strong>
+          <!--ion-row>
+          <ion-col size="auto"><ion-icon name="cart" style="width:25px;height:25px"></ion-icon><u (click)="iniciar()">Iniciar</u></ion-col>
+          <ion-col></ion-col>
+          <ion-col size="auto"><ion-icon name="cart" style="width:25px;height:25px"></ion-icon><u (click)="cancel()">Cancelar</u></ion-col>
+          </ion-row-->
+        </ion-grid>
+    </ion-item>
+      <div style="height: 10px;"></div>
+      <div *ngIf="inicio === true">
+        <ion-label style="color:#000030">Método de pago:</ion-label>
+        <ion-select class="select" [(ngModel)]="saldo" name="saldo" (ngModelChange)="optionsFnSaldo();" placeholder="Método de pago">
+          <ion-select-option value="Num_Transf_Saldo" *ngIf="activar_Tran_Saldo.Valor == 1">Transferencia de Saldo</ion-select-option>  
+          <ion-select-option value="Num_Transf_Banco" *ngIf="activar_Tran_Bancaria.Valor == 1">Transferencia Bancaria</ion-select-option>
+          <ion-select-option value="Txt_Contac_Direct" >Contactar directamente</ion-select-option> 
+        </ion-select>
+        <div *ngIf="movil === true">
+          <ion-item>
+            <ion-label style="color:#000030" position="floating">Desde:</ion-label>
+            <ion-input [(ngModel)]="puntos" name="puntos" type="number" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label style="color:#000030"  *ngIf="configMovil.NombreCodigo === 'Num_Transf_Saldo'">{{ configMovil.Nombre }}:</ion-label>
+            <ion-label style="color:#000030"  *ngIf="configMovil.NombreCodigo === 'Num_Transf_Saldo'">{{ configMovil.Valor }}</ion-label>
+          </ion-item>
+        </div>
+        <div *ngIf="banco === true">
+          <ion-item>
+            <ion-label style="color:#000030" position="floating">Desde:</ion-label>
+            <ion-input [(ngModel)]="puntos" name="puntos" type="number" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label style="color:#000030" position="floating" *ngIf="configBanco.NombreCodigo === 'Num_Transf_Banco'">{{ configBanco.Nombre }}:</ion-label>
+            <ion-label style="color:#000030" position="floating" *ngIf="configBanco.NombreCodigo === 'Num_Transf_Banco'">{{ configBanco.Valor }}</ion-label>
+          </ion-item>
+        </div>
+        <div *ngIf="direc === true" style="width: auto;height: auto;">
+          <p  style="background-color: rgb(141, 201, 224);color: #000030;padding: 5px;" *ngIf="configDirec.NombreCodigo === 'Txt_Contac_Direct'">
+            {{ configDirec.Nombre }}
+          </p>
+        </div>
+       
+        <div style="background-color: rgb(141, 201, 224);color: #000030; width: auto;height: auto;padding: 5px;">
+          <p >
+            Usted puede enviar la cantidad de saldo
+            que desee, y el sistema otorgará los
+            puntos correspondientes.
+          </p>
+          <strong> 1 punto equivale a {{ precio_Punto.Valor }}CUP</strong>
+          <p>
+            EL ENVÍO DEBE REALIZARSE EN LAS PRÓXIMAS 24 HORAS
+          </p>
+        </div>
+        <div style="height: 20px;"></div>
+        <ion-button class="buttons" shape="round" fill="outline" color="#000030" (click)="send()">Enviar</ion-button>
+        <div style="height: 10px;"></div>
+        <ion-button  class="buttons" shape="round" fill="outline" color="#000030" (click)="cancel()">Cancelar</ion-button>
+      </div>
+  </form>  
+</ion-item>
+</ion-content>

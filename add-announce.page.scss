@@ -1,0 +1,73 @@
+.round{
+    width: 45px;
+    height: 45px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: #000030;
+    color: #ffff;
+    float: right
+}
+
+.round-label{
+    float: left;
+    margin-left: 5px;
+}
+
+ion-input{
+    --border-color: #000030!important;
+}
+.anunciarexpanded{
+    width: 130px;
+    height: 35px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: orangered;
+    color: #ffff;
+    float: right
+}
+
+ion-content{
+
+    --ion-background-color:#eee;
+}
+
+
+ion-item{
+
+    --ion-background-color:#ffff;
+    color: orangered;
+}
+
+
+.notificate{
+    width: 40px;
+    height: 40px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    float: left;
+    //background-color: orangered;
+}
+
+
+[_nghost-c1]{
+    background-color: #eee;
+    border-radius: 40px;
+    font-size: 14px;
+    color: #fff;
+}
+
+[_nghost-c1] .ng2-tag-input-remove[_nghost-c1]{
+    color: #eee;
+    background: orangered;
+    height: 20px;
+    width: 20px;
+    line-height: 20px;
+}
+
+.example-chip-list {
+    width: 200%;
+  }
+

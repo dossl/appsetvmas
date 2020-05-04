@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color:#000030;margin-left: 100px">Iniciar sesión</ion-title>
+    <ion-buttons class="round" style="margin-left: 140px; margin-top: 5px; margin-bottom: 5px;">
+      <ion-button>
+        <ion-icon slot="icon-only" name="contact" style="margin-left: -5px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Email o ID de Usuario</ion-label>
+      <ion-input [(ngModel)]="email" name="email" type="text" #nombrev="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Contraseña</ion-label>
+      <ion-input [(ngModel)]="password" name="password" type="password" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <p style="color:#000030; margin-left: 50px;" (click)="restore()" >¿Ha olvidado la contraseña?</p>
+    </ion-item>
+    <ion-item>
+      <ul (click)="register()" style="color:#000030; margin-left: 80px;">Registrarse</ul>
+    </ion-item>
+    <ion-item>
+      <ion-checkbox [(ngModel)]="savelog" name="savelog" style="color:#000030;margin-top: -5px;"></ion-checkbox><div style="width:3px"></div><p style="color:#000030">¿Desea guardar su nombre de usuario y contraseña?</p>
+    </ion-item>
+    <div style="height: 5px;"></div>
+    <ion-button class="buttons"   shape="round" fill="outline" (click)="sigin()">Aceptar</ion-button>
+    <div style="height: 5px;"></div>
+  </form>
+</ion-content>
