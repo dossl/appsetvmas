@@ -1,0 +1,31 @@
+{
+
+    "etiquetas": [
+
+        { "name": "Ropa" },
+
+        { "name": "Electrodomesticos" },
+
+        { "name": "Calzado" },
+
+        { "name": "Computadoras" },
+
+        { "name": "Moviles" },
+
+        { "name": "Inmovilario" },
+
+        { "name": "Alquileres" },
+
+        { "name": "transporte" },
+
+        { "name": "Bisuteria" },
+
+        { "name": "Peluqueria" },
+
+        { "name": "Ofertas" },
+
+        { "name": "Servicios" }
+
+    ]
+
+}

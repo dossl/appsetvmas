@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color:#000030;margin-left: 25px">Recuperar cuenta</ion-title>
+    <ion-buttons class="round" style="margin-left: 100px; margin-top: 5px;">
+      <ion-button>
+        <ion-icon slot="icon-only" name="contact" style="margin-left: -5px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <p style="color:#000030">Ingresa tu correo electrónico para recuperar tu cuenta</p>
+      <ion-label style="color:#000030" position="floating">Email o ID de Usuario</ion-label>
+      <ion-input [(ngModel)]="correo" name="correo" type="text" #nombrev="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <div style="height: 5px;"></div>
+    <ion-button class="buttons"   shape="round" fill="outline"  (click)="restore()">Aceptar</ion-button>
+    <ion-button  class="buttons" shape="round" fill="outline"  (click)="cancel()">Cancelar</ion-button>
+    <div style="height: 5px;"></div>
+  </form>
+</ion-content>
+

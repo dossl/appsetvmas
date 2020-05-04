@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color:#000030; margin-left: 40px;">Vender Puntos</ion-title>
+    <div>
+      <img
+      src="assets/imgs_test/bolsita-con-fondo.png"
+      height="45px"
+      width="45px"
+      alt="No Image" slot="start" style="margin-left: 100px; margin-top: 5px;"/>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Nombre destino</ion-label>
+      <ion-input [(ngModel)]="nombre" name="nombre" type="text" #nombrev="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Cantidad de puntos</ion-label>
+      <ion-input [(ngModel)]="puntos" name="puntos" type="number" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <div style="height: 5px;"></div>
+    <ion-button class="buttons"   shape="round" fill="outline" color="#000030" (click)="send(nombre,puntos)">Vender</ion-button>
+    <ion-button  class="buttons" shape="round" fill="outline" color="#000030" (click)="cancel()">Cancelar</ion-button>
+    <div style="height: 5px;"></div>
+  </form>
+</ion-content>

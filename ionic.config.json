@@ -1,0 +1,7 @@
+{
+  "name": "skeletor",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

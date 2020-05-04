@@ -1,0 +1,19 @@
+.buttons{
+    width: 150px; 
+    height: 30px; 
+    margin-left: 50px; 
+    color:#000030; 
+    --border-color: #ff4500;
+}
+
+
+.round{
+    width: 45px;
+    height: 45px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: rgb(141, 201, 224);
+    color: #000030;
+    margin-left: 90px;
+}

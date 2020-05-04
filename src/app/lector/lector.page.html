@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Barcode Scanner</ion-title>
+    <ion-icon name="close" slot="end" (click)="close()"></ion-icon>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-label style="margin-left: 50px;">Click Button To Scan</ion-label>
+  <ion-button class="buttons"   shape="round" fill="outline" (click)="scanCode()">
+    Scan Code
+  </ion-button>  
+  <div *ngIf="scannedData">
+    <p>
+      Scanned Code: <b>{{ scannedData }}</b>
+    </p>
+  </div>
+</ion-content>

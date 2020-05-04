@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color:#000030;">
+      <ion-grid>
+        <ion-row style="height: 50px;">
+          <ion-col sise="auto">
+            <ion-buttons class="round" style="margin-left: -10px;">
+              <ion-button >
+                <ion-icon slot="icon-only" style="color:#000030;" name="eye"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-col>
+          <ion-col sise="auto">
+            <div style="margin-left: 0px;margin-top: 10px;">{{anuncio.Titulo}}</div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [scrollEvents]="true"
+(ionScrollStart)="logScrollStart()"
+(ionScroll)="logScrolling($event)"
+(ionScrollEnd)="logScrollEnd()">
+    <ion-item>
+      <ion-grid>
+          <ion-row style="margin-top: -10px;">
+              <ion-col size="7">
+                <ion-card style="float: left;margin-top: 20px; margin-left: -10px;height:150px;width:110px">
+                  <img
+                  [src]="'anuncios/mini/'+anuncio.ImageName"
+                  id="img"
+                  class="hover-shadow cursor"
+                  alt="No Image"
+                  (click)="openModal()"/>
+                  <div id="imgModal" class="slide-modal" *ngIf="modale">
+                    <span class="close cursor" (click)="closeModal()">&times;</span>
+                    <div class="slide-modal-content">
+                      <div class="img-slides">
+                        <img
+                        [src]="'anuncios/mini/'+anuncio.ImageName"
+                        alt="No Image"/>
+                      </div>
+                    </div>
+                  </div>
+                </ion-card>
+              </ion-col>
+              <ion-col size="5">
+                  <div style="padding: 10px; width: 120px;color: #000030;margin-top: 90px; margin-left: -10px;">
+                    <ion-button color="medium" shape="round" fill="outline">{{anuncio.Precio}}</ion-button>
+                    <br>
+                    <ion-icon name="eye" slot="start"></ion-icon>{{anuncio.ContadorView}}
+                  </div>
+              </ion-col>
+          </ion-row>
+      </ion-grid>
+  </ion-item>
+  <ion-item>
+    <div>
+      <p style="color: #000030;">Acción:<strong>{{anuncio.Accion}}</strong></p>
+      <p style="color: #000030;">Categoría:{{anuncio.Categoria}}</p>
+      <ul *ngFor="let item of arrayEtiqueta">
+        <li  style="display: inline;">
+          <p class="etiqueta" >{{item.Nombre}}</p>
+        </li>
+      </ul>
+      <div style="color: #000030;">{{anuncio.Descripcion}}</div>
+    </div>
+    
+  </ion-item>
+  <ion-item>
+    <div>
+      <ion-slides page="true" [options]="slideOpts">
+        <ion-slide >
+          <img
+          [src]="'anuncios/mini/'+anuncio.ImageName"
+          class="img"
+          alt="No Image"
+          />
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </ion-item>
+  <ion-item>
+    <div>
+      <p style="color: #000030;">Datos del contacto:</p>
+      <strong style="color: #000030;">{{anuncio.NombreContacto}}</strong>
+      <br>
+      <strong style="color: #000030;">{{anuncio.TelefonoContacto}}</strong>
+      <br>
+      <strong style="color: #000030;">{{anuncio.CorreoContacto}}</strong>
+      <br>
+      <strong style="color: #000030;">{{anuncio.Municipio}}</strong>
+      <br>
+      <strong style="color: #000030;">{{anuncio.Url}}</strong>
+      <div style="height: 10px;"></div>
+    </div>
+  </ion-item>
+
+  <ion-item>
+      <p style="color: #000030;" *ngFor="let item of listaTipoOpciones">{{item.Nombre}}</p>
+  </ion-item>
+  <div style="height: 5px;"></div>
+  <u style="margin-left: 40px;">
+    <ion-icon style="color: #000030;width: 25px;height: 25px; margin-top: 25px;" name="thumbs-down" slot="start"></ion-icon>
+    Denunciar Anuncio
+  </u>
+  <div style="height: 10px;"></div>
+  <ion-button  class="buttons" shape="round" fill="outline" color="#000030" (click)="cancel()">Salir</ion-button>
+  <div style="height: 15px;"></div>
+</ion-content>

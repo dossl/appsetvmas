@@ -1,0 +1,162 @@
+<ion-header>
+  <ion-toolbar class="bar">
+      <ion-buttons  slot="start">
+          <!--button ion-button menuToggle class="toggle">
+              <ion-icon name="menu" class="icon-toggle"></ion-icon>
+          </button-->
+          <ion-menu-button autoHide="false" class="toggle"></ion-menu-button>
+      </ion-buttons>
+    <ion-title>
+        <img
+        src="assets/imgs_test/logo.png"
+        height="40px"
+        width="80px"
+        alt="No Image"/>
+    </ion-title>
+    <ion-label slot="end" class="hola">
+      <ion-icon [name]="nube" class="icono" #icono id="enable"  (click)="conection()"></ion-icon>
+      <ion-icon *ngIf="!currentUser" name="contact" (click)="login()" class="icono"></ion-icon>
+    </ion-label>
+    <ion-label slot="end" class="hola">
+      <u *ngIf="currentUser" (click)="presentAlertConfirm()">{{ nameUser }}</u>
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-slides page="true" [options]="slideOpts">
+      <!--ion-slide class="slide">
+        <div class="contenedor">
+            <img
+                src="assets/imgs_test/slide1.png"
+                height="170px"
+                width="220px"
+                alt="No Image"
+                /> 
+        </div>
+    </ion-slide-->
+      <ion-slide *ngFor="let item of barnerSuperior">
+        <img
+            [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName"
+            class="banner"
+            alt="No Image"/> 
+      </ion-slide>
+    </ion-slides>
+  </ion-item>
+  <div class="buscar">
+    <ion-grid>
+        <ion-row>
+          <ion-col size="auto" style="float:right">
+              <ion-buttons class="round" style="padding: top 20px;">
+                  <ion-button (click)="search()">
+                    <ion-icon slot="icon-only" name="options" style="margin-left: -5px;"></ion-icon>
+                  </ion-button>
+              </ion-buttons>
+          </ion-col>
+          <ion-col size="0.5"></ion-col>
+          <ion-col size="auto">
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === false" class="searchmax"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === true" class="searchminim"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+          </ion-col>
+          <ion-col size="2">
+              <ion-buttons class="anunciar" style="padding: top -10px;" *ngIf="bocina === false">
+                  <ion-button (click)="onNotificate()">
+                      <img src="assets/imgs_test/notif1.png" height="auto" width="auto" slot="end"/>
+                  </ion-button>
+              </ion-buttons>
+              <ion-buttons  class="anunciarexpanded" style="padding: top 20px;" *ngIf="bocina === true">
+                  <ion-button (click)="onNotificate()">
+                      <img src="assets/imgs_test/hover.png" height="auto" width="auto" slot="end"/>
+                  </ion-button>
+              </ion-buttons>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+</div>
+<div class="form">
+  <div style="margin-left: 15px">
+    <!--h1>Ayuda</!--h1>
+    <p>Tanto en modo online como en modo
+      offline,la aplicación móvil debe tener una 
+      pantalla de ayuda con una explicación breve
+      del sistema, sus ventajas y beneficios para
+      el usuario.Al final de la pantalla ayuda,
+      deben estar disponible los  enlaces para acceder
+      a las páginas web de ayuda del sitio. Los temas de ayuda
+      son:
+    </p-->
+
+    <h1 *ngIf="help === false" [innerHTML]="formData.Titulo">{{formData.Titulo}}</h1>
+    <div *ngIf="help === false" [innerHTML]="formData.Contenido">{{ formData.Contenido }}</div>
+    <h1 *ngIf="help === true">Ayuda</h1>
+    <div *ngIf="help === true" [innerHTML]="ayudar.Valor">{{ayudar.Valor}}</div>
+
+    <u (click)="termino()"><li><strong>Términos y condiciones de uso.</strong></li></u>
+    <br>
+      <u (click)="nosotros()"><li><strong>Sobre nosotros.</strong></li></u>
+      <br>
+      <u (click)="politicas()"><li><strong>Póliticas</strong></li></u>
+      <br>
+      <u (click)="puntos()"><li><strong>Ganar puntos</strong></li></u>
+      <br>
+      <u (click)="respuestas()"><li><strong>Respuesta preguntas frecuentes</strong></li></u>
+      <br>
+      <div style="height: 20px;"></div>
+  </div>
+</div>  
+
+  
+  <ion-item>
+      <ion-slides page="true" [options]="slideOpts">
+          <!--ion-slide class="slide">
+              <div class="contenedor">
+                  
+                  <img
+                      src="assets/imgs_test/slide_down1.png"
+                      height="250px"
+                      width="280px"
+                      alt="No Image"
+                      />    
+                  <div class="centrado">
+                    Título del anuncio en una línea
+                    <br>
+                    Categoría del anuncio
+                  </div>
+              </div>
+          </ion-slide-->
+          <ion-slide class="slide" *ngFor="let item of barnerInferior">
+            <div class="contenedor">
+                <img
+                [src]="'https://setvmas.com/api/uploads/banners/inferior/'+item.ImageName"
+                class="banner"
+                alt="No Image"
+                class="sombra"
+                />
+                <!--div class="centrado">
+                  Título del anuncio en una línea
+                  <br>
+                  Categoría del anuncio
+                </div-->
+            </div>
+        </ion-slide>
+      </ion-slides>
+  </ion-item>
+</ion-content>
+<ion-footer style="height: auto;position: relative;">
+  <ion-toolbar>
+      <div class="footer">
+        <ion-icon  (click)="menu()" class="icon_footer" [name]="arrow"></ion-icon>
+        <div *ngIf="menus === true" style="margin-left: 150px;">
+          <p (click)="inicio()">INICIO</p>
+          <p (click)="oficina()" *ngIf="currentUser">OFICINA</p>
+          <p (click)="ayuda()">AYUDA</p>
+          <p (click)="contacto()">CONTÁCTANOS</p>
+          <div style="height: 10px;"></div>
+        </div>
+      </div>
+  </ion-toolbar>
+ 
+</ion-footer>
+
+
