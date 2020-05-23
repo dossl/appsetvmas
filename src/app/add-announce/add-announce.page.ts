@@ -44,6 +44,7 @@ import { Network } from '@ionic-native/network/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx'
 import { VariableConfiguracion } from '../models/variable-configuracion.model';
 import { Banner } from '../models/banner.model';
+import { Almacenimagen } from '../models/almacenimagen.model';
 
 
 const STORAGE_KEY = 'my_images';
@@ -74,7 +75,7 @@ export class AddAnnouncePage implements OnInit {
   texto:any
 
   categoria:any
-  arraycategoria:any
+  arraycategoria:Categoria[] = []
 
   arrayprovincia:any[]
   arraymunicipio:any
@@ -135,12 +136,16 @@ export class AddAnnouncePage implements OnInit {
  
   cameraOptions: CameraOptions = {
     quality: 100,
-    targetWidth: 400,
-    targetHeight: 400,
-    destinationType: this.camera.DestinationType.DATA_URL,
+    targetWidth: 166,
+    targetHeight: 322,
+    //allowEdit: true,
+    destinationType: this.camera.DestinationType.FILE_URI,
+    //sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
     encodingType: this.camera.EncodingType.JPEG,
     mediaType: this.camera.MediaType.PICTURE
   }
+  
+
   public objects:any[];
   public labelAttribute:string;
 
@@ -238,6 +243,7 @@ export class AddAnnouncePage implements OnInit {
     private modal: PopoverController,
     public splashscreen: SplashScreen,
     private datePipe: DatePipe,
+    public loadingCtrl: LoadingController,
     private filepath: FilePath
 
   ) {
@@ -327,18 +333,13 @@ export class AddAnnouncePage implements OnInit {
       this.presentToast(error);
     })*/
     this.service.getCategoriaAll('','','asc',1,5000).then(data=>{
-      this.arraycategoria = data as Categoria;
+      this.arraycategoria = data as Categoria[];
       console.log(this.arraycategoria)
-      /*this.arraycategoria.forEach(elem=>{
-        this.service.getEtiquetasByCategoria(elem.CategoriaId).then(res =>{
-          this.etiqueta = res
-          console.log(this.etiqueta)
-        })
-      })*/
     }).catch((error)=>{
       console.log('Login Incorrect',error)
       this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
     })
+    
     /*if (this.isConnected){
           //mode online
         this.service.getEtiquetas('Nombre','','asc',1,10).then(data=>{
@@ -445,6 +446,27 @@ export class AddAnnouncePage implements OnInit {
     this.service.getCurrentUser().then(res=>{
       this.currentUser = res as Usuario
    })
+   if(this.arraycategoria.length === 0){
+    setTimeout(()=>{
+      this.presentLoading()
+      this.service.getCategoriaAll('','','asc',1,5000).then(data=>{
+        this.arraycategoria = data as Categoria[];
+        console.log(this.arraycategoria)
+      }).catch((error)=>{
+        console.log('Login Incorrect',error)
+        this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
+      })
+    },3000)
+  }
+  }
+
+
+  async presentLoading(){
+    const loading = await this.loadingCtrl.create({
+      message: '',
+      duration: 3000
+    });
+    return await loading.present();
   }
 
   
@@ -461,6 +483,7 @@ export class AddAnnouncePage implements OnInit {
     else
       return "";
    }
+   
 
   calcular(){
     this.totalpuntos = 0
@@ -691,18 +714,71 @@ export class AddAnnouncePage implements OnInit {
     }
   }
 
+
   takeSnap(){
+    this.camera.getPicture(this.cameraOptions).then((imageData)=>{
+      this.file.resolveLocalFilesystemUrl(imageData).then((entry: FileEntry) => {
+        entry.file(file => {
+          console.log(file);
+          this.readFile(file);
+        });
+      });
+    }, (err) => {
+      // Handle error
+    });
+  }
+
+
+  readFile(file: any) {
+    const reader = new FileReader();
+    
+    reader.onloadend = () => {
+      const imgBlob = new Blob([reader.result], {
+        type: file.type
+      });
+      this.anuncio.ImageName = file.name
+      this.anuncio.ImageMimeType = file.type
+      alert("ImageName " + JSON.stringify( this.anuncio.ImageName))
+      alert("ImageType " + JSON.stringify( this.anuncio.ImageMimeType))
+      const formData = new FormData();
+      //formData.append('name', 'Hello');
+      formData.append('file', imgBlob, file.name);
+    };
+    this.readFiletoBase64(file)
+    reader.readAsArrayBuffer(file);
+  }
+
+  readFiletoBase64(file){
+    const reader = new FileReader();
+    reader.readAsDataURL(file)
+    reader.onload = () =>{
+      this.imagen = 'data:image/jpeg;base64,' + reader.result
+      this.anuncio.ImageContent = this.imagen
+      alert("Imagen " + JSON.stringify(this.anuncio.ImageContent))
+      
+    }
+  }
+
+
+  /*takeSnap(){
     this.camera.getPicture(this.cameraOptions).then((imageData)=>{
       let base64Image = 'data:image/jpeg;base64,' + imageData;
       this.filePath.resolveNativePath(imageData).then(filePath=>{
-          this.imagenname = imageData.substr(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))
+          //this.imagenname = imageData.substr(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))
+          //this.anuncio.ImageName = imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'));
+         // alert("ImageName " + JSON.stringify( imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))))
       })
       this.imagen = base64Image;
+      this.anuncio.ImageName = imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'));
+      //alert("ImageName " + JSON.stringify(this.imagen ))
+      // alert("ImageName " + JSON.stringify( imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))))
+      // alert("ImageName " + JSON.stringify( atob(this.imagen)))
       this.mimeContent = imageData
+       
     }, (err)=>{
       console.log(err)
     })
-  }
+  }*/
   
   upload(form) {
     console.log(form.tags);
@@ -724,7 +800,7 @@ export class AddAnnouncePage implements OnInit {
     this.imagePicker.getPictures({ maximumImagesCount: 1, outputType: 0 }).then((results) => {
       for (let i = 0; i < results.length; i++) {
           console.log('Image URI: ' + results[i]);
-          this.crop.crop(results[i], { quality: 100 })
+           this.crop.crop(results[i], { quality: 100 })
             .then(
               newImage => {
                 console.log('new image path is: ' + newImage);
@@ -733,7 +809,7 @@ export class AddAnnouncePage implements OnInit {
                    fileKey: 'file',
                    fileName: newImage.substr(newImage.lastIndexOf('/') + 1)
                 };
-  
+                
                 fileTransfer.upload(newImage, 'assets/imgs_test', uploadOpts)
                  .then((data) => {
                    console.log(data);
@@ -855,7 +931,14 @@ export class AddAnnouncePage implements OnInit {
         }else{
           this.anuncio.OpcionesAvanzadas.splice(this.anuncio.OpcionesAvanzadas.findIndex(x=>x.NombreCodigo=='BAN_SUP'), 1);
         }
-       
+
+        if(this.anuncio.ImageContent == '' && this.anuncio.ImageMimeType =='' && this.anuncio.ImageMimeType == '' && this.anuncio.ImageName == ''){
+          this.anuncio.AlmacenImagen.push(new Almacenimagen(0, this.anuncio.Categoria.ImageContent, this.anuncio.Categoria.ImageContent, this.anuncio.Categoria.ImageMimeType, this.anuncio.Categoria.ImageName, this.anuncio.AnuncioId, true));
+     
+        }else{
+          this.anuncio.AlmacenImagen.push(new Almacenimagen(0, this.images, this.anuncio.ImageContent, this.anuncio.ImageMimeType, this.anuncio.ImageName, this.anuncio.AnuncioId, true));
+        }
+          
         const creation = this.datePipe.transform(new Date(),"yyyy-MM-dd")
         const modification = this.datePipe.transform(new Date(),"yyyy-MM-dd")
          let index = this.array.length + 1
@@ -865,6 +948,7 @@ export class AddAnnouncePage implements OnInit {
         '');
         anuncioData.AnuncioId = 0
         anuncioData.Titulo = this.titulo
+        //localStorage.setItem("TituloAnuncio",this.titulo)
         anuncioData.Descripcion = this.texto
         anuncioData.NombreContacto = this.nombre
         anuncioData.TelefonoContacto = this.telefono
@@ -874,9 +958,9 @@ export class AddAnnouncePage implements OnInit {
         anuncioData.IsVisible = false
         anuncioData.FechaCreacion = new Date(creation) 
         anuncioData.FechaModificacion =  new Date(modification) 
-        anuncioData.ImageContent = this.mimeContent
-        anuncioData.ImageMimeType = 'image/jpeg'
-        anuncioData.ImageName = this.imagenname
+        anuncioData.ImageContent = this.imagen
+        anuncioData.ImageMimeType = this.anuncio.ImageMimeType
+        anuncioData.ImageName = this.anuncio.ImageName
         anuncioData.Url = this.url
         anuncioData.Provincia = this.provincia
         anuncioData.Municipio = this.municipio
@@ -890,11 +974,28 @@ export class AddAnnouncePage implements OnInit {
         anuncioData.Tipo = ""
           if (this.configAvanzada){
               anuncioData.OpcionesAvanzadas =  this.anuncio.OpcionesAvanzadas
-              anuncioData.Banners = this.anuncio.Banners
-              anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
-              
+              anuncioData.Banners = this.anuncio.Banners        
           }
-          anuncioData.Usuario = this.currentUser
+          anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
+          if(this.currentUser == undefined || this.currentUser == null){
+            let invitatedUser: Usuario = new Usuario()
+            invitatedUser.Activo =	false
+            invitatedUser.Anfitrion	= "0001"
+            invitatedUser.Bloqueado	= false
+            invitatedUser.CantReferidos =	0
+            invitatedUser.Clase	= "Iniciado"
+            invitatedUser.Codigo =	"0012"
+            invitatedUser.Correo	= "invitado@gmail.com"
+            invitatedUser.Puntos	= 56
+            invitatedUser.Rol	= null
+            invitatedUser.Telefono =	null
+            invitatedUser.Url	 = null
+            invitatedUser.UsuarioId =	43
+            anuncioData.Usuario = invitatedUser
+
+          }else{
+            anuncioData.Usuario = this.currentUser
+          }
           console.log(anuncioData)
           this.service.insertarAnuncio(anuncioData).then(data=>{
             console.log(data)
@@ -902,6 +1003,7 @@ export class AddAnnouncePage implements OnInit {
           }).catch((error)=>{
             console.log(error)
             this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
+            //this.presentToast(error);
           })
       }    
       
@@ -923,9 +1025,9 @@ export class AddAnnouncePage implements OnInit {
         anuncioData.IsVisible = false
         anuncioData.FechaCreacion = new Date(creation) 
         anuncioData.FechaModificacion =  new Date(modification) 
-        anuncioData.ImageContent = this.mimeContent
+        anuncioData.ImageContent = this.anuncio.ImageContent
         anuncioData.ImageMimeType = 'image/jpeg'
-        anuncioData.ImageName = this.nombreimagen
+        anuncioData.ImageName = this.anuncio.ImageName
         anuncioData.Url = this.url
         anuncioData.Provincia = this.provincia
         anuncioData.Municipio = this.municipio
@@ -936,13 +1038,31 @@ export class AddAnnouncePage implements OnInit {
         anuncioData.Banners = []
         anuncioData.AlmacenImagen = []
         anuncioData.Categoria = this.anuncio.Categoria
+        anuncioData.Tipo = ""
           if (this.configAvanzada){
               anuncioData.OpcionesAvanzadas =  this.anuncio.OpcionesAvanzadas
-              anuncioData.Banners = this.anuncio.Banners
-              anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
-              
+              anuncioData.Banners = this.anuncio.Banners        
           }
-          anuncioData.Usuario = this.currentUser
+          anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
+          if(this.currentUser == undefined || this.currentUser == null){
+            let invitatedUser: Usuario
+            invitatedUser.Activo =	false
+            invitatedUser.Anfitrion	= "0001"
+            invitatedUser.Bloqueado	= false
+            invitatedUser.CantReferidos =	0
+            invitatedUser.Clase	= "Iniciado"
+            invitatedUser.Codigo =	"0012"
+            invitatedUser.Correo	= "invitado@gmail.com"
+            invitatedUser.Puntos	= 56
+            invitatedUser.Rol	= null
+            invitatedUser.Telefono =	null
+            invitatedUser.Url	 = null
+            invitatedUser.UsuarioId =	43
+            anuncioData.Usuario = invitatedUser
+
+          }else{
+            anuncioData.Usuario = this.currentUser
+          }
       this.sqlite.create({
         name: 'setVMas.db',
         location: 'default'
