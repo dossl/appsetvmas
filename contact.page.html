@@ -1,0 +1,168 @@
+<ion-header>
+  <ion-toolbar class="bar">
+      <ion-buttons  slot="start">
+          <!--button ion-button menuToggle class="toggle">
+              <ion-icon name="menu" class="icon-toggle"></ion-icon>
+          </button-->
+          <ion-menu-button autoHide="false" class="toggle"></ion-menu-button>
+      </ion-buttons>
+    <ion-title>
+        <img
+        src="assets/imgs_test/logo.png"
+        height="40px"
+        width="80px"
+        alt="No Image"/>
+    </ion-title>
+    <ion-label slot="end" class="hola">
+      <ion-icon [name]="nube" class="icono" #icono id="enable"  (click)="conection()"></ion-icon>
+      <ion-icon *ngIf="!currentUser" name="contact" (click)="login()" class="icono"></ion-icon>
+    </ion-label>
+    <ion-label slot="end" class="hola">
+      <u *ngIf="currentUser" (click)="presentAlertConfirm()">{{ nameUser }}</u>
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-slides page="true" [options]="slideOpts">
+      <!--ion-slide class="slide">
+        <div class="contenedor">
+            <img
+                src="assets/imgs_test/slide1.png"
+                height="170px"
+                width="220px"
+                alt="No Image"
+                /> 
+        </div>
+    </ion-slide-->
+      <ion-slide *ngFor="let item of barnerSuperior">
+        <img
+            [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName"
+            class="banner"
+            alt="No Image"/> 
+      </ion-slide>
+    </ion-slides>
+  </ion-item>
+  <div class="buscar">
+    <ion-grid>
+        <ion-row>
+          <ion-col size="auto" style="float:left">
+              <ion-buttons class="round" style="padding: top 20px;">
+                  <ion-button (click)="search()">
+                    <ion-icon slot="icon-only" name="options" style="margin-left: -5px;"></ion-icon>
+                  </ion-button>
+              </ion-buttons>
+          </ion-col>
+          <ion-col size="0.5"></ion-col>
+          <ion-col size="auto">
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === false" class="searchmax"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === true" class="searchminim"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+          </ion-col>
+          <ion-col size="2">
+              <ion-buttons class="anunciar" style="padding: top -10px;" *ngIf="bocina === false">
+                <ion-button (click)="onNotificate()">
+                    <img src="assets/imgs_test/notif1.png" height="auto" width="auto" slot="end"/>
+                </ion-button>
+            </ion-buttons>
+            <ion-buttons  class="anunciarexpanded" style="padding: top 20px;" *ngIf="bocina === true">
+                <ion-button (click)="onNotificate()">
+                    <img src="assets/imgs_test/hover.png" height="auto" width="auto" slot="end"/>
+                </ion-button>
+            </ion-buttons>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+</div>
+<div class="form">
+  <div style="margin-left: 25px">
+    <!--h1>Contáctanos</h1>
+    <p>Puedes usar el siguiente formulario
+       para hacernos llegar 
+       todas tus inquietudes:
+    </p-->
+     <h1>{{formData.Titulo}}</h1>
+    <p>{{formData.Contenido}}
+    </p>
+  </div>
+ 
+ 
+  <form>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Nombre</ion-label>
+      <ion-input [(ngModel)]="nombre" name="nombre" type="text" #nombrev="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="email" name="email" type="text" #emailv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label style="color:#000030" position="floating">Asunto</ion-label>
+      <ion-textarea [(ngModel)]="asunto" name="asunto" autocomplete="on" autocorrect="on"></ion-textarea>
+  </ion-item> 
+  <ion-item>
+    <ion-label style="color:#000030" position="floating">¿Cómo te podemos ayudar?</ion-label>
+    <ion-textarea [(ngModel)]="texto" name="texto" autocomplete="on" autocorrect="on"></ion-textarea>
+</ion-item>
+    <div style="height: 20px;"></div>
+    <ion-button class="buttons" shape="round" fill="outline" color="#000030" (click)="send(nombre,email,asunto,texto)">Enviar</ion-button>
+  
+  
+    <ion-button  class="buttons" shape="round" fill="outline" color="#000030" (click)="cancel()">Cancelar</ion-button>
+  
+  </form>
+</div>  
+
+  
+  <ion-item>
+      <ion-slides page="true" [options]="slideOpts">
+          <!--ion-slide class="slide">
+              <div class="contenedor">
+                  
+                  <img
+                      src="assets/imgs_test/slide_down1.png"
+                      height="250px"
+                      width="280px"
+                      alt="No Image"
+                      />    
+                  <div class="centrado">
+                    Título del anuncio en una línea
+                    <br>
+                    Categoría del anuncio
+                  </div>
+              </div>
+          </ion-slide-->
+          <ion-slide class="slide" *ngFor="let item of barnerInferior">
+            <div class="contenedor">
+                <img
+                [src]="'https://setvmas.com/api/uploads/banners/inferior/'+item.ImageName"
+                class="banner"
+                alt="No Image"
+                class="sombra"
+                />
+                <!--div class="centrado">
+                  Título del anuncio en una línea
+                  <br>
+                  Categoría del anuncio
+                </div-->
+            </div>
+        </ion-slide>
+      </ion-slides>
+  </ion-item>
+</ion-content>
+<ion-footer style="height: auto;position: relative;">
+  <ion-toolbar>
+      <div class="footer">
+        <ion-icon  (click)="menu()" class="icon_footer" [name]="arrow"></ion-icon>
+        <div *ngIf="menus === true" style="margin-left: 150px;">
+          <p (click)="inicio()">INICIO</p>
+          <p (click)="oficina()" *ngIf="currentUser">OFICINA</p>
+          <p (click)="ayuda()">AYUDA</p>
+          <p (click)="contacto()">CONTÁCTANOS</p>
+          <div style="height: 10px;"></div>
+        </div>
+      </div>
+  </ion-toolbar>
+ 
+</ion-footer>
+

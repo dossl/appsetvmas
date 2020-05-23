@@ -1,0 +1,48 @@
+@font-face{
+    font-family: Roboto-Light;
+    src : url('../assets/fonts/Roboto-Light.ttf')
+}
+
+@font-face{
+    font-family: Roboto-Medium;
+    src : url('../assets/fonts/Roboto-Medium.ttf')
+}
+
+@import "../../node_modules/ionic4-auto-complete/auto-complete";
+
+
+.online{
+    font-weight: bold;   
+}
+
+.offline{
+    font-weight: bold;
+}
+
+
+
+ion-content{
+    --ion-background-color:#000030;
+    --ion-color: #fff;
+    //opacity: 0.5;
+}
+
+ion-header{
+    --ion-background-color:#000030;
+}
+
+.menu{
+    text-align: center;
+    color: #fff;
+}
+
+.hola{
+    margin-right: 20px;
+    color: #fff;
+}
+
+.icono{
+    width: 20px;
+    height: 20px;
+    padding: 5px
+}

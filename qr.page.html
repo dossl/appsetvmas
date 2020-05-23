@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title style="color:#000030; margin-left: 20px; width: 250px;">Mi código de referido</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form>
+    <ion-item>
+      <div style="margin-left: 50px; width: auto; height: auto;">
+        <ngx-qrcode [qrc-value]="referido" qrc-version = "40"></ngx-qrcode>
+      </div>
+    </ion-item>
+    <div style="height: 5px;"></div>
+    <ion-button class="buttons"   shape="round" fill="outline" color="#000030" (click)="cancel()">Volver</ion-button>
+    <div style="height: 5px;"></div>
+  </form>
+</ion-content>
+
