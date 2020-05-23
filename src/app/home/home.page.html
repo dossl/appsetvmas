@@ -111,6 +111,18 @@
                         (click)="miWeb(item.Url)"
                         alt="No Image"
                         />
+                          <!--img *ngIf="imagenMovil !== null && item.ImageName === '' && item.Url == undefined && item.Titulo == titulo || imagenMovil !== null && item.ImageName === '' && item.Url == null && item.Titulo == titulo"
+                          [src]="imagenMovil"
+                          class="cat"
+                          (click)="details(item.AnuncioId)"
+                          alt="No Image"
+                          />
+                          <img *ngIf="imagenMovil !== null && item.Url !== undefined && item.ImageName === '' && item.Titulo == titulo || imagenMovil !== null && item.Url !== null && item.ImageName === '' && item.Titulo == titulo"
+                          [src]="imagenMovil"
+                          class="cat"
+                          alt="No Image"
+                          (click)="miWeb(item.Url)"
+                          /-->
                     </ion-col>
                     <ion-col size="auto">
                       <div class="container">

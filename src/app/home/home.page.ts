@@ -21,6 +21,11 @@ import { ViewPage } from '../view/view.page';
 import { ModalController,AlertController } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 
+export interface AnuncioImagen{
+  Id:number,
+  Imagen: string,
+  Titulo: string
+}
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -74,6 +79,22 @@ export class HomePage implements OnInit, AfterViewInit {
   height:any
   WifiWizard2: any;
   anunciod: AnunciosModel
+  imagenArray:AnuncioImagen[] = []
+  imagenMovil:any = null
+  titulo:any = ''
+
+  imagenMovil1:any = null
+  titulo1:any = ''
+
+  imagenMovil2:any = null
+  titulo2:any = ''
+
+  imagenMovil3:any = null
+  titulo3:any = ''
+
+  imagenMovil4:any = null
+  titulo4:any = ''
+
   @ViewChild('popular',{static:false}) popular:ElementRef
   @ViewChild('icono', {static: false}) icono;
 
@@ -86,7 +107,7 @@ export class HomePage implements OnInit, AfterViewInit {
     //this.presentLoading();
    // this.testconnetion();
    // this.loadBanner()
-    this.loadAuto()
+   // this.loadAuto()
     this.insomnia.keepAwake().then(()=>{
       console.log('success')
     })
@@ -121,6 +142,7 @@ export class HomePage implements OnInit, AfterViewInit {
     if(!this.isConnected){
       this.testconnetion();
     }
+    this.loadAuto()
     this.currentUser = JSON.parse(localStorage.getItem("currentuser")) 
     if(this.currentUser){
       let index = this.currentUser.Correo.indexOf("@");
@@ -140,6 +162,8 @@ export class HomePage implements OnInit, AfterViewInit {
        console.log(this.currentUser)
      }
    })
+   //this.imagenMovil = JSON.parse(localStorage.getItem("ImageMovil")) 
+   //this.titulo = localStorage.getItem("TituloAnuncio")
   }
 
   loadAuto(){
@@ -341,6 +365,22 @@ export class HomePage implements OnInit, AfterViewInit {
         })
       }
       this.loadingCtrl.dismiss();
+      /*this.sqlite.create({
+        name: 'setVMas.db',
+        location: 'default'
+      }).then((db: SQLiteObject) => {
+        db.executeSql('SELECT * FROM AnuncioImagen', []).then((data) => {
+          for (let i = 0; i < data.rows.length; i++) {
+            let item = data.rows.item(i).Imagen;
+            this.imagenMovil = data.rows.item(i).Imagen.substr(0)
+            this.titulo = data.rows.item(i).Titulo
+            alert("List " + JSON.stringify( data.rows.item(i).Imagen.substr(0)))
+          }
+         
+        }).catch(e => {console.log(e)
+        //  alert("error " + JSON.stringify(e))
+        });
+      })*/
     }else if (this.group === true){
       this.icon = 'arrow-dropdown';
       this.group = false
@@ -567,7 +607,7 @@ conection(){
 }
 
 sendShare(titulo?,id?){
-  let url = 'https://setvmas.com/sitio/#/detalles-anuncio/'+id
+  let url = 'https://setvmas.com/#/detalles-anuncio/'+id
   this.socialSharing.share(titulo, titulo, null, url);
 }
 
