@@ -46,7 +46,6 @@ import { VariableConfiguracion } from '../models/variable-configuracion.model';
 import { Banner } from '../models/banner.model';
 import { Almacenimagen } from '../models/almacenimagen.model';
 
-
 const STORAGE_KEY = 'my_images';
 
 
@@ -139,7 +138,8 @@ export class AddAnnouncePage implements OnInit {
     targetWidth: 166,
     targetHeight: 322,
     //allowEdit: true,
-    destinationType: this.camera.DestinationType.FILE_URI,
+    saveToPhotoAlbum: true,
+    destinationType: this.camera.DestinationType.DATA_URL,
     //sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
     encodingType: this.camera.EncodingType.JPEG,
     mediaType: this.camera.MediaType.PICTURE
@@ -244,7 +244,8 @@ export class AddAnnouncePage implements OnInit {
     public splashscreen: SplashScreen,
     private datePipe: DatePipe,
     public loadingCtrl: LoadingController,
-    private filepath: FilePath
+    private filepath: FilePath,
+
 
   ) {
     /*this.platform.ready().then(()=>{
@@ -714,8 +715,10 @@ export class AddAnnouncePage implements OnInit {
     }
   }
 
+  
 
-  takeSnap(){
+
+  /*takeSnap(){
     this.camera.getPicture(this.cameraOptions).then((imageData)=>{
       this.file.resolveLocalFilesystemUrl(imageData).then((entry: FileEntry) => {
         entry.file(file => {
@@ -726,10 +729,10 @@ export class AddAnnouncePage implements OnInit {
     }, (err) => {
       // Handle error
     });
-  }
+  }*/
 
 
-  readFile(file: any) {
+  /*readFile(file: any) {
     const reader = new FileReader();
     
     reader.onloadend = () => {
@@ -752,15 +755,15 @@ export class AddAnnouncePage implements OnInit {
     const reader = new FileReader();
     reader.readAsDataURL(file)
     reader.onload = () =>{
-      this.imagen = 'data:image/jpeg;base64,' + reader.result
+      this.imagen = reader.result
       this.anuncio.ImageContent = this.imagen
       alert("Imagen " + JSON.stringify(this.anuncio.ImageContent))
       
     }
-  }
+  }*/
 
 
-  /*takeSnap(){
+  takeSnap(){
     this.camera.getPicture(this.cameraOptions).then((imageData)=>{
       let base64Image = 'data:image/jpeg;base64,' + imageData;
       this.filePath.resolveNativePath(imageData).then(filePath=>{
@@ -769,16 +772,26 @@ export class AddAnnouncePage implements OnInit {
          // alert("ImageName " + JSON.stringify( imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))))
       })
       this.imagen = base64Image;
-      this.anuncio.ImageName = imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'));
-      //alert("ImageName " + JSON.stringify(this.imagen ))
-      // alert("ImageName " + JSON.stringify( imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))))
-      // alert("ImageName " + JSON.stringify( atob(this.imagen)))
-      this.mimeContent = imageData
-       
+      this.anuncio.ImageContent = imageData
+      let imageN = this.makeImageName(5)
+      let imageName = imageN + '.jpg'
+      this.anuncio.ImageName = imageName
+      
     }, (err)=>{
       console.log(err)
     })
-  }*/
+  }
+
+  makeImageName(length){
+    let result = ''
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let charactersLenght = characters.length
+    for (var i = 0; i < length; i++){
+       result +=characters.charAt(Math.floor(Math.random() * charactersLenght))
+    }
+    return result
+
+  }
   
   upload(form) {
     console.log(form.tags);
@@ -959,7 +972,7 @@ export class AddAnnouncePage implements OnInit {
         anuncioData.FechaCreacion = new Date(creation) 
         anuncioData.FechaModificacion =  new Date(modification) 
         anuncioData.ImageContent = this.imagen
-        anuncioData.ImageMimeType = this.anuncio.ImageMimeType
+        anuncioData.ImageMimeType = 'image/jpeg'
         anuncioData.ImageName = this.anuncio.ImageName
         anuncioData.Url = this.url
         anuncioData.Provincia = this.provincia
