@@ -38,6 +38,7 @@ import { element } from 'protractor';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx'
 import { Banner } from '../models/banner.model';
+import { Almacenimagen } from '../models/almacenimagen.model';
 
 const STORAGE_KEY = 'my_images';
 
@@ -143,6 +144,7 @@ export class EditAnnouncePage implements OnInit {
     quality: 100,
     targetWidth: 400,
     targetHeight: 400,
+    saveToPhotoAlbum: true,
     destinationType: this.camera.DestinationType.DATA_URL,
     encodingType: this.camera.EncodingType.JPEG,
     mediaType: this.camera.MediaType.PICTURE
@@ -608,18 +610,49 @@ export class EditAnnouncePage implements OnInit {
     }
   }
 
-  takeSnap(){
+  /*takeSnap(){
     this.camera.getPicture(this.cameraOptions).then((imageData)=>{
       let base64Image = 'data:image/jpeg;base64,' + imageData;
       this.filePath.resolveNativePath(imageData).then(filePath=>{
-        this.imagenname = imageData.substr(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))
+        //this.imagenname = imageData.substr(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))
       })
       this.imagen = base64Image;
       this.mimeContent = imageData
+      this.anuncio.ImageContent = imageData
       this.loadImage = false
     }, (err)=>{
       console.log(err)
     })
+  }*/
+
+  takeSnap(){
+    this.camera.getPicture(this.cameraOptions).then((imageData)=>{
+      let base64Image = 'data:image/jpeg;base64,' + imageData;
+      this.filePath.resolveNativePath(imageData).then(filePath=>{
+          //this.imagenname = imageData.substr(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))
+          //this.anuncio.ImageName = imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'));
+         // alert("ImageName " + JSON.stringify( imageData.substring(imageData.lastIndexOf('/') + 1, imageData.lastIndexOf('?'))))
+      })
+      this.imagen = base64Image;
+      this.anuncio.ImageContent = imageData
+      let imageN = this.makeImageName(5)
+      let imageName = imageN + '.jpg'
+      this.anuncio.ImageName = imageName
+      
+    }, (err)=>{
+      console.log(err)
+    })
+  }
+
+  makeImageName(length){
+    let result = ''
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let charactersLenght = characters.length
+    for (var i = 0; i < length; i++){
+       result +=characters.charAt(Math.floor(Math.random() * charactersLenght))
+    }
+    return result
+
   }
   
   upload(form) {
@@ -651,6 +684,8 @@ export class EditAnnouncePage implements OnInit {
                    fileKey: 'file',
                    fileName: newImage.substr(newImage.lastIndexOf('/') + 1)
                 };
+                this.anuncio.ImageName = uploadOpts.fileName
+                this.anuncio.ImageMimeType = uploadOpts.mimeType
   
                 fileTransfer.upload(newImage, 'assets/imgs_test', uploadOpts)
                  .then((data) => {
@@ -898,6 +933,13 @@ export class EditAnnouncePage implements OnInit {
         }else{
           this.anuncio.OpcionesAvanzadas.splice(this.anuncio.OpcionesAvanzadas.findIndex(x=>x.NombreCodigo=='BAN_SUP'), 1);
         }
+
+        if(this.anuncio.ImageContent == '' && this.anuncio.ImageMimeType =='' && this.anuncio.ImageMimeType == '' && this.anuncio.ImageName == ''){
+          this.anuncio.AlmacenImagen.push(new Almacenimagen(0, this.anuncio.Categoria.ImageContent, this.anuncio.Categoria.ImageContent, this.anuncio.Categoria.ImageMimeType, this.anuncio.Categoria.ImageName, this.anuncio.AnuncioId, true));
+     
+        }else{
+          this.anuncio.AlmacenImagen.push(new Almacenimagen(0, this.images, this.anuncio.ImageContent, this.anuncio.ImageMimeType, this.anuncio.ImageName, this.anuncio.AnuncioId, true));
+        }
         const creation = this.datePipe.transform(new Date(),"yyyy-MM-dd")
         const modification = this.datePipe.transform(new Date(),"yyyy-MM-dd")
         let anuncioData = new AnunciosModel(0, '', '', '', '',
@@ -915,9 +957,9 @@ export class EditAnnouncePage implements OnInit {
         anuncioData.IsVisible = false
         anuncioData.FechaCreacion = new Date(creation) 
         anuncioData.FechaModificacion =  new Date(modification) 
-        anuncioData.ImageContent = this.mimeContent
-        anuncioData.ImageMimeType = 'image/jpeg'
-        anuncioData.ImageName = this.imagenname
+        anuncioData.ImageContent = this.anuncio.ImageContent
+        anuncioData.ImageMimeType = this.anuncio.ImageMimeType
+        anuncioData.ImageName = this.anuncio.ImageName
         anuncioData.Url = this.url
         anuncioData.Provincia = this.provincia
         anuncioData.Municipio = this.municipio
@@ -977,10 +1019,9 @@ export class EditAnnouncePage implements OnInit {
        // anuncioData.Categoria = this.anuncio.Categoria
           if (this.configAvanzada){
               anuncioData.OpcionesAvanzadas =  this.anuncio.OpcionesAvanzadas
-              anuncioData.Banners = this.anuncio.Banners
-              anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
-              
+              anuncioData.Banners = this.anuncio.Banners                
           }
+          anuncioData.AlmacenImagen = this.anuncio.AlmacenImagen
           anuncioData.Usuario = this.currentUser
       this.sqlite.create({
         name: 'setVMas.db',
