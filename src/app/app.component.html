@@ -1,160 +1,54 @@
 <ion-app>
   <ion-menu side="start" menuId="first" contentId="content1">
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar color="primary">
         <ion-title>
-          <ion-grid style="margin-left: -50px;">
-            <ion-row style="margin-left: 40px; color: #fff;font-weight: lighter;">
-             <ion-col size="auto">
-               <p [ngClass]="{online: active}">{{ online }} |</p>
-             </ion-col>
-             <ion-col size="auto">
-               <p [ngClass]="{offline: !active}">{{ offline }}</p>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+          <img src="assets/imgs_test/logo.png" height="40px" width="80px" alt="No Image" />
         </ion-title>
+        <ion-item slot="end" color="primary">
+          <label class="online" *ngIf="isConnected" slot="end">Online</label>
+          <label class="offline" disabled="true" *ngIf="!isConnected" slot="end">Offline</label>
+          <ion-icon color="light" *ngIf="!isConnected" slot="end" name="cloud-outline"></ion-icon>
+          <ion-icon color="light" *ngIf="isConnected" slot="end" name="cloud-done"></ion-icon>
+        </ion-item>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-     <ion-list *ngIf="active && currentUser" style="margin-left: 40px;">
-      <ion-item class="menu">  
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="inicio()">Inicio</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">       
-        <ion-buttons slot="start">
-          <ion-menu-button autoHide="false" (click)="oficina()">Oficina</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">    
-        <ion-buttons style="margin-left: 20px;">
-          <ion-menu-button autoHide="false" (click)="anunciar()">Anunciar</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" style="margin-left: 40px;" (click)="downloadBD()">Descargar Bd</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="ayuda()"> Ayuda</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-     <ion-list *ngIf="active && !currentUser" style="margin-left: 40px;">
-      <ion-item class="menu">
-        <ion-buttons slot="start">
-          <ion-menu-button autoHide="false" (click)="inicio()">Inicio</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons slot="start" style="margin-left: 20px;">
-          <ion-menu-button autoHide="false" (click)="anunciar()">Anunciar</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons slot="start">
-          <ion-menu-button autoHide="false" style="margin-left: 40px;" (click)="downloadBD()"> Descargar Bd</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons slot="start">
-          <ion-menu-button autoHide="false" (click)="ayuda()">Ayuda</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-     <ion-list *ngIf="!active && currentUser" style="margin-left: 40px;">
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="inicio()">Inicio</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons slot="start">
-          <ion-menu-button autoHide="false" (click)="oficina()">Oficina</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons style="margin-left: 20px;">
-          <ion-menu-button autoHide="false" (click)="anunciar()">Anunciar</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="ayuda()">Ayuda</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-     <ion-list *ngIf="!active && !currentUser" style="margin-left: 40px;">
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="inicio()">Inicio</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-      <ion-item class="menu">
-        <ion-buttons>
-          <ion-menu-button autoHide="false" (click)="ayuda()">Ayuda</ion-menu-button>
-        </ion-buttons>
-      </ion-item>
-    </ion-list>
-      <!--div *ngIf="active && currentUser">
-        <ion-list *ngFor="let pages of online_active" style="margin-left: 40px;">
-          <ion-menu-toggle auto-hide="false">
-            <ion-item class="menu" menuclose [routerLink]="pages.url" *ngIf="pages.title !== 'DESCARGAR BD'" routerDirection="'root'">
-                   {{pages.title}} 
-            </ion-item>
-            <ion-item class="menu" menuclose (click)="downloadBD()" *ngIf="pages.title === 'DESCARGAR BD'" routerDirection="'root'">
-              {{pages.title}}
-            </ion-item>
-          </ion-menu-toggle>
-          </ion-list>
-      </div>
-      <div *ngIf="active && !currentUser">
-        <ion-list *ngFor="let pages of online_noactive" style="margin-left: 40px;">
-          <ion-menu-toggle auto-hide="false">
-            <ion-item class="menu" menuclose [routerLink]="pages.url" *ngIf="pages.title !== 'DESCARGAR BD'" routerDirection="'root'">
-                   {{pages.title}} 
-            </ion-item>
-            <ion-item class="menu" menuclose (click)="downloadBD()" *ngIf="pages.title === 'DESCARGAR BD'" routerDirection="'root'">
-              {{pages.title}}
-            </ion-item>
-          </ion-menu-toggle>
+    <ion-content color="primary">
+      <ion-list mode="ios">
+        <ion-item [routerLink]="['/', 'home']" color="primary">
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+        <ion-item [routerLink]="['/', 'virtual-office']" color="primary">
+          <ion-label>Oficina</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!active" [routerLink]="['/', 'add-announce']" color="primary">
+          <ion-label>Adicionar Anuncio</ion-label>
+        </ion-item>
+        <ion-item *ngIf="!active" (click)="downloadBD()" color="primary">
+          <ion-label>Descargar DB</ion-label>
+        </ion-item>
+        <ion-item [routerLink]="['/', 'contact']" color="primary">
+          <ion-label>Contáctenos</ion-label>
+        </ion-item>
+        <ion-item [routerLink]="['/', 'help']" color="primary">
+          <ion-label>Ayuda</ion-label>
+        </ion-item>
+
+      </ion-list>
+      <div class="secondary-menu">
+        <ion-list lines="full" mode="ios">
+          <ion-item-divider *ngIf="active && currentUser" color="primary">
+            <ion-label>Acumulado de Puntos: <strong>{{ userPoint }}</strong></ion-label>
+          </ion-item-divider>
+          <ion-item *ngIf="currentUser" (click)="qr()" color="primary">
+            <ion-icon slot="start" name="qr-scanner"></ion-icon>
+            <ion-label>Mostrar Código de Referido</ion-label>
+          </ion-item>
+          <ion-item *ngIf="active && currentUser" (click)="sell()" color="primary">
+            <ion-icon slot="start" src="/assets/icon/money.svg"></ion-icon>
+            <ion-label>Vender Puntos</ion-label>
+          </ion-item>
         </ion-list>
-      </div>
-      <div *ngIf="!active && currentUser">
-        <ion-list *ngFor="let pages of offline_active" style="margin-left: 40px;">
-          <ion-menu-toggle auto-hide="false" >
-            <ion-item class="menu" menuclose [routerLink]="pages.url" routerDirection="'root'">
-                   {{pages.title}} 
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
-      </div>
-      <div *ngIf="!active && !currentUser">
-        <ion-list *ngFor="let pages of offline_noactive" style="margin-left: 40px;">
-          <ion-menu-toggle auto-hide="false" >
-            <ion-item class="menu" menuclose [routerLink]="pages.url" routerDirection="'root'">
-                   {{pages.title}} 
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
-      </div-->  
-          
-      <div *ngIf="(active && currentUser) || (!active && currentUser)" style="margin-left: 50px;">
-        <u (click)="qr()" class="menu"><ion-icon name="qr-scanner" style="width:20px;height:20px"></ion-icon>Mostrar Código de referido</u>
-      </div>
-      <div *ngIf="active && currentUser" style="margin-left: 50px;">
-        <p style="color: orangered;">Acumulado de puntos: <strong>{{ userPoint }}</strong></p>
-      </div>
-      <div *ngIf="active && currentUser" style="margin-left: 50px;">
-        <u (click)="vende()" class="menu"><img class="menu"
-          src="assets/imgs_test/bolsita blanca.png"
-          height="25px"
-          width="25px"
-          alt="No Image" slot="start"/>Vender puntos</u>
       </div>
     </ion-content>
   </ion-menu>

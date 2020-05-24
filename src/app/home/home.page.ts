@@ -18,11 +18,11 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx'
 import { Insomnia } from '@ionic-native/insomnia/ngx';
 import { ViewPage } from '../view/view.page';
-import { ModalController,AlertController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 
-export interface AnuncioImagen{
-  Id:number,
+export interface AnuncioImagen {
+  Id: number,
   Imagen: string,
   Titulo: string
 }
@@ -34,13 +34,12 @@ export interface AnuncioImagen{
 export class HomePage implements OnInit, AfterViewInit {
 
   slideOpts = {
-    initialSlide:1,
-    slidePerView:1,
+    initialSlide: 1,
+    slidePerView: 1,
     speed: 400,
     autoplay: true,
     enablekeyboardcontroll: true
   }
-  nube = "cloud-outline"
   isConnected = false;
 
   shownGroup = null;
@@ -54,61 +53,61 @@ export class HomePage implements OnInit, AfterViewInit {
   group = false
   group1 = false
   populareslist: any;
-  recienteslist:any
+  recienteslist: any
   barner: any;
   barnerSuperior: Banner[];
   barnerInferior: Banner[];
 
   anuncio: any
-  txtbuscar =''
+  txtbuscar = ''
 
-  populares:AnunciosModel[]
-  recientes:AnunciosModel[]
+  populares: AnunciosModel[]
+  recientes: AnunciosModel[]
   cantPorPagina = this.servCo.getCantPorPaginasHome();
 
   bocina = false;
 
   currentUser: Usuario
   category: any
-  displayImage:any 
-  displayImageSuperior:any 
-  displayImageInferior:any 
-  base64:any
-  nameUser:any
-  width:any
-  height:any
+  displayImage: any
+  displayImageSuperior: any
+  displayImageInferior: any
+  base64: any
+  nameUser: any
+  width: any
+  height: any
   WifiWizard2: any;
   anunciod: AnunciosModel
-  imagenArray:AnuncioImagen[] = []
-  imagenMovil:any = null
-  titulo:any = ''
+  imagenArray: AnuncioImagen[] = []
+  imagenMovil: any = null
+  titulo: any = ''
 
-  imagenMovil1:any = null
-  titulo1:any = ''
+  imagenMovil1: any = null
+  titulo1: any = ''
 
-  imagenMovil2:any = null
-  titulo2:any = ''
+  imagenMovil2: any = null
+  titulo2: any = ''
 
-  imagenMovil3:any = null
-  titulo3:any = ''
+  imagenMovil3: any = null
+  titulo3: any = ''
 
-  imagenMovil4:any = null
-  titulo4:any = ''
+  imagenMovil4: any = null
+  titulo4: any = ''
 
-  @ViewChild('popular',{static:false}) popular:ElementRef
-  @ViewChild('icono', {static: false}) icono;
+  @ViewChild('popular', { static: false }) popular: ElementRef
+  @ViewChild('icono', { static: false }) icono;
 
-  @ViewChild(IonInfiniteScroll,{static:false}) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
 
-  constructor(public navCtrl: NavController,public render: Renderer,private servCo: ConfiguracionesService, private servAnuncio: AnuncioService, private networkService: NetworkService, private sqlite: SQLite,private sanitizer: DomSanitizer,public toastCtrl: ToastController,public platform: Platform, public splashscreen: SplashScreen,
-    private modal: PopoverController,private alertCtrl: AlertController,public modalController: ModalController,private insomnia: Insomnia,private iab: InAppBrowser, public loadingCtrl: LoadingController,private clipboard: Clipboard,private socialSharing: SocialSharing) {}
+  constructor(public navCtrl: NavController, public render: Renderer, private servCo: ConfiguracionesService, private servAnuncio: AnuncioService, private networkService: NetworkService, private sqlite: SQLite, private sanitizer: DomSanitizer, public toastCtrl: ToastController, public platform: Platform, public splashscreen: SplashScreen,
+    private modal: PopoverController, private alertCtrl: AlertController, public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser, public loadingCtrl: LoadingController, private clipboard: Clipboard, private socialSharing: SocialSharing) { }
 
   ngOnInit() {
     //this.presentLoading();
-   // this.testconnetion();
-   // this.loadBanner()
-   // this.loadAuto()
-    this.insomnia.keepAwake().then(()=>{
+    // this.testconnetion();
+    // this.loadBanner()
+    // this.loadAuto()
+    this.insomnia.keepAwake().then(() => {
       console.log('success')
     })
   }
@@ -137,36 +136,36 @@ export class HomePage implements OnInit, AfterViewInit {
     await alert.present();
   }
 
-  ionViewWillEnter(){
+  ionViewWillEnter() {
     this.testconnetion()
-    if(!this.isConnected){
+    if (!this.isConnected) {
       this.testconnetion();
     }
-    this.loadAuto()
-    this.currentUser = JSON.parse(localStorage.getItem("currentuser")) 
-    if(this.currentUser){
+    // this.loadAuto()
+    this.currentUser = JSON.parse(localStorage.getItem("currentuser"))
+    if (this.currentUser) {
       let index = this.currentUser.Correo.indexOf("@");
-      if(index !== -1){
-         this.nameUser = this.currentUser.Correo.substr(0,index);
+      if (index !== -1) {
+        this.nameUser = this.currentUser.Correo.substr(0, index);
       }
       console.log(this.currentUser)
     }
 
-    this.servAnuncio.getCurrentUser().then(res=>{
+    this.servAnuncio.getCurrentUser().then(res => {
       this.currentUser = res as Usuario
-      if(this.currentUser){
-       let index = this.currentUser.Correo.indexOf("@");
-       if(index !== -1){
-          this.nameUser = this.currentUser.Correo.substr(0,index);
-       }
-       console.log(this.currentUser)
-     }
-   })
-   //this.imagenMovil = JSON.parse(localStorage.getItem("ImageMovil")) 
-   //this.titulo = localStorage.getItem("TituloAnuncio")
+      if (this.currentUser) {
+        let index = this.currentUser.Correo.indexOf("@");
+        if (index !== -1) {
+          this.nameUser = this.currentUser.Correo.substr(0, index);
+        }
+        console.log(this.currentUser)
+      }
+    })
+    //this.imagenMovil = JSON.parse(localStorage.getItem("ImageMovil")) 
+    //this.titulo = localStorage.getItem("TituloAnuncio")
   }
 
-  loadAuto(){
+  loadAuto() {
     this.presentLoading();
     this.testconnetion();
     this.loadBanner()
@@ -185,7 +184,7 @@ export class HomePage implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  
+
   ngAfterViewInit() {
     /*this.currentUser = JSON.parse(localStorage.getItem("currentuser")) 
     if(this.currentUser.Correo !== undefined || this.currentUser.Correo !== null){
@@ -195,11 +194,11 @@ export class HomePage implements OnInit, AfterViewInit {
       }
       console.log(this.currentUser)
     }*/
-    setTimeout(()=>{
+    setTimeout(() => {
       this.loadBanner()
-       if( this.group == true){
+      if (this.group == true) {
         this.presentLoading();
-        this.servAnuncio.getAnunciosRecientes('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data=>{
+        this.servAnuncio.getAnunciosRecientes('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data => {
           this.recientes = data as AnunciosModel[];
           for (const i of (this.recientes as AnunciosModel[])) {
             if (i.ImageContent !== undefined && i.ImageContent !== null) {
@@ -208,82 +207,74 @@ export class HomePage implements OnInit, AfterViewInit {
             } else {
               i.Imagen = i.Categoria.ImageName;
             }
-  
+
           }
           console.log(this.recientes)
-        }).catch((error)=>{
+        }).catch((error) => {
           this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
         })
-       }else if (this.group1 === false){
-            this.presentLoading();
-            this.servAnuncio.getAnunciosPopulares('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data=>{
-              this.populares = data as AnunciosModel[];
-              for (const i of (this.populares as AnunciosModel[])) {
-                if (i.ImageContent !== undefined && i.ImageContent !== null) {
-                  i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
-                  console.log(i.Imagen)
-                } else {
-                  i.Imagen = i.Categoria.ImageName;
-                }
-      
-              }
-              console.log(this.populares)
-            }).catch((error)=>{
-              this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-            })
-       }
-    },180000)
+      } else if (this.group1 === false) {
+        this.presentLoading();
+        this.servAnuncio.getAnunciosPopulares('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data => {
+          this.populares = data as AnunciosModel[];
+          for (const i of (this.populares as AnunciosModel[])) {
+            if (i.ImageContent !== undefined && i.ImageContent !== null) {
+              i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
+              console.log(i.Imagen)
+            } else {
+              i.Imagen = i.Categoria.ImageName;
+            }
+
+          }
+          console.log(this.populares)
+        }).catch((error) => {
+          this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
+        })
+      }
+    }, 180000)
   }
 
-  testconnetion(){
+  testconnetion() {
     this.networkService.getNetworkStatus().subscribe((connected: boolean) => {
       this.isConnected = connected;
-      if (!this.isConnected) {
-        this.nube = "cloud-outline"
-          
-      }else{
-        this.nube = "cloud-done"
-        console.log('conexion is full')
-      }
     });
-    
   }
 
-  logScrollStart() {  
-    console.log('logScrollStart : When Scroll Starts');  
-  }  
-  
-  logScrolling() {  
-    console.log('logScrolling : When Scrolling');  
-  }  
-  
-  logScrollEnd() {  
-    console.log('logScrollEnd : When Scroll Ends');  
-  }  
-  
-  loadBanner(){
-    if (this.isConnected){
-      this.servAnuncio.getBannerSuperior().then(data=>{
+  logScrollStart() {
+    console.log('logScrollStart : When Scroll Starts');
+  }
+
+  logScrolling() {
+    console.log('logScrolling : When Scrolling');
+  }
+
+  logScrollEnd() {
+    console.log('logScrollEnd : When Scroll Ends');
+  }
+
+  loadBanner() {
+    if (this.isConnected) {
+      this.servAnuncio.getBannerSuperior().then(data => {
         this.barnerSuperior = data as Banner[];
         console.log(this.barnerSuperior)
-      }).catch((error)=>{
+      }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
       })
-      this.servAnuncio.getBannerInferior().then(data=>{
+      this.servAnuncio.getBannerInferior().then(data => {
         this.barnerInferior = data as Banner[];
         this.loadingCtrl.dismiss();
         console.log(this.barnerInferior)
-      }).catch((error)=>{
+      }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
       })
-    }else {
+    } else {
       this.sqlite.create({
         name: 'setVMas.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
         db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY, Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-        .then(res => console.log('Executed SQL'))
-        .catch(e => console.log(e));
+          .then(res => console.log('Executed SQL'))
+          .catch(e => console.log(e));
         db.executeSql('SELECT * FROM BannerSuperior WHERE isVisible=? ORDER BY BannerId DESC', [true]).then(res => {
           this.barnerSuperior = res as Banner[];
         }).catch(e => console.log(e));
@@ -293,14 +284,14 @@ export class HomePage implements OnInit, AfterViewInit {
         location: 'default'
       }).then((db: SQLiteObject) => {
         db.executeSql('CREATE TABLE IF NOT EXISTS BannerInferior(BannerId INTEGER PRIMARY KEY, Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-        .then(res => console.log('Executed SQL'))
-        .catch(e => console.log(e));
+          .then(res => console.log('Executed SQL'))
+          .catch(e => console.log(e));
         db.executeSql('SELECT * FROM BannerInferior ORDER BY BannerId DESC', []).then(res => {
           this.barnerInferior = res as Banner[];
         }).catch(e => console.log(e));
       })
     }
-    
+
   }
 
   /*toggleGroup(group) {
@@ -317,13 +308,13 @@ export class HomePage implements OnInit, AfterViewInit {
     }
   };*/
 
-  toggleGroup(){
-    if (this.group === false){
+  toggleGroup() {
+    if (this.group === false) {
       this.icon = 'arrow-dropup';
       this.group = true
-      if (this.isConnected){
+      if (this.isConnected) {
         this.presentLoading();
-        this.servAnuncio.getAnunciosRecientes('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data=>{
+        this.servAnuncio.getAnunciosRecientes('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data => {
           this.recientes = data as AnunciosModel[];
           for (const i of (this.recientes as AnunciosModel[])) {
             if (i.ImageContent !== undefined && i.ImageContent !== null) {
@@ -332,20 +323,20 @@ export class HomePage implements OnInit, AfterViewInit {
             } else {
               i.Imagen = i.Categoria.ImageName;
             }
-  
+
           }
           console.log(this.recientes)
-        }).catch((error)=>{
+        }).catch((error) => {
           this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
         })
-      }else {
+      } else {
         this.sqlite.create({
           name: 'setVMas.db',
           location: 'default'
         }).then((db: SQLiteObject) => {
           db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosRecientes(AnuncioId INTEGER PRIMARY KEY, Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
+            .then(res => console.log('Executed SQL'))
+            .catch(e => console.log(e));
           db.executeSql('SELECT * FROM AnunciosRecientes ORDER BY AnuncioId DESC', []).then(res => {
             this.recientes = [];
             /*for(var i=0; i<res.rows.length; i++) {
@@ -359,7 +350,7 @@ export class HomePage implements OnInit, AfterViewInit {
               } else {
                 i.Imagen = i.Categoria.ImageName;
               }
-    
+
             }
           }).catch(e => console.log(e));
         })
@@ -381,20 +372,20 @@ export class HomePage implements OnInit, AfterViewInit {
         //  alert("error " + JSON.stringify(e))
         });
       })*/
-    }else if (this.group === true){
+    } else if (this.group === true) {
       this.icon = 'arrow-dropdown';
       this.group = false
       this.infiniteScroll.disabled = !this.infiniteScroll.disabled;
     }
   }
 
-  toggleGroup1(){
-    if (this.group1 === false){
+  toggleGroup1() {
+    if (this.group1 === false) {
       this.icon1 = 'arrow-dropup';
       this.group1 = true
-      if (this.isConnected){
+      if (this.isConnected) {
         this.presentLoading();
-        this.servAnuncio.getAnunciosPopulares('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data=>{
+        this.servAnuncio.getAnunciosPopulares('', this.txtbuscar, 'asc', 1, this.cantPorPagina).then(data => {
           this.populares = data as AnunciosModel[];
           for (const i of (this.populares as AnunciosModel[])) {
             if (i.ImageContent !== undefined && i.ImageContent !== null) {
@@ -403,20 +394,20 @@ export class HomePage implements OnInit, AfterViewInit {
             } else {
               i.Imagen = i.Categoria.ImageName;
             }
-  
+
           }
           console.log(this.populares)
-        }).catch((error)=>{
+        }).catch((error) => {
           this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
         })
-      }else {
+      } else {
         this.sqlite.create({
           name: 'setVMas.db',
           location: 'default'
         }).then((db: SQLiteObject) => {
           db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosPopulares(AnuncioId INTEGER PRIMARY KEY, Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
+            .then(res => console.log('Executed SQL'))
+            .catch(e => console.log(e));
           db.executeSql('SELECT * FROM AnunciosPopulares WHERE isVisible=? ORDER BY AnuncioId DESC', [true]).then(res => {
             this.populares = [];
             /*for(var i=0; i<res.rows.length; i++) {
@@ -430,18 +421,18 @@ export class HomePage implements OnInit, AfterViewInit {
               } else {
                 i.Imagen = i.Categoria.ImageName;
               }
-    
+
             }
           }).catch(e => console.log(e));
         })
       }
       this.loadingCtrl.dismiss();
-    } else if (this.group1 === true){
+    } else if (this.group1 === true) {
       this.icon1 = 'arrow-dropdown';
       this.group1 = false
       this.infiniteScroll.disabled = !this.infiniteScroll.disabled;
     }
-    
+
   }
 
   /*toggleGroup1(group) {
@@ -469,177 +460,175 @@ export class HomePage implements OnInit, AfterViewInit {
   };
 
 
-  onNotificate(){
-    if(this.bocina === false){
+  onNotificate() {
+    if (this.bocina === false) {
       this.bocina = true;
-    }else if (this.bocina === true){
-       this.bocina = false;
-       this.onAnnounce();
+    } else if (this.bocina === true) {
+      this.bocina = false;
+      this.onAnnounce();
     }
     console.log(this.bocina)
   }
 
 
-  async onAnnounce(){
+  async onAnnounce() {
     console.log("Announce")
     this.navCtrl.navigateForward('/add-announce')
   }
 
-  menu(){
-    if (this.menus === false){
+  menu() {
+    if (this.menus === false) {
       this.menus = true
       this.arrow = 'arrow-dropdown'
-    }else if(this.menus === true){
+    } else if (this.menus === true) {
       this.menus = false
       this.arrow = 'arrow-dropup'
     }
   }
 
-inicio(){
-  this.navCtrl.navigateForward('/home')
-}
-
-oficina(){
-  this.navCtrl.navigateForward('/virtual-office')
-}
-
-search(){
-  this.navCtrl.navigateForward('/search')
-}
-ayuda(){
-  this.navCtrl.navigateForward('/help')
-}
-
-contacto(){
-  this.navCtrl.navigateForward('/contact')
-}
-
-async presentToast(message: string){
-  const toast = await this.toastCtrl.create({
-    message,
-    //duration: 3000
-  });
-  return await toast.present();
-}
-
-
-async details(id?){
-  let anuncio: AnunciosModel
-  
-  if (this.group == true){
-    this.recientes.forEach(element=>{
-      if(element.AnuncioId === id){
-        this.anunciod = element
-      }
-  })
-  }else if (this.group1 == true){
-    this.populares.forEach(element=>{
-      if(element.AnuncioId === id){
-        this.anunciod = element
-      }
-    })
+  inicio() {
+    this.navCtrl.navigateForward('/home')
   }
-  
-  const modal = await this.modalController.create({
-    component: DetailsPage,
-    componentProps:{"id": id,"anuncio":this.anunciod},
-    animated: true,
-    backdropDismiss: false
-  });
-  return await modal.present();
-}
 
-
-async view(id?){
-  let anuncio: AnunciosModel
-  
-  if (this.group == true){
-    this.recientes.forEach(element=>{
-      if(element.AnuncioId === id){
-        this.anunciod = element
-      }
-  })
-  }else if (this.group1 == true){
-    this.populares.forEach(element=>{
-      if(element.AnuncioId === id){
-        this.anunciod = element
-      }
-    })
+  oficina() {
+    this.navCtrl.navigateForward('/virtual-office')
   }
-  console.log("modal")
-  const modal = await this.modalController.create({
-    component: ViewPage,
-    componentProps:{"id": id,"anuncio":this.anunciod},
-    animated: true,
-    backdropDismiss: false
-  });
-  return await modal.present();
-}
 
-
-login(){
-  this.navCtrl.navigateForward('/signin')
-}
-
-logout(){
-  this.servAnuncio.logout()
-}
-
-conection(){
-  
-  document.getElementById("enable").style.webkitAnimation = "pulse linear .60s"
-  document.getElementById("enable").style.animation = "pulse linear .60s"
-  
-  if(this.isConnected === false){
-    this.WifiWizard2.enableWifi()
-    this.testconnetion();
-    this.nube = "cloud-done"
-    //this.animation = true
-    
-    
-  }else if(this.isConnected === true){
-     this.isConnected = false
-     this.WifiWizard2.disableWifi()
-     this.nube = "cloud-outline"
-     //this.animation = false
+  search() {
+    this.navCtrl.navigateForward('/search')
   }
-  
-}
+  ayuda() {
+    this.navCtrl.navigateForward('/help')
+  }
 
-sendShare(titulo?,id?){
-  let url = 'https://setvmas.com/#/detalles-anuncio/'+id
-  this.socialSharing.share(titulo, titulo, null, url);
-}
+  contacto() {
+    this.navCtrl.navigateForward('/contact')
+  }
 
-miWeb(url){
-    const option: InAppBrowserOptions= {
+  async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      //duration: 3000
+    });
+    return await toast.present();
+  }
+
+
+  async details(id?) {
+    let anuncio: AnunciosModel
+
+    if (this.group == true) {
+      this.recientes.forEach(element => {
+        if (element.AnuncioId === id) {
+          this.anunciod = element
+        }
+      })
+    } else if (this.group1 == true) {
+      this.populares.forEach(element => {
+        if (element.AnuncioId === id) {
+          this.anunciod = element
+        }
+      })
+    }
+
+    const modal = await this.modalController.create({
+      component: DetailsPage,
+      componentProps: { "id": id, "anuncio": this.anunciod },
+      animated: true,
+      backdropDismiss: false
+    });
+    return await modal.present();
+  }
+
+
+  async view(id?) {
+    let anuncio: AnunciosModel
+
+    if (this.group == true) {
+      this.recientes.forEach(element => {
+        if (element.AnuncioId === id) {
+          this.anunciod = element
+        }
+      })
+    } else if (this.group1 == true) {
+      this.populares.forEach(element => {
+        if (element.AnuncioId === id) {
+          this.anunciod = element
+        }
+      })
+    }
+    console.log("modal")
+    const modal = await this.modalController.create({
+      component: ViewPage,
+      componentProps: { "id": id, "anuncio": this.anunciod },
+      animated: true,
+      backdropDismiss: false
+    });
+    return await modal.present();
+  }
+
+
+  login() {
+    this.navCtrl.navigateForward('/signin')
+  }
+
+  logout() {
+    this.servAnuncio.logout()
+  }
+
+  conection() {
+
+    document.getElementById("enable").style.webkitAnimation = "pulse linear .60s"
+    document.getElementById("enable").style.animation = "pulse linear .60s"
+
+    if (this.isConnected === false) {
+      this.WifiWizard2.enableWifi()
+      this.testconnetion();
+      //this.animation = true
+
+
+    } else if (this.isConnected === true) {
+      this.isConnected = false
+      this.WifiWizard2.disableWifi()
+      //this.animation = false
+    }
+
+  }
+
+  sendShare(titulo?, id?) {
+    let url = 'https://setvmas.com/#/detalles-anuncio/' + id
+    this.socialSharing.share(titulo, titulo, null, url);
+  }
+
+  miWeb(url) {
+    const option: InAppBrowserOptions = {
       zoom: 'no',
       hardwareback: 'no'
     }
-    let browser = this.iab.create(url,'_self',option)
+    let browser = this.iab.create(url, '_self', option)
     browser.show()
-}
+  }
 
-/*enlace(){
-  let userCodigo = 'https://setvmas.com/'+this.codigo
-  this.clipboard.copy(userCodigo);
-}*/
+  /*enlace(){
+    let userCodigo = 'https://setvmas.com/'+this.codigo
+    this.clipboard.copy(userCodigo);
+  }*/
 
-async presentLoading(){
-  const loading = await this.loadingCtrl.create({
-    message: '',
-    duration: 38000
-  });
-  return await loading.present();
-}
+  async presentLoading() {
+    const loading = await this.loadingCtrl.create({
+      message: '',
+      duration: 38000
+    });
+    return await loading.present();
+  }
 
-async presentLoading1(){
-  const loading = await this.loadingCtrl.create({
-    message: '',
-    duration: 2000
-  });
-  return await loading.present();
-}
+  async presentLoading1() {
+    const loading = await this.loadingCtrl.create({
+      message: '',
+      duration: 2000
+    });
+    return await loading.present();
+  }
 
 
 }
