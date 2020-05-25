@@ -68,6 +68,7 @@
     "info.protonet.imageresizer": "^0.1.1",
     "ionic-tags-input": "0.1.1",
     "ionic4-auto-complete": "^2.4.1",
+    "lodash": "^4.17.15",
     "ngx-chips": "^2.1.0",
     "ngx-qrcode2": "0.0.9",
     "node-sass": "^4.13.0",

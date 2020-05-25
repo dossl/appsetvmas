@@ -304,7 +304,7 @@ export class SearchPage implements OnInit {
     this.socialSharing.share(titulo, titulo, null, url);
   }
   
-  miWeb(url){
+  openWeb(url){
       const option: InAppBrowserOptions= {
         zoom: 'no',
         hardwareback: 'no'

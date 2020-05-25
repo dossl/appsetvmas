@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -34,6 +34,98 @@
 //@import "[email protected]/material/prebuilt-themes/pink-bluegrey.css";
 //@import "[email protected]/material/prebuilt-themes/purple-green.css";
 
-ion-input{
-    --border-color: dimgrey;
+ion-input {
+  --border-color: dimgrey;
+}
+
+ion-searchbar {
+  .searchbar-input-container {
+    .searchbar-input {
+      border-radius: 30px !important;
+      padding-left: 45px;
+      padding-right: 10px;
+    }
+  }
+}
+
+ion-content {
+  --background: #eeeeee;
+}
+
+ion-card {
+  ion-item {
+    --padding-start: 2px;
+    // --min-height: 120px;
+    --background: white;
+
+    ion-thumbnail {
+      width: 40%;
+      height: 138px;
+      margin: 2px 16px 2px 0;
+
+      img {
+        border-bottom-left-radius: 4px;
+        border-top-left-radius: 4px;
+      }
+    }
+
+    > ion-label {
+      display: inline-grid !important;
+      height: 116px;
+
+      p {
+        margin-bottom: 10px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        line-height: 16px !important;
+        max-height: 32px !important;
+        -webkit-box-orient: vertical !important;
+        font-size: 11px !important;
+      }
+
+      ion-text {
+        h2 {
+          margin-bottom: 10px !important;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          line-height: 16px;
+          max-height: 32px;
+          -webkit-box-orient: vertical;
+        }
+      }
+
+      ion-buttons {
+        z-index: 0 !important;
+        align-self: end;
+        width: 100%;
+
+        ion-button {
+          text-transform: none;
+
+          ion-icon {
+            margin-right: 5px;
+          }
+
+          &.eye-button {
+            position: absolute;
+            right: 30px;
+          }
+
+          &.share-button {
+            position: absolute;
+            right: -6px;
+          }
+        }
+
+        ion-button:first-child {
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
 }
