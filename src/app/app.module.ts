@@ -23,7 +23,7 @@ import { TagInputModule } from 'ngx-chips';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Crop } from '@ionic-native/crop/ngx';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
-import {RlTagInputModule} from 'angular2-tag-input';
+import { RlTagInputModule } from 'angular2-tag-input';
 import { ConfiguracionesService } from './services/configuraciones.service';
 import { SQLite } from '@ionic-native/sqlite/ngx';
 import { Toast } from '@ionic-native/toast/ngx';
@@ -32,51 +32,42 @@ import { Network } from '@ionic-native/network/ngx';
 import { AnuncioService } from './services/anuncio.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { FormsModule } from '@angular/forms';
-import { MasSellPointPage } from './mas-sell-point/mas-sell-point.page';
-import { MasqrPage } from './masqr/masqr.page';
-import { MasqrPageModule } from './masqr/masqr.module';
-import { MasSellPointPageModule } from './mas-sell-point/mas-sell-point.module';
-import { QrPageModule } from './qr/qr.module';
-import { SellPointPageModule } from './sell-point/sell-point.module';
-import { LectorPageModule } from './lector/lector.module';
-import { DetailsPageModule } from './details/details.module';
-import { BuypointPageModule } from './buypoint/buypoint.module';
-import { RestoreAccountPageModule } from './restore-account/restore-account.module';
-import { QrPage } from './qr/qr.page';
-import { SellPointPage } from './sell-point/sell-point.page';
-import { LectorPage } from './lector/lector.page';
-import { DetailsPage } from './details/details.page';
-import { BuypointPage } from './buypoint/buypoint.page';
-import { RestoreAccountPage } from './restore-account/restore-account.page';
+import { MasSellPointPage } from './pages/mas-sell-point/mas-sell-point.page';
+import { MasqrPage } from './pages/masqr/masqr.page';
+import { MasqrPageModule } from './pages/masqr/masqr.module';
+import { MasSellPointPageModule } from './pages/mas-sell-point/mas-sell-point.module';
+import { QrPageModule } from './pages/qr/qr.module';
+import { SellPointPageModule } from './pages/sell-point/sell-point.module';
+import { LectorPageModule } from './pages/lector/lector.module';
+import { DetailsPageModule } from './pages/details/details.module';
+import { BuypointPageModule } from './pages/buypoint/buypoint.module';
+import { RestoreAccountPageModule } from './pages/restore-account/restore-account.module';
+import { QrPage } from './pages/qr/qr.page';
+import { SellPointPage } from './pages/sell-point/sell-point.page';
+import { LectorPage } from './pages/lector/lector.page';
+import { DetailsPage } from './pages/details/details.page';
+import { BuypointPage } from './pages/buypoint/buypoint.page';
+import { RestoreAccountPage } from './pages/restore-account/restore-account.page';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { DatePipe } from '@angular/common';
-import {NgxQRCodeModule} from 'ngx-qrcode2';
-import { SearchPage } from './search/search.page';
+import { NgxQRCodeModule } from 'ngx-qrcode2';
+import { SearchPage } from './pages/search/search.page';
 import { InterceptorService } from './services/interceptor.service';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx'
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx';
-import { ViewPage } from './view/view.page';
 
 @NgModule({
-  declarations: [AppComponent,MasqrPage,MasSellPointPage,DetailsPage,SellPointPage,QrPage,BuypointPage,ViewPage,LectorPage],
-  entryComponents: [MasqrPage,MasSellPointPage,DetailsPage,SellPointPage,QrPage,BuypointPage,ViewPage,LectorPage],
+  declarations: [AppComponent, MasqrPage, MasSellPointPage, DetailsPage, SellPointPage, QrPage, BuypointPage, LectorPage],
+  entryComponents: [MasqrPage, MasSellPointPage, DetailsPage, SellPointPage, QrPage, BuypointPage, LectorPage],
   imports: [TagInputModule,
     BrowserModule,
     RlTagInputModule,
     FormsModule,
     NgxQRCodeModule,
-    /*MasqrPageModule,
-    MasSellPointPageModule,
-    QrPageModule,
-    SellPointPageModule,
-    LectorPageModule,
-    DetailsPageModule,
-    BuypointPageModule,
-    RestoreAccountPageModule,*/
 
-    BrowserAnimationsModule,IonicModule.forRoot(), AppRoutingModule, AutoCompleteModule, HttpClientModule,
-    IonicStorageModule.forRoot(),  NgSelectModule ],
+    BrowserAnimationsModule, IonicModule.forRoot(), AppRoutingModule, AutoCompleteModule, HttpClientModule,
+    IonicStorageModule.forRoot(), NgSelectModule],
   providers: [
     StatusBar,
     SplashScreen,
@@ -93,6 +84,7 @@ import { ViewPage } from './view/view.page';
     SocialSharing,
     Insomnia,
     Crop,
+    // tslint:disable-next-line: deprecation
     FileTransfer,
     ConfiguracionesService,
     AnuncioService,
@@ -108,4 +100,4 @@ import { ViewPage } from './view/view.page';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

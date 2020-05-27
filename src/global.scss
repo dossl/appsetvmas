@@ -43,6 +43,13 @@ ion-content {
   --background: #eeeeee;
 }
 
+ionic-selectable-modal {
+  ion-toolbar {
+    --background: var(--ion-color-primary, #3880ff) !important;
+    margin-top: -1px;
+  }
+}
+
 ion-card {
   ion-item {
     --padding-start: 2px;

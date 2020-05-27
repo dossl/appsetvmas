@@ -1,0 +1,405 @@
+<ion-header>
+  <ion-toolbar *ngIf="aplicarfiltros">
+      <ion-icon slot="icon-only" name="options" style="color: #000030;width: 25px;height: 25px; margin-left: 10px;" slot="start"></ion-icon>
+      <ion-icon name="close" slot="end" (click)="close()" style="width: 25px;height: 25px;margin-right: 10px;"></ion-icon>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="mostrarResultados" class="bar">
+    <ion-buttons  slot="start">
+      <ion-menu-button autoHide="false" class="toggle"></ion-menu-button>
+    </ion-buttons>
+    <img src="assets/logo_setvmas.png" height="43px" width="81px" alt="No Image" style="vertical-align: bottom;" />
+
+    <ion-label slot="end" class="hola">
+      <ion-icon [name]="nube" class="icono" (click)="conection()"></ion-icon>
+      <ion-icon *ngIf="!currentUser" name="contact" (click)="login()" class="icono"></ion-icon>
+    </ion-label>
+    <ion-label slot="end" class="hola">
+      <u *ngIf="currentUser" (click)="presentAlertConfirm()">{{ nameUser }}</u>
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+		<ion-label>Municipio</ion-label>
+    <ionic-selectable item-content [(ngModel)]="locality" itemValueField="Nombre" 
+    itemTextField="Nombre" groupValueField="provincia.Nombre" groupTextField="provincia.Nombre"
+		 [items]="localities" searchPlaceholder="Buscar" closeButtonText="Cerrar" closeButtonSlot="end" [canSearch]="true" headerColor="primary" (onChange)="munChange($event)">
+			<ng-template ionicSelectableGroupTemplate let-group="group">
+				{{group.text}}
+			</ng-template>
+		</ionic-selectable>
+	</ion-item>
+  <ion-item  *ngIf="mostrarResultados">
+    <ion-slides page="true" [options]="slideOpts">
+      <ion-slide *ngFor="let item of barnerSuperior">
+        <img
+            [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName"
+            class="banner"
+            alt="No Image"
+            (click)="details(item.AnuncioId)"/> 
+      </ion-slide>
+    </ion-slides>
+  </ion-item>
+  <ion-item *ngIf="mostrarResultados">
+        <div class="buscar">
+          <!--div class="row">
+            <div class="col-sm-4">
+              <ion-buttons class="round" style="padding: top 20px;">
+                <ion-button (click)="search()">
+                  <ion-icon slot="icon-only" name="options" style="margin-left: -5px;"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </div>
+            <div class="col-sm-4">
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === false" class="searchmax"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+              <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === true" class="searchminim"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+            </div>
+            <div class="col-sm-4">
+                <ion-buttons class="anunciar" style="padding: top -10px;" *ngIf="bocina === false">
+                  <ion-button (click)="onNotificate()">
+                      <img  src="assets/imgs_test/notif1.png" height="auto" width="auto" slot="end"/>
+                  </ion-button>
+                </ion-buttons>
+                <ion-buttons class="anunciarexpanded" style="padding: top 30px;" *ngIf="bocina === true">
+                    <ion-button (click)="onNotificate()">
+                        <img src="assets/imgs_test/hover.png" height="auto" width="auto" slot="end"/>
+                    </ion-button>
+                </ion-buttons>
+            </div>
+          </div-->
+          <ion-grid>
+              <ion-row>
+                <ion-col size="auto" style="float:left">
+                    <ion-buttons class="round" style="padding: top 20px;">
+                        <ion-button (click)="search()">
+                          <ion-icon slot="icon-only" name="options" style="margin-left: -5px;"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                </ion-col>
+                <ion-col size="0.5"></ion-col>
+                <ion-col size="auto">
+                    <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === false" class="searchmax"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+                    <ion-input [(ngModel)]="txtbuscar" placeholder="¿QUÉ BUSCAS?..." *ngIf="bocina === true" class="searchminim"><ion-icon class="search" name="search" slot="start"></ion-icon></ion-input>
+                </ion-col>
+                <ion-col size="2">
+                    <ion-buttons class="anunciar" style="padding: top -10px;" *ngIf="bocina === false">
+                        <ion-button (click)="onNotificate()">
+                            <img  src="assets/imgs_test/notif1.png" height="auto" width="auto" slot="end"/>
+                        </ion-button>
+                    </ion-buttons>
+                    <ion-buttons class="anunciarexpanded" style="padding: top 30px;" *ngIf="bocina === true">
+                        <ion-button (click)="onNotificate()">
+                            <img src="assets/imgs_test/hover.png" height="auto" width="auto" slot="end"/>
+                        </ion-button>
+                    </ion-buttons>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+      </div>
+  </ion-item>
+  <!--ion-item *ngIf="aplicarfiltros">
+    <ion-checkbox [(ngModel)]="buscarprofunda" name="buscarprofunda"></ion-checkbox><div style="width:3px"></div><p>Búsqueda Profunda</p>
+  </ion-item-->
+  <ion-item *ngIf="aplicarfiltros">
+    <mat-form-field class="example-chip-list" style="width: 500px;margin-left: 0px;">
+      <input type="text" placeholder="Categoría"
+             style="font-size: 1rem" aria-label="Number"
+             matInput
+             [formControl]="inputCat"
+             [matAutocomplete]="auto"
+             [(ngModel)]="buscarAnuncio.Categoria">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of ListaCategoriaFiltradas | async" [value]="option.Nombre"
+                    (onSelectionChange)="selectedCategoria($event)">
+          {{option.Nombre}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </ion-item>
+  <ion-item *ngIf="aplicarfiltros">
+    <mat-form-field class="example-chip-list " style="width: 500px;margin-left: 0px;">
+      <mat-chip-list #chipList>
+        <mat-chip class = "btn-buscar-etiqueta" style="background-color: #000030; color:#fff;" *ngFor="let fruit of ListaEti; let indx=index;" [selectable]="selectable" [removable]="removable" (removed)="removeEti(fruit,indx)">
+          {{fruit.Nombre}}
+          <mat-icon matChipRemove *ngIf="removable" class="btn-del-etiqueta-blanca" style="color: #fff;margin-top: 0px;font-size: small;">x</mat-icon>
+        </mat-chip>
+        <input placeholder="Etiquetas" #etiquInp
+               [formControl]="inputEtq"
+               style="font-size: 1rem" [matAutocomplete]="auto2"
+               [matChipInputFor]="chipList"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addEti($event)">
+      </mat-chip-list>
+      <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="selectedEti($event)" >
+        <mat-option *ngFor="let fruit of ListaEtiFilter | async" [value]="fruit">
+          {{fruit.Nombre}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </ion-item>
+    <ion-item *ngIf="aplicarfiltros">
+      <mat-form-field class="example-chip-list" style="width: 500px;margin-left: 0px;">
+        <input type="text"
+               placeholder="Acción"
+               style="font-size: 1rem" aria-label="Number"
+               matInput
+               [formControl]="inputAcc"
+               [matAutocomplete]="auto1"
+               [(ngModel)]="buscarAnuncio.Accion">
+        <mat-autocomplete #auto1="matAutocomplete">
+          <mat-option *ngFor="let option of ListaAccionFiltradas | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </ion-item>
+    <ion-item *ngIf="aplicarfiltros">
+      <ion-grid>
+          <ion-row class="ion-justify-content-end">
+               <ion-col size="8">
+                <ion-item>
+                  <ion-label position="floating">Precio Mínimo</ion-label>
+                  <ion-input style="font-size: 1rem;"
+                  type="number"
+                  #Precio="ngModel"
+                  min="0"
+                  [(ngModel)]="buscarAnuncio.PrecioMin"></ion-input>
+                </ion-item>
+               </ion-col>
+               <ion-col size="4">
+                <ion-item>
+                  <ion-checkbox [(ngModel)]="buscarAnuncio.HasFoto" [checked]="buscarAnuncio.HasFoto" style="float: right;margin-right: -20px;"></ion-checkbox><div style="width:3px; margin-left: 20px;"></div><p>Fotos</p>
+                </ion-item>
+              </ion-col>
+          </ion-row>
+          <ion-row class="ion-justify-content-end">
+            
+            <ion-col size="4">
+              <ion-item>
+                <ion-checkbox [(ngModel)]="buscarAnuncio.ProductoNuevo" [checked]="buscarAnuncio.ProductoNuevo" style="float: right;margin-right: -20px;"></ion-checkbox><div style="width:3px;margin-left: 20px;"></div><p>Nuevo</p>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-justify-content-end">
+            <ion-col size="8">
+              <ion-item>
+                <ion-label position="floating">Precio Máximo</ion-label>
+                <ion-input style="font-size: 1rem;"
+                type="number"
+                #Precio="ngModel"
+                min="0"
+                [(ngModel)]="buscarAnuncio.PrecioMax"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="4">
+              <ion-item>
+                <ion-checkbox [(ngModel)]="buscarAnuncio.IsWeb" [checked]="buscarAnuncio.IsWeb" style="float: right;margin-right: -20px;"></ion-checkbox><div style="width:3px;margin-left: 20px;"></div><p>Web</p>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+      </ion-grid>
+  </ion-item>
+    <ion-item *ngIf="aplicarfiltros">
+      <mat-form-field class="example-chip-list" style="width: 500px;margin-left: 0px;">
+        <input type="text" placeholder="Provincia" style="font-size: 1rem" aria-label="Number" (ngModelChange)="inputProvinciaChange($event)"
+               matInput  [matAutocomplete]="auto3"
+               [formControl]="inputProv">
+        <mat-autocomplete #auto3="matAutocomplete">
+          <mat-option *ngFor="let option of ListaProvFiltradas | async" [value]="option.Nombre">
+            {{option.Nombre}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </ion-item>
+    <ion-item *ngIf="aplicarfiltros">
+      <mat-form-field class="example-chip-list" style="width: 500px;margin-left: 0px;">
+        <input type="text" placeholder="Municipio" style="font-size: 1rem" aria-label="Number" matInput
+               [matAutocomplete]="auto4"
+               [formControl]="inputMun">
+        <mat-autocomplete #auto4="matAutocomplete">
+          <mat-option *ngFor="let option of ListaMunFiltradas | async" [value]="option.Nombre">
+            {{option.Nombre}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </ion-item>
+    <!--ion-item *ngIf="aplicarfiltros">
+      <ion-label position="floating">Descripción</ion-label>
+        <ion-input style="font-size: 1rem"
+        type="text"
+        #Titulo="ngModel"
+        [(ngModel)]="buscarAnuncio.Descripcion"></ion-input>
+    </ion-item-->
+    
+    <!--ion-item *ngIf="aplicarfiltros">
+      <ion-label >Más Parámetros </ion-label>
+    </ion-item-->
+      <ion-item *ngIf="buscarprofunda">
+        <ion-label position="floating">Título del anuncio</ion-label>
+        <ion-input style="font-size: 1rem;"
+        type="text"
+        #Titulo="ngModel"
+        [(ngModel)]="buscarAnuncio.Titulo" >    
+        </ion-input>
+      </ion-item>
+      <ion-item *ngIf="buscarprofunda">
+        <ion-label position="floating">Url del sitio</ion-label>
+        <ion-input style="font-size: 1rem; "
+        type="text"
+        #Titulo="ngModel"
+        [(ngModel)]="buscarAnuncio.Url"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="buscarprofunda">
+        <ion-label position="floating">Nombre del Contacto</ion-label>
+        <ion-input style="font-size: 1rem"
+        type="text"
+        #Titulo="ngModel"
+        [(ngModel)]="buscarAnuncio.NombreContacto"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="buscarprofunda">
+        <ion-label position="floating">Teléfono del contacto</ion-label>
+        <ion-input style="font-size: 1rem"
+        type="text"
+        #Titulo="ngModel"
+        [(ngModel)]="buscarAnuncio.TelefonoContacto"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="buscarprofunda">
+        <ion-label position="floating">Email del contacto</ion-label>
+        <ion-input style="font-size: 1rem"
+        type="text"
+        #CorreoContacto="ngModel"
+        [(ngModel)]="buscarAnuncio.CorreoContacto"></ion-input>
+      </ion-item>
+    <div style="height: 15px;"></div>
+          <ion-buttons class="anunciarexpanded" *ngIf="aplicarfiltros">
+            <ion-button (click)="buscarAnunciosFiltros()">
+                <p style="margin-left: 40px;">BUSCAR</p>
+                <ion-icon slot="end" name="arrow-dropright"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+     <div style="height: 15px;"></div>
+<ion-list *ngIf="mostrarResultados">
+  <ion-item-sliding>
+    <!--ion-item class="ion-text-wrap" text-wrap (click)="toggleGroup()" [ngClass]="{active: isGroupShown(i)}">
+      <ion-label class="label">
+        <p>{{ totalPaginas }}</p>
+      </ion-label>
+    </ion-item-->
+    <ion-label class="label">
+      <p style="background-color: rgb(141, 201, 224);color: #000030; margin-left: 50px; text-align: center;">{{ totalPaginas }}Resultados</p>
+    </ion-label>
+    <div *ngIf="mostrarResultados">
+      <ion-card *ngFor="let item of ListaAnuncios" class="card">
+        <ion-grid>
+            <ion-row style="height: 150px; width: 150px;">
+                <ion-col size="auto">
+                  <img *ngIf="item.ImageName !== undefined && item.Url == undefined || item.ImageName !== null && item.Url == null"
+                  [src]="'https://setvmas.com/api/uploads/anuncios/mini/'+item.ImageName"
+                  class="img"
+                  (click)="details(item.AnuncioId)"
+                  alt="No Image"
+                  />
+                  <img *ngIf="item.ImageName !== undefined && item.Url !== undefined || item.ImageName !== null && item.Url !== null"
+                  [src]="'https://setvmas.com/api/uploads/anuncios/mini/'+item.ImageName"
+                  class="img"
+                  alt="No Image"
+                  (click)="openWeb(item.Url)"
+                  />
+                  <img *ngIf="item.ImageName === undefined && item.Url == undefined || item.ImageName === null && item.Url == null"
+                  [src]="'https://setvmas.com/api/uploads/categorias/mini/'+item.Categoria.ImageName"
+                  class="img"
+                  (click)="details(item.AnuncioId)"
+                  alt="No Image"
+                  />
+                  <img *ngIf="item.ImageName === undefined && item.Url !== undefined || item.ImageName === null && item.Url !== null"
+                  [src]="'https://setvmas.com/api/uploads/categorias/mini/'+item.Categoria.ImageName"
+                  class="img"
+                  (click)="openWeb(item.Url)"
+                  alt="No Image"
+                  />
+                </ion-col>
+                <ion-col size="auto">
+                  <div class="container">
+                    <p style="padding: 10px; width: 120px;height: auto; margin-top: -10px;">
+                      {{item.Categoria.Nombre}}
+                    </p>  
+                      <p style="padding: 10px; width: 120px;height: auto;color: black; margin-top: -10px;">{{item.Titulo}}</p>
+                      <ion-button style="margin-top: -20px; width: 120px;height: 30px;" color="medium" shape="round" fill="outline" ><p style="font-weight: bold;color: #000;">${{item.Precio}}</p></ion-button>
+                  </div>
+                </ion-col>
+                <ion-col size="auto">
+                  <div style="margin-left: 268px;margin-top: -110px;position: absolute;">
+                    <ion-buttons class="round1">
+                      <ion-button (click)="sendShare(item.Titulo,item.AnuncioId)">
+                        <ion-icon slot="icon-only" name="share" style="margin-left: -10px;"></ion-icon>
+                      </ion-button>
+                    </ion-buttons> 
+                  </div>
+                  <br>
+                  <br>
+                  <div style="margin-left: 268px;margin-top: -90px;position: relative;"> 
+                    <ion-buttons class="round1" *ngIf="item.Url">
+                      <ion-button (click)="details(item.AnuncioId)">
+                        <ion-icon slot="icon-only" name="eye" style="margin-left: -6px;"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </div>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card>
+    </div>
+  </ion-item-sliding>
+</ion-list>
+<ion-item *ngIf="mostrarResultados">
+  <ion-slides page="true" [options]="slideOpts">
+      <ion-slide class="slide" *ngFor="let item of barnerInferior">
+          <div class="contenedor">
+              <img
+              [src]="'https://setvmas.com/api/uploads/banners/inferior/'+item.ImageName"
+              height="400px"
+              width="204px"
+              alt="No Image"
+              class="sombra"
+              (click)="details(item.AnuncioId)"
+              />
+              <!--div class="centrado">
+                Título del anuncio en una línea
+                <br>
+                Categoría del anuncio
+              </div-->
+          </div>
+      </ion-slide>
+  </ion-slides>
+</ion-item>
+</ion-content>
+<ion-footer>
+  <div class="row" *ngIf="mostrarResultados">
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-6" style="display: inline-flex; margin-left: 90px;">
+      <div [class]="pagActual!==1 ? 'col-md-4 texto-paginado-back' : 'col-md-4 texto-paginado-back-deshab'" (click)="clickAnterior()" style="color:#eee;">Anterior</div>
+      <div class="col-md-4 texto-paginado-numeros" style="color: orangered;">{{pagActual}}/{{totalPaginas}}</div>
+      <div [class]="pagActual!==totalPaginas ? 'col-md-4 texto-paginado-next' : 'col-md-4 texto-paginado-next-deshab'" (click)="clickNext()" style="color: orangered;">Siguiente</div>
+    </div>
+    <div class="col-md-3">
+
+    </div>
+
+  </div>
+  <div *ngIf="mostrarResultados" style="height: auto">
+    <ion-toolbar>
+      <div class="footer">
+        <ion-icon  (click)="menu()" class="icon_footer" [name]="arrow"></ion-icon>
+        <div *ngIf="menus === true" style="margin-left: 150px; margin-top: -10px;">
+          <p (click)="inicio()">INICIO</p>
+          <p (click)="oficina()">OFICINA</p>
+          <p (click)="ayuda()">AYUDA</p>
+          <p (click)="contacto()">CONTÁCTANOS</p>
+          <div style="height: 10px;"></div>
+        </div>
+      </div>
+  </ion-toolbar>
+  </div>
+</ion-footer>
