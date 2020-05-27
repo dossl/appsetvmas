@@ -4,17 +4,17 @@
       <ion-menu-button size="small" autoHide="false" class="toggle"></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      <img src="assets/logo_setvmas.png" height="30px" width="86px" alt="No Image" />
+      <img src="assets/logo_setvmas.png" height="43px" width="81px" alt="No Image" style="vertical-align: bottom;" />
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button size="small"  id="enable" fill="clear" (click)="toggleConection()">
+      <ion-button size="small" id="enable" fill="clear" (click)="toggleConection()">
         <ion-icon *ngIf="!isConnected" slot="icon-only" name="cloud-outline"></ion-icon>
         <ion-icon *ngIf="isConnected" slot="icon-only" name="cloud-done"></ion-icon>
       </ion-button>
-      <ion-button size="small"  *ngIf="!currentUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
+      <ion-button size="small" *ngIf="!currentUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
         <ion-icon slot="icon-only" name="ios-log-in"></ion-icon>
       </ion-button>
-      <ion-button size="small"  *ngIf="currentUser" fill="clear" (click)="presentAlertConfirm()" color="light">
+      <ion-button size="small" *ngIf="currentUser" fill="clear" (click)="presentAlertConfirm()" color="light">
         {{ nameUser }}
       </ion-button>
     </ion-buttons>
@@ -30,10 +30,11 @@
     </ion-item>
   </ion-toolbar>
   <ion-toolbar color="primary" style="display: contents;">
-    <ion-button size="small" slot="start" fill="clear" (click)="search()" color="light">
+    <ion-button size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
-    <ion-searchbar (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText" placeholder="¿Qué buscas?"></ion-searchbar>
+    <ion-searchbar (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText"
+      placeholder="¿Qué buscas?"></ion-searchbar>
     <ion-button size="small" slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
       <ion-icon slot="icon-only" name="megaphone"></ion-icon>
     </ion-button>

@@ -9,7 +9,7 @@ import { MunicipiosModel } from '../models/municipios.model';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { Etiqueta } from '../models/etiqueta.model';
 import { BuscarAnunciosModel } from '../models/buscar-anuncios.model';
-import { PopoverController, LoadingController, ToastController, NavController,Platform, AlertController } from '@ionic/angular';
+import { PopoverController, LoadingController, ToastController, NavController, Platform, AlertController } from '@ionic/angular';
 import { AnuncioService } from '../services/anuncio.service';
 import { ConfiguracionesService } from '../services/configuraciones.service';
 import { NetworkService } from '../services/network.service';
@@ -22,7 +22,7 @@ import { DetailsPage } from '../details/details.page';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Network } from '@ionic-native/network/ngx';
-import { Insomnia } from '@ionic-native/insomnia/ngx'
+import { Insomnia } from '@ionic-native/insomnia/ngx';
 import { InAppBrowserOptions, InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
@@ -33,7 +33,8 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 })
 export class SearchPage implements OnInit {
 
-  @Input('mostrarSiempreResultados') mostrarResultados: boolean;
+  // tslint:disable-next-line: no-input-rename
+  @Input('mostrarResultados') mostrarResultados: boolean;
   @ViewChild('auto', { static: false }) matAutocomplete: MatAutocomplete;
   currentUser: Usuario;
 
@@ -76,13 +77,13 @@ export class SearchPage implements OnInit {
   ListaEtiFilter: Observable<Etiqueta[]>;
   ListaEti: Etiqueta[] = [];
   ListaEtiFuente: Etiqueta[];
-  isConnected:any
+  isConnected: any;
 
   barnerSuperior: Banner[];
   barnerInferior: Banner[];
-  buscarprofunda:any
+  buscarprofunda: any;
   bocina = false;
-  nameUser:any
+  nameUser: any;
 
 
   @ViewChild('etiquInp', { static: false }) etiquInp: ElementRef<HTMLInputElement>;
@@ -104,9 +105,10 @@ export class SearchPage implements OnInit {
   mostrarMasCamposBusq = true;
   private loadingAnuncio = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingAnuncio.asObservable();
-  
-  constructor(private modal: PopoverController,
-    private service: AnuncioService, 
+
+  constructor(
+    private modal: PopoverController,
+    private service: AnuncioService,
     private servCo: ConfiguracionesService,
     public loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
@@ -117,19 +119,19 @@ export class SearchPage implements OnInit {
     private alertCtrl: AlertController,
     private socialSharing: SocialSharing,
     public platform: Platform, public splashscreen: SplashScreen,
-    private networkService: NetworkService) { 
+    private networkService: NetworkService) {
 
-      /*this.platform.ready().then(()=>{
-        this.splashscreen.hide();
-     })*/
-    }
+    /*this.platform.ready().then(()=>{
+      this.splashscreen.hide();
+   })*/
+  }
 
   ngOnInit() {
-    this.testconnetion()
-    this.insomnia.keepAwake().then(()=>{
-      console.log('success')
-    })
-    if(this.isConnected){
+    this.testconnetion();
+    this.insomnia.keepAwake().then(() => {
+      console.log('success');
+    });
+    if (this.isConnected) {
       this.loadingAnuncio.next(true);
       /*if (window.innerWidth <= 130 && window.innerWidth > 106) {
         this.cantColumnas = 3;
@@ -142,32 +144,32 @@ export class SearchPage implements OnInit {
       }*/
       this.txtBuscar = '';
       this.txtBuscarAvan = '';
-  
+
       this.buscarAnuncio.ListaEtiquetas = [];
       this.service.updateAnuncioReciente.next(true);
       this.service.updateAnuncioReciente.subscribe(res => {
-  
+
         this.ListaAnuncios = null;
         this.filtroReciente = true;
         this.pagActual = 1;
         this.filtroMasVisto = false;
         this.filtroAva = false;
-   
-          this.service.getAnunciosRecientes('FechaCreacion', '', 'asc', 1, this.cantPorPagina)
-            .then((res) => {
-              this.ListaAnuncios = res as AnunciosModel[];
-              this.loadingAnuncio.next(false);
-              for (const i of (this.ListaAnuncios as AnunciosModel[])) {
-                if (i.ImageContent !== undefined && i.ImageContent !== null) {
-                  i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
-                } else {
-                  i.Imagen = i.Categoria.ImageName;
-                }
+
+        this.service.getAnunciosRecientes('FechaCreacion', '', 'asc', 1, this.cantPorPagina)
+          .then((ads: AnunciosModel[]) => {
+            this.ListaAnuncios = ads;
+            this.loadingAnuncio.next(false);
+            for (const i of (this.ListaAnuncios)) {
+              if (i.ImageContent !== undefined && i.ImageContent !== null) {
+                i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
+              } else {
+                i.Imagen = i.Categoria.ImageName;
               }
-            },
-              () => this.loadingAnuncio.next(true));
+            }
+          },
+            () => this.loadingAnuncio.next(true));
       });
-  
+
       this.service.getCategoriaAll('', '', 'asc', 1, 5000).then(res => this.ListaCategoria = res as Categoria[]);
       this.service.getEtiquetasByCategoria(-1).then(res => this.ListaEtiFuente = res as Etiqueta[]);
       this.ListaAcciones = this.servCo.getAccionesAnuncio();
@@ -187,7 +189,6 @@ export class SearchPage implements OnInit {
         );
       // ********Chip List*******************
       this.ListaEtiFilter = this.inputEtq.valueChanges.pipe(
-        startWith(null),
         map((fruit: string | null) => fruit ? this._filterEtiqueta(fruit) : this.ListaEtiFuente));
       // ********Chip List*******************
       this.ListaProvFiltradas = this.inputProv.valueChanges
@@ -201,15 +202,15 @@ export class SearchPage implements OnInit {
           map((value) => this._filterMunicipios(value)
           )
         );
-  
+
       this.filtroReciente = true;
       this.filtroMasVisto = false;
       this.filtroAva = false;
-      this.loadBanner()
-    }else if(!this.isConnected){
-      setTimeout(()=>{
-            this.testconnetion();
-      },5000)
+      this.loadBanner();
+    } else if (!this.isConnected) {
+      setTimeout(() => {
+        this.testconnetion();
+      }, 5000);
     }
   }
 
@@ -224,12 +225,12 @@ export class SearchPage implements OnInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
-            this.navCtrl.navigateForward('/home')
+            this.navCtrl.navigateForward('/home');
           }
         }, {
           text: 'Aceptar',
           handler: () => {
-            this.logout()
+            this.logout();
           }
         }
       ]
@@ -238,49 +239,49 @@ export class SearchPage implements OnInit {
     await alert.present();
   }
 
-  ionViewWillEnter(){
-    this.testconnetion()
-    if(!this.isConnected){
+  ionViewWillEnter() {
+    this.testconnetion();
+    if (!this.isConnected) {
       this.testconnetion();
     }
-    this.service.getCurrentUser().then(res=>{
-      this.currentUser = res as Usuario
-      if(this.currentUser){
-       let index = this.currentUser.Correo.indexOf("@");
-       if(index !== -1){
-          this.nameUser = this.currentUser.Correo.substr(0,index);
-       }
-       console.log(this.currentUser)
-     }
-   })
+    this.service.getCurrentUser().then(res => {
+      this.currentUser = res as Usuario;
+      if (this.currentUser) {
+        const index = this.currentUser.Correo.indexOf('@');
+        if (index !== -1) {
+          this.nameUser = this.currentUser.Correo.substr(0, index);
+        }
+        console.log(this.currentUser);
+      }
+    });
   }
 
 
-  logout(){
-    this.service.logout()
+  logout() {
+    this.service.logout();
   }
 
-  
 
-  loadBanner(){
-    if (this.isConnected){
-      this.service.getBannerSuperior().then(data=>{
+
+  loadBanner() {
+    if (this.isConnected) {
+      this.service.getBannerSuperior().then(data => {
         this.barnerSuperior = data as Banner[];
-        console.log(this.barnerSuperior)
-      }).catch((error)=>{
+        console.log(this.barnerSuperior);
+      }).catch((error) => {
         this.presentToast(error);
-      })
-      this.service.getBannerInferior().then(data=>{
+      });
+      this.service.getBannerInferior().then(data => {
         this.barnerInferior = data as Banner[];
-        console.log(this.barnerInferior)
-      }).catch((error)=>{
+        console.log(this.barnerInferior);
+      }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-      })
+      });
     }
-    
+
   }
 
-  async presentToast(message: string){
+  async presentToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000
@@ -288,10 +289,10 @@ export class SearchPage implements OnInit {
     return await toast.present();
   }
 
-  async details(id){
+  async details(id) {
     const modal = await this.modal.create({
       component: DetailsPage,
-      componentProps:{"id": id},
+      componentProps: { id },
       animated: true,
       backdropDismiss: false
     });
@@ -299,28 +300,28 @@ export class SearchPage implements OnInit {
   }
 
 
-  sendShare(titulo?,id?){
-    let url = 'https://setvmas.com/sitio/#/detalles-anuncio/'+id
+  sendShare(titulo?, id?) {
+    const url = 'https://setvmas.com/sitio/#/detalles-anuncio/' + id;
     this.socialSharing.share(titulo, titulo, null, url);
   }
-  
-  openWeb(url){
-      const option: InAppBrowserOptions= {
-        zoom: 'no',
-        hardwareback: 'no'
-      }
-      let browser = this.iab.create(url,'_self',option)
-    browser.show()
+
+  openWeb(url) {
+    const option: InAppBrowserOptions = {
+      zoom: 'no',
+      hardwareback: 'no'
+    };
+    const browser = this.iab.create(url, '_self', option);
+    browser.show();
   }
 
-  async presentLoading1(){
+  async presentLoading1() {
     const loading = await this.loadingCtrl.create({
       message: '',
       duration: 2000
     });
     return await loading.present();
   }
-  
+
 
 
   private _filterCategorias(value: string): Categoria[] {
@@ -580,7 +581,7 @@ export class SearchPage implements OnInit {
         }
 
     }
-    this.loadingCtrl.dismiss()
+    this.loadingCtrl.dismiss();
 
   }
   clickAnterior() {
@@ -636,7 +637,7 @@ export class SearchPage implements OnInit {
         });
       }
     }
-    this.loadingCtrl.dismiss()
+    this.loadingCtrl.dismiss();
 
   }
 
@@ -648,7 +649,7 @@ export class SearchPage implements OnInit {
   }
 
 
-  testconnetion(){
+  testconnetion() {
     this.networkService.getNetworkStatus().subscribe((connected: boolean) => {
       this.isConnected = connected;
     });
@@ -669,13 +670,13 @@ export class SearchPage implements OnInit {
     this.presentLoading1();
     this.service.buscarAnunciosAvanzadosCount(this.buscarAnuncio).then(res => {
       this.totalPaginas = Math.ceil((res as number) / this.cantPorPagina);
-      console.log(this.totalPaginas)
+      console.log(this.totalPaginas);
     });
 
 
     this.service.buscarAnunciosAvanzados(this.buscarAnuncio).then(res => {
       this.ListaAnuncios = res as AnunciosModel[];
-      console.log(this.ListaAnuncios)
+      console.log(this.ListaAnuncios);
       this.loadingAnuncio.next(false);
       for (const i of (this.ListaAnuncios as AnunciosModel[])) {
         if (i.ImageContent !== undefined && i.ImageContent !== null) {
@@ -685,48 +686,48 @@ export class SearchPage implements OnInit {
         }
 
       }
-       this.loadingCtrl.dismiss()
+      this.loadingCtrl.dismiss();
     });
   }
 
-  close(){
-    this.navCtrl.navigateForward('/home')
+  close() {
+    this.navCtrl.navigateForward('/home');
   }
 
-  inicio(){
-    this.navCtrl.navigateForward('/home')
+  inicio() {
+    this.navCtrl.navigateForward('/home');
   }
-  
-  oficina(){
-    this.navCtrl.navigateForward('/virtual-office')
+
+  oficina() {
+    this.navCtrl.navigateForward('/virtual-office');
   }
-  
-  search(){
+
+  search() {
     this.aplicarfiltros = true;
     this.mostrarResultados = false;
-    this.buscarAnuncio = new BuscarAnunciosModel()
+    this.buscarAnuncio = new BuscarAnunciosModel();
   }
-  ayuda(){
-    this.navCtrl.navigateForward('/help')
-  }
-  
-  contacto(){
-    this.navCtrl.navigateForward('/contact')
+  ayuda() {
+    this.navCtrl.navigateForward('/help');
   }
 
-  onNotificate(){
-    if(this.bocina === false){
+  contacto() {
+    this.navCtrl.navigateForward('/contact');
+  }
+
+  onNotificate() {
+    if (this.bocina === false) {
       this.bocina = true;
-    }else if (this.bocina === true){
-       this.bocina = false;
-       this.onAnnounce();
+    } else if (this.bocina === true) {
+      this.bocina = false;
+      this.onAnnounce();
     }
-    console.log(this.bocina)
+    console.log(this.bocina);
   }
 
-  async onAnnounce(){
-    console.log("Announce")
-    this.navCtrl.navigateForward('/add-announce')
+  async onAnnounce() {
+    console.log('Announce');
+    this.navCtrl.navigateForward('/add-announce');
   }
 
 
