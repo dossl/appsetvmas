@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
 import { NetworkService } from '../services/network.service';
-import { DetailsPage } from '../details/details.page';
+import { ScrollHideDirective } from '../directives/scroll-hide.directive';
 
 @NgModule({
   imports: [
@@ -20,8 +20,7 @@ import { DetailsPage } from '../details/details.page';
       }
     ])
   ],
-  declarations: [HomePage,/*DetailsPage*/],
-  providers: [NetworkService],
-  //entryComponents: [DetailsPage]
+  declarations: [HomePage, ScrollHideDirective],
+  providers: [NetworkService]
 })
 export class HomePageModule {}

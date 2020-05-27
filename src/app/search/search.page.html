@@ -296,7 +296,7 @@
                   [src]="'https://setvmas.com/api/uploads/anuncios/mini/'+item.ImageName"
                   class="img"
                   alt="No Image"
-                  (click)="miWeb(item.Url)"
+                  (click)="openWeb(item.Url)"
                   />
                   <img *ngIf="item.ImageName === undefined && item.Url == undefined || item.ImageName === null && item.Url == null"
                   [src]="'https://setvmas.com/api/uploads/categorias/mini/'+item.Categoria.ImageName"
@@ -307,7 +307,7 @@
                   <img *ngIf="item.ImageName === undefined && item.Url !== undefined || item.ImageName === null && item.Url !== null"
                   [src]="'https://setvmas.com/api/uploads/categorias/mini/'+item.Categoria.ImageName"
                   class="img"
-                  (click)="miWeb(item.Url)"
+                  (click)="openWeb(item.Url)"
                   alt="No Image"
                   />
                 </ion-col>
