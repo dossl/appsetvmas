@@ -1,44 +1,44 @@
 <ion-header id="home-header" [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
-  <ion-toolbar class="bar">
+  <ion-toolbar color="primary" class="custom-toolbar">
     <ion-buttons slot="start">
-      <ion-menu-button autoHide="false" class="toggle"></ion-menu-button>
+      <ion-menu-button size="small" autoHide="false" class="toggle"></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      <img src="assets/imgs_test/logo.png" height="40px" width="80px" alt="No Image" />
+      <img src="assets/logo_setvmas.png" height="30px" width="86px" alt="No Image" />
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button id="enable" fill="clear" (click)="toggleConection()">
+      <ion-button size="small"  id="enable" fill="clear" (click)="toggleConection()">
         <ion-icon *ngIf="!isConnected" slot="icon-only" name="cloud-outline"></ion-icon>
         <ion-icon *ngIf="isConnected" slot="icon-only" name="cloud-done"></ion-icon>
       </ion-button>
-      <ion-button *ngIf="!currentUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
+      <ion-button size="small"  *ngIf="!currentUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
         <ion-icon slot="icon-only" name="ios-log-in"></ion-icon>
       </ion-button>
-      <ion-button *ngIf="currentUser" fill="clear" (click)="presentAlertConfirm()" color="light">
+      <ion-button size="small"  *ngIf="currentUser" fill="clear" (click)="presentAlertConfirm()" color="light">
         {{ nameUser }}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-toolbar color="primary" *ngIf="barnersTop.length > 0">
-    <ion-item color="primary">
+  <ion-toolbar color="primary" *ngIf="bannersTop.length > 0">
+    <ion-item color="primary" *ngIf="bannersTop.length > 0 && !  loadingBannerTop">
       <ion-slides pager page="true" [options]="slideOpts">
-        <ion-slide *ngFor="let item of barnersTop">
+        <ion-slide *ngFor="let item of bannersTop">
           <img [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName" class="banner" alt="No Image"
-            (click)="details(item.AnuncioId)" />
+            (click)="details(item)" />
         </ion-slide>
       </ion-slides>
     </ion-item>
   </ion-toolbar>
-  <ion-toolbar color="primary">
-    <ion-button slot="start" fill="clear" (click)="search()" color="light">
+  <ion-toolbar color="primary" style="display: contents;">
+    <ion-button size="small" slot="start" fill="clear" (click)="search()" color="light">
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
-    <ion-searchbar [(ngModel)]="seachText" placeholder="¿Qué buscas?"></ion-searchbar>
-    <ion-button slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
+    <ion-searchbar (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText" placeholder="¿Qué buscas?"></ion-searchbar>
+    <ion-button size="small" slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
       <ion-icon slot="icon-only" name="megaphone"></ion-icon>
     </ion-button>
   </ion-toolbar>
-  <ion-toolbar color="primary">
+  <ion-toolbar color="primary" style="height: 29px;">
     <ion-segment (ionChange)="segmentChanged($event)" [(ngModel)]="tab">
       <ion-segment-button [value]="RECENTS_TAB">
         RECIENTES
@@ -50,34 +50,113 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content #pageContent fullscreen [scrollEvents]="true">
-  <ion-card *ngFor="let item of recents">
-    <ion-item>
-      <ion-thumbnail slot="start">
-        <img *ngIf="item.ImageName !== ''" [src]="'https://setvmas.com/api/uploads/anuncios/mini/' + item.ImageName" />
-        <img *ngIf="item.ImageName === '' && item.Categoria.ImageName" [src]="'https://setvmas.com/api/uploads/categorias/mini/' + item.Categoria.ImageName" />
-      </ion-thumbnail>
-      <ion-label class="ion-text-wrap">
-        <p>{{item.Categoria.Nombre}}</p>
-        <ion-text color="primary">
-          <h2>{{item.Titulo}}</h2>
-        </ion-text>
-        <ion-buttons>
-          <ion-button slot="start" fill="outline" shape="round" color="primary">
-            ${{ item.Precio.toFixed(2)}}
-          </ion-button>
-          <ion-button *ngIf="item.Url" (click)="details(item.AnuncioId)" class="eye-button" shape="round" slot="end"
-            fill="clear" color="primary">
-            <ion-icon name="md-eye"></ion-icon>
-          </ion-button>
-          <ion-button (click)="sendShare(item.Titulo,item.AnuncioId)" class="share-button" shape="round" slot="end"
-            fill="clear" color="primary">
-            <ion-icon name="md-share"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-label>
+<ion-content id="pageContent" #pageContent fullscreen>
+  <div *ngIf="!loading">
+    <ion-card *ngFor="let item of tab === RECENTS_TAB ? recents : mostSeen">
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <img (click)="open(item)" *ngIf="item.ImageName !== ''"
+            [src]="'https://setvmas.com/api/uploads/anuncios/mini/' + item.ImageName" />
+          <img (click)="open(item)" *ngIf="item.ImageName === '' && item.Categoria.ImageName"
+            [src]="'https://setvmas.com/api/uploads/categorias/mini/' + item.Categoria.ImageName" />
+        </ion-thumbnail>
+        <ion-label class="ion-text-wrap">
+          <p>{{item.Categoria.Nombre}}</p>
+          <ion-text color="primary">
+            <h2>{{item.Titulo}}</h2>
+          </ion-text>
+          <ion-buttons>
+            <ion-button slot="start" fill="outline" shape="round" color="primary">
+              ${{ item.Precio.toFixed(2)}}
+            </ion-button>
+            <ion-button *ngIf="item.Url" (click)="details(item)" class="eye-button" shape="round" slot="end"
+              fill="clear" color="primary">
+              <ion-icon name="md-eye"></ion-icon>
+            </ion-button>
+            <ion-button (click)="sendShare(item.Titulo,item.AnuncioId)" class="share-button" shape="round" slot="end"
+              fill="clear" color="primary">
+              <ion-icon name="md-share"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-label>
 
-    </ion-item>
-  </ion-card>
+      </ion-item>
+    </ion-card>
+  </div>
+  <div *ngIf="loading">
+    <ion-card *ngFor="let item of skeletorCard">
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-thumbnail>
+        <ion-label class="ion-text-wrap">
+          <p>
+            <ion-skeleton-text animated></ion-skeleton-text>
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </p>
+          <ion-text color="primary">
+            <h2>
+              <ion-skeleton-text animated></ion-skeleton-text>
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </h2>
+          </ion-text>
+          <ion-buttons>
+            <ion-skeleton-text animated style="width: 30%; height: 16px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 10%;height: 16px;position: absolute;right: 35px;bottom: 0px;">
+            </ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 10%;height: 16px;position: absolute;right: 0;bottom: 0px;">
+            </ion-skeleton-text>
+          </ion-buttons>
+        </ion-label>
 
+      </ion-item>
+    </ion-card>
+  </div>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content>
+      <ion-card>
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <ion-skeleton-text animated></ion-skeleton-text>
+          </ion-thumbnail>
+          <ion-label class="ion-text-wrap">
+            <p>
+              <ion-skeleton-text animated></ion-skeleton-text>
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </p>
+            <ion-text color="primary">
+              <h2>
+                <ion-skeleton-text animated></ion-skeleton-text>
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </h2>
+            </ion-text>
+            <ion-buttons>
+              <ion-skeleton-text animated style="width: 30%; height: 16px;"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 10%;height: 16px;position: absolute;right: 35px;bottom: 0px;">
+              </ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 10%;height: 16px;position: absolute;right: 0;bottom: 0px;">
+              </ion-skeleton-text>
+            </ion-buttons>
+          </ion-label>
+
+        </ion-item>
+      </ion-card>
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
+
+<ion-footer [scrollHide]="footerScrollConfig" [scrollContent]="pageContent" *ngIf="bannersBottom.length > 0">
+  <ion-toolbar color="primary">
+    <ion-item color="primary" *ngIf="bannersBottom.length > 0 && !loadingBannerBottom">
+      <ion-slides pager page="true" [options]="slideOpts">
+        <ion-slide class="slide" *ngFor="let index of getIndexesForSlidesBottom()">
+          <div class="contenedor">
+            <img *ngFor="let item of getImagesForSlideBottom(index)"
+              [src]="'https://setvmas.com/api/uploads/banners/inferior/'+item.ImageName" alt="No Image"
+              (click)="details(item)" />
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>

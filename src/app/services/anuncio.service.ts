@@ -271,7 +271,7 @@ export class AnuncioService {
 
   getBannerSuperior() {
     return new Promise(resolve => {
-      this.http.get(this.rootURL + 'Banners/Tipo/Superior movil').subscribe(data => {
+      this.http.get(this.rootURL + 'Banners/Tipo/Superior escritorio').subscribe(data => {
         resolve(data);
       }, err => {
         console.log(err);
