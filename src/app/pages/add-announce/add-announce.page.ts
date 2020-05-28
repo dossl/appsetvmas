@@ -21,7 +21,7 @@ import {MatAutocompleteSelectedEvent, MatAutocomplete} from '@angular/material/a
 import {MatChipInputEvent} from '@angular/material/chips';
 import {Observable} from 'rxjs';
 import {map, startWith, take} from 'rxjs/operators';
-import { ConfiguracionesService } from '../../services/configuraciones.service';
+import { SettingsService } from '../../services/settings.service';
 import { AnunciosModel } from '../../models/anuncios.model';
 import { MunicipiosModel } from '../../models/municipios.model';
 import { ProvinciasModel } from '../../models/provincias.model';
@@ -234,7 +234,7 @@ export class AddAnnouncePage implements OnInit {
     private crop: Crop,
     private transfer: FileTransfer,
     private formBuilder: FormBuilder,
-    private servCo: ConfiguracionesService,
+    private servCo: SettingsService,
     private sqlite: SQLite,
     private toast: Toast,
     public network: Network,

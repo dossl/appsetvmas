@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, NavController, NavParams } from '@ionic/angular';
 import { ScrollHideDirective, ScrollHideConfig } from '../../directives/scroll-hide.directive';
 import { AnunciosModel } from '../../models/anuncios.model';
-import { ConfiguracionesService } from '../../services/configuraciones.service';
+import { SettingsService } from '../../services/settings.service';
 import { AnuncioService } from '../../services/anuncio.service';
 import { NetworkService } from '../../services/network.service';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
@@ -16,6 +16,9 @@ import { Insomnia } from '@ionic-native/insomnia/ngx';
 import { ModalController, AlertController } from '@ionic/angular';
 import { IonInfiniteScroll } from '@ionic/angular';
 import * as _ from 'lodash';
+import { BuscarAnunciosModel } from '../../models/buscar-anuncios.model';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+
 
 export interface AnuncioImagen {
   Id: number;
@@ -58,6 +61,7 @@ export class HomePage implements OnInit, AfterViewInit {
   loadingBannerTop = true;
   loadingBannerBottom = true;
   skeletorCard = [];
+  filters: BuscarAnunciosModel;
 
   currentUser: Usuario;
   nameUser: any;
@@ -66,11 +70,17 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
 
   constructor(
-    private servCo: ConfiguracionesService, private servAnuncio: AnuncioService, private networkService: NetworkService,
+    private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,
     private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
     public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
-    public loadingCtrl: LoadingController, private socialSharing: SocialSharing
-  ) { }
+    public loadingCtrl: LoadingController, private socialSharing: SocialSharing,
+    private router: Router
+
+  ) {
+    if (this.router.getCurrentNavigation().extras.state) {
+      this.filters = this.router.getCurrentNavigation().extras.state.filters;
+    }
+  }
 
   ngAfterViewInit(): void {
     this.skeletorCard = [];
@@ -89,6 +99,11 @@ export class HomePage implements OnInit, AfterViewInit {
 
   segmentChanged(ev: any) {
     this.tab = ev.detail.value;
+    if (this.tab === this.RECENTS_TAB && _.size(this.recents) === 0) {
+      this.loadRecents();
+    } else if (this.tab === this.MOST_SEEN_TAB && _.size(this.mostSeen) === 0) {
+      this.loadMostSeen();
+    }
   }
 
   async presentAlertConfirm() {
@@ -115,10 +130,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   ionViewWillEnter() {
-    this.testconnetion();
-    if (!this.isConnected) {
-      this.testconnetion();
-    }
+    this.checkConnetion();
     this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
     if (this.currentUser) {
       const index = this.currentUser.Correo.indexOf('@');
@@ -139,7 +151,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   loadAuto() {
-    this.testconnetion();
+    this.checkConnetion();
     this.loadBanner();
     this.loadAds();
   }
@@ -166,7 +178,7 @@ export class HomePage implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  testconnetion() {
+  checkConnetion() {
     this.networkService.getNetworkStatus().subscribe((connected: boolean) => {
       this.isConnected = connected;
     });
@@ -233,8 +245,13 @@ export class HomePage implements OnInit, AfterViewInit {
 
   async loadAds() {
     this.loading = true;
-    this.loadRecents();
-    this.loadMostSeen();
+    if (this.tab === this.RECENTS_TAB) {
+      this.loadRecents(() => {
+      });
+    } else {
+      this.loadMostSeen(() => {
+      });
+    }
   }
 
   loadRecents(callback = () => { }) {
@@ -248,11 +265,8 @@ export class HomePage implements OnInit, AfterViewInit {
           } else {
             i.Imagen = i.Categoria.ImageName;
           }
-
         }
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
+        this.loading = false;
         callback();
       }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
@@ -282,14 +296,10 @@ export class HomePage implements OnInit, AfterViewInit {
               console.log(item.Imagen);
             }
           }
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
+          this.loading = false;
           callback();
         }).catch(e => {
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
+          this.loading = false;
           callback();
         });
       });
@@ -307,15 +317,11 @@ export class HomePage implements OnInit, AfterViewInit {
             i.Imagen = i.Categoria.ImageName;
           }
         }
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
+        this.loading = false;
         callback();
       }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-        setTimeout(() => {
-          this.loading = false;
-        }, 2000);
+        this.loading = false;
         callback();
       });
     } else {
@@ -368,7 +374,7 @@ export class HomePage implements OnInit, AfterViewInit {
 
     if (this.isConnected === false) {
       this.WifiWizard2.enableWifi();
-      this.testconnetion();
+      this.checkConnetion();
     } else if (this.isConnected === true) {
       this.isConnected = false;
       this.WifiWizard2.disableWifi();

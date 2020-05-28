@@ -16,7 +16,7 @@ import {MatAutocompleteSelectedEvent, MatAutocomplete} from '@angular/material/a
 import {MatChipInputEvent} from '@angular/material/chips';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { ConfiguracionesService } from '../../services/configuraciones.service';
+import { SettingsService } from '../../services/settings.service';
 import { AnunciosModel } from '../../models/anuncios.model';
 import { stringify } from '@angular/compiler/src/util';
 import { Etiqueta } from '../../models/etiqueta.model';
@@ -206,7 +206,7 @@ export class EditAnnouncePage implements OnInit {
     private crop: Crop,
     private transfer: FileTransfer,
     private formBuilder: FormBuilder,
-    private servCo: ConfiguracionesService,
+    private servCo: SettingsService,
     private sqlite: SQLite,
     public network: Network,
     private toast: Toast,
@@ -279,7 +279,6 @@ export class EditAnnouncePage implements OnInit {
     {nombre:'Santiago de Cuba',municipio:[ 'Contramaestre', 'Guam�', 'Julio Antonio Mella','Palma Soriano', 'San Luis', 'Santiago de Cuba','Segundo Frente', 'Songo la Maya', 'Tercer Frente']},
     {nombre:'Guat�namo',municipio:['Baracoa', 'Caimanera', 'El Salvador','Guant�namo', 'Im�as', 'Mais�', 'Manuel Tames','Niceto P�rez', 'San Antonio del Sur', 'Yateras']},
   ]
-    console.log(this.service.getAnuncioId())
     
   }
 

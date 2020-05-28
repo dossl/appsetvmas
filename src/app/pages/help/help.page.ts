@@ -1,7 +1,7 @@
 import { Component, OnInit, Renderer } from '@angular/core';
 import { NavController,Platform, AlertController } from '@ionic/angular';
 import { AnunciosModel } from '../../models/anuncios.model';
-import { ConfiguracionesService } from '../../services/configuraciones.service';
+import { SettingsService } from '../../services/settings.service';
 import { AnuncioService } from '../../services/anuncio.service';
 import { NetworkService } from '../../services/network.service';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
@@ -54,7 +54,7 @@ export class HelpPage implements OnInit {
   nameUser:any
 
   formData: PaginasEstaticasModel = new PaginasEstaticasModel( 0, '', '' ) ;
-  constructor(public navCtrl: NavController,public render: Renderer,private alertCtrl: AlertController,private insomnia: Insomnia,public network: Network,private servCo: ConfiguracionesService, private servAnuncio: AnuncioService, private networkService: NetworkService,private sqlite: SQLite,private sanitizer: DomSanitizer,public toastCtrl: ToastController,public platform: Platform, public splashscreen: SplashScreen,
+  constructor(public navCtrl: NavController,public render: Renderer,private alertCtrl: AlertController,private insomnia: Insomnia,public network: Network,private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,private sqlite: SQLite,private sanitizer: DomSanitizer,public toastCtrl: ToastController,public platform: Platform, public splashscreen: SplashScreen,
     ) {
       /*this.platform.ready().then(()=>{
         this.splashscreen.hide();

@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ConfiguracionesService } from './configuraciones.service';
+import { SettingsService } from './settings.service';
 import { Etiqueta } from '../models/etiqueta.model';
-import { PaginasEstaticasModel } from '../models/paginas-estaticas.model';
 import { AnunciosModel } from '../models/anuncios.model';
 import { Usuario } from '../models/usuario.model';
-import { CategoriaEtiqueta } from '../models/categoria-etiqueta.model';
 import { Categoria } from '../models/categoria.model';
 import { PointSell } from '../models/sell-points.model';
 import { Purchase } from '../models/purchase.model';
@@ -18,43 +15,6 @@ import { BuscarAnunciosModel } from '../models/buscar-anuncios.model';
 export class AnuncioService {
 
   anuncioId: any;
-  estado: any;
-  nuevo: any;
-  precio: any;
-  titulo: any;
-  nombre: any;
-  telefono: any;
-  email: any;
-  municipio: any;
-  provincia: any;
-  imagen: any;
-  etiqueta: any;
-  accion: any;
-  texto: any;
-
-  selectaccion: any;
-  selectprovincia: any;
-  selectmunicipio: any;
-
-  destacado: any;
-  masetiqueta: any;
-  autorrenovable: any;
-  frecuencia: any;
-  web: any;
-  url: any;
-  webanuncio: any;
-  nombreimagen: any;
-  imagenadicional: any;
-  imagenbarnerinferior: any;
-  imagenbarnersuperior: any;
-  diaspagardestacado: any;
-  diaspagardescribe: any;
-  diaspagarautorrenovable: any;
-  diaspagarweb: any;
-  diaspagarimagenadicional: any;
-  diaspagarbarner: any;
-  diaspagarbarnersuperior: any;
-
   anuncio: any;
   etiquet: any;
   pointSell: PointSell;
@@ -62,53 +22,8 @@ export class AnuncioService {
 
 
   readonly rootURL;
-  constructor(private http: HttpClient,
-    private servConfiguracion: ConfiguracionesService) {
-
+  constructor(private http: HttpClient, private servConfiguracion: SettingsService) {
     this.rootURL = this.servConfiguracion.getRootURLApi();
-
-    /*this.anuncio = [
-      {
-        nuevo: true,
-        precio: '210.00',
-        titulo: 'Laptop',
-        nombre:'Osmel',
-        telefono:'53235750',
-        email:'osmel.santos.88@gmail.com',
-        municipio:'10 de octubre',
-        provincia:'La Habana',
-        images:'',
-        etiqueta:[{name:'fotografo'},{name:'estudio'},{name:'asesoria'}],
-        accion:'vendo',
-        texto: 'anuncio nuevo',
-        destacado:undefined,
-        masetiqueta:false,
-        autorrenovable:true,
-        frecuencia:'',
-        web:'',
-        url:'',
-        webanuncio:'',
-        nombreimagen:'',
-        imagenadicional:'',
-        imagenbarnerinferior:'',
-        imagenbarnersuperior:'',
-        diaspagardestacado:'',
-        diaspagardescribe:'',
-        diaspagarautorrenovable:'',
-        diaspagarweb:'',
-        diaspagarimagenadicional:'',
-        diaspagarbarner:'',
-        diaspagarbarnersuperior:'',
-
-      }
-    ]*/
-  }
-
-  setEtiquet(etiquet) {
-    this.etiquet = etiquet;
-  }
-  getEtiquet() {
-    return this.etiquet;
   }
 
   /*********Api Request******** */
@@ -130,7 +45,6 @@ export class AnuncioService {
     });
 
   }
-
 
   getAnunciosById(id) {
     return new Promise(resolve => {
@@ -160,7 +74,6 @@ export class AnuncioService {
     });
   }
 
-
   getAnunciosPopulares(col, filter, sortDirection, pageIndex, pageSize) {
     return new Promise(resolve => {
       this.http.get(this.rootURL + 'Anuncios/Populares', {
@@ -178,7 +91,6 @@ export class AnuncioService {
     });
   }
 
-
   buscarAnunciosAvanzados(buscar: BuscarAnunciosModel) {
     if (buscar.PrecioMax === null || buscar.PrecioMax === undefined) {
       buscar.PrecioMax = 0;
@@ -195,6 +107,7 @@ export class AnuncioService {
     });
 
   }
+
   buscarAnunciosAvanzadosCount(buscar: BuscarAnunciosModel) {
     return new Promise(resolve => {
       this.http.post(this.rootURL + 'Anuncios/AvanzadosCount', buscar).subscribe(data => {
@@ -223,8 +136,6 @@ export class AnuncioService {
       });
     });
   }
-
-
 
   insertarEtiquetas(formData) {
     return new Promise((resolve, reject) => {
@@ -258,6 +169,7 @@ export class AnuncioService {
         });
     });
   }
+
   deleteAnuncio(id) {
     return new Promise((resolve, reject) => {
       this.http.delete(this.rootURL + 'Anuncios/' + id)
@@ -306,8 +218,6 @@ export class AnuncioService {
     });
   }
 
-
-
   getCategoriaEtiquetaByCategoria(id) {
     return new Promise((resolve, reject) => {
       this.http.get(this.rootURL + '/CategoriaEtiquetas' + id)
@@ -318,7 +228,6 @@ export class AnuncioService {
         });
     });
   }
-
 
   enviarCorreo(nombre, correo, asunto, mensaje) {
     return new Promise(resolve => {
@@ -499,7 +408,6 @@ export class AnuncioService {
   }
 
   recuperar(correo) {
-
     return new Promise(resolve => {
       this.http.get(this.rootURL + 'Usuarios/Recuperar/', {
         params: new HttpParams()
@@ -512,8 +420,6 @@ export class AnuncioService {
       });
     });
   }
-
-
 
   getTipoOpcions(col, filter, sortDirection, pageIndex, pageSize) {
     return new Promise(resolve => {
@@ -578,7 +484,6 @@ export class AnuncioService {
 
   }
 
-
   getAnunciosCountV2(col, filter, sortDirection, pageIndex, pageSize, metodo) {
     return new Promise(resolve => {
       this.http.get(this.rootURL + 'Anuncios/CountHome', {
@@ -609,7 +514,6 @@ export class AnuncioService {
     });
   }
 
-
   buyPoint(formaPago, monto, tarjeta, phone, userId) {
     this.purchaseData = new Purchase(formaPago, monto, tarjeta, phone, userId);
     return new Promise(resolve => {
@@ -622,7 +526,6 @@ export class AnuncioService {
 
   }
 
-
   sellPoint(userId, buyer, amount) {
     this.pointSell = new PointSell(userId, buyer, amount);
     return new Promise(resolve => {
@@ -634,361 +537,7 @@ export class AnuncioService {
     });
   }
 
-
-  public resultadoAnunciosObserver = new BehaviorSubject<AnunciosModel[]>([]);
-  public ListaAnunciosObservable = this.resultadoAnunciosObserver.asObservable();
-  public CantidadTotalAnunciosObserver = new BehaviorSubject<number>(0);
-  public CantiadAnunciosTotalObservable = this.CantidadTotalAnunciosObserver.asObservable();
-  public textoBuscarObserver = new BehaviorSubject<string>('');
-  public textoBuscarObservable = this.textoBuscarObserver.asObservable();
-  ListaAnuncios: AnunciosModel[];
-  public updateAnuncioReciente = new BehaviorSubject<boolean>(false);
-  public reciente$ = this.updateAnuncioReciente.asObservable();
-
   /********************************************************************************************** */
-  getAnuncio() {
-    return this.anuncio;
-  }
-
-  cropUpload() { }
-
-  addAnuncio(nuevo: any, precio: any, titulo: any, nombre: any, telefono: any, email: any, municipio: any, provincia: any, images: any, etiqueta: any, accion: any, texto: any, destacado: any, masetiqueta: any, autorrenovable: any, frecuencia: any, web: any, url: any, webanuncio: any, nombreimagen: any, imagenadicional: any, imagenbarnerinferior: any, imagenbarnersuperior: any, diaspagardestacado: any, diaspagardescribe: any, diaspagarautorrenovable: any, diaspagarweb: any, diaspagarimagenadicional: any, diaspagarbarner: any, diaspagarbarnersuperior: any) {
-    this.anuncio.push({
-      nuevo: nuevo,
-      precio: precio,
-      titulo: titulo,
-      nombre: nombre,
-      telefono: telefono,
-      email: email,
-      municipio: municipio,
-      provincia: provincia,
-      images: images,
-      etiqueta: etiqueta,
-      destacado: destacado,
-      masetiqueta: masetiqueta,
-      autorrenovable: autorrenovable,
-      frecuencia: frecuencia,
-      web: web,
-      accion: accion,
-      texto: texto,
-      url: url,
-      webanuncio: webanuncio,
-      nombreimagen: nombreimagen,
-      imagenadicional: imagenadicional,
-      imagenbarnerinferior: imagenbarnerinferior,
-      imagenbarnersuperior: imagenbarnersuperior,
-      diaspagardestacado: diaspagardestacado,
-      diaspagardescribe: diaspagardescribe,
-      diaspagarautorrenovable: diaspagarautorrenovable,
-      diaspagarweb: diaspagarweb,
-      diaspagarimagenadicional: diaspagarimagenadicional,
-      diaspagarbarner: diaspagarbarner,
-      diaspagarbarnersuperior: diaspagarbarnersuperior
-    });
-    console.log(texto);
-  }
-
-
-  editAnuncio(nuevo: any, precio: any, titulo: any, nombre: any, telefono: any, email: any, municipio: any, provincia: any, images: any, etiqueta: any, accion: any, texto: any, destacado: any, masetiqueta: any, autorrenovable: any, frecuencia: any, web: any, url: any, webanuncio: any, nombreimagen: any, imagenadicional: any, imagenbarnerinferior: any, imagenbarnersuperior: any, diaspagardestacado: any, diaspagardescribe: any, diaspagarautorrenovable: any, diaspagarweb: any, diaspagarimagenadicional: any, diaspagarbarner: any, diaspagarbarnersuperior: any) {
-
-    this.anuncio.filter(item => {
-      item.nuevo = nuevo,
-        item.precio = precio,
-        item.titulo = titulo,
-        item.nombre = nombre,
-        item.telefono = telefono,
-        item.email = email,
-        item.municipio = municipio,
-        item.provincia = provincia,
-        item.images = images,
-        item.etiqueta = etiqueta,
-        item.accion = accion,
-        item.texto = texto,
-        item.destacado = destacado,
-        item.masetiqueta = masetiqueta,
-        item.autorrenovable = autorrenovable,
-        item.frecuencia = frecuencia,
-        item.web = web,
-        item.url = url,
-        item.webanuncio = webanuncio,
-        item.nombreimagen = nombreimagen,
-        item.imagenadicional = imagenadicional,
-        item.imagenbarnerinferior = imagenbarnerinferior,
-        item.imagenbarnersuperior = imagenbarnersuperior,
-        item.diaspagardestacado = diaspagardestacado,
-        item.diaspagardescribe = diaspagardescribe,
-        item.diaspagarautorrenovable = diaspagarautorrenovable,
-        item.diaspagarweb = diaspagarweb,
-        item.diaspagarimagenadicional = diaspagarimagenadicional,
-        item.diaspagarbarner = diaspagarbarner,
-        item.diaspagarbarnersuperior = diaspagarbarnersuperior;
-    });
-    console.log(texto);
-  }
-
-  /*deleteAnuncio(titulo){
-    let index = this.anuncio.indexOf(titulo)
-    this.anuncio.splice(index,1)
-  }*/
-
-  getTexto() {
-    return this.texto;
-  }
-
-  setTexto(texto) {
-    this.texto = texto;
-  }
-
-  getEstado() {
-    return this.estado;
-  }
-  setEstado(estado) {
-    this.estado = estado;
-  }
-  setNuevo(nuevo) {
-    this.nuevo = nuevo;
-  }
-  setPrecio(precio) {
-    this.precio = precio;
-  }
-  setTitulo(titulo) {
-    this.titulo = titulo;
-  }
-  setNombre(nombre) {
-    this.nombre = nombre;
-  }
-  setTelefono(telefono) {
-    this.telefono = telefono;
-  }
-
-  setEmail(email) {
-    this.email = email;
-  }
-  setMunicipio(municipio) {
-    this.municipio = municipio;
-  }
-
-  setProvincia(provincia) {
-    this.provincia = provincia;
-  }
-
-  setImages(imagen) {
-    this.imagen = imagen;
-  }
-
-  setEtiqueta(etiqueta) {
-    this.etiqueta = etiqueta;
-  }
-
-  setAccion(accion) {
-    this.accion = accion;
-  }
-
-
-  setSelectaccion(selectaccion) {
-    this.selectaccion = selectaccion;
-  }
-  setSelectprovincia(selectprovincia) {
-    this.selectprovincia = selectprovincia;
-  }
-
-  setSelectmunicipio(selectmunicipio) {
-    this.selectmunicipio = selectmunicipio;
-  }
-
-  setDestacado(destacado) {
-    this.destacado = destacado;
-  }
-
-  setMasetiqueta(masetiqueta) {
-    this.masetiqueta = masetiqueta;
-  }
-
-  setAutorrenovable(autorrenovable) {
-    this.autorrenovable = autorrenovable;
-  }
-
-  setFrecuencia(frecuencia) {
-    this.frecuencia = frecuencia;
-  }
-
-  setWeb(web) {
-    this.web = web;
-  }
-  setUrl(url) {
-    this.url = url;
-  }
-  setWebanuncio(webanuncio) {
-    this.webanuncio = webanuncio;
-  }
-  setNombreimagen(nombreimagen) {
-    this.nombreimagen = nombreimagen;
-  }
-
-  setImagenadicional(imagenadicional) {
-    this.imagenadicional = imagenadicional;
-  }
-  setImagenbarnerinferior(imagenbarnerinferior) {
-    this.imagenbarnerinferior = imagenbarnerinferior;
-  }
-  setImagenbarnersuperior(imagenbarnersuperior) {
-    this.imagenbarnersuperior = imagenbarnersuperior;
-  }
-  setDiaspagardestacado(diaspagardestacado) {
-    this.diaspagardestacado = diaspagardestacado;
-  }
-  setDiaspagardescribe(diaspagardescribe) {
-    this.diaspagardescribe = diaspagardescribe;
-  }
-  setDiaspagarautorrenovable(diaspagarautorrenovable) {
-    this.diaspagarautorrenovable = diaspagarautorrenovable;
-  }
-  setDiaspagarweb(diaspagarweb) {
-    this.diaspagarweb = diaspagarweb;
-  }
-  setDiaspagarimagenadicional(diaspagarimagenadicional) {
-    this.diaspagarimagenadicional = diaspagarimagenadicional;
-  }
-  setDiaspagarbarner(diaspagarbarner) {
-    this.diaspagarbarner = diaspagarbarner;
-  }
-  setDiaspagarbarnersuperior(diaspagarbarnersuperior) {
-    this.diaspagarbarnersuperior = diaspagarbarnersuperior;
-  }
-
-
-  getStates(term: string = null): Observable<string[]> {
-    return Observable.create((observer) => {
-      let getEtiquetaNamePromise: Promise<any>;
-
-      getEtiquetaNamePromise = new Promise((resolve) => {
-        fetch('./assets/data/etiquetas.json').then(res => res.json())
-          .then(json => {
-            const results = json.states;
-            resolve(results);
-          });
-      });
-
-      getEtiquetaNamePromise.then((data) => {
-        if (term) {
-          data = data.filter(x => x.name.toLocaleLowerCase().indexOf(term.toLocaleLowerCase()) > -1);
-        }
-        observer.next(data);
-      });
-    });
-  }
-
-
-  getNuevo() {
-    return this.nuevo;
-  }
-  getPrecio() {
-    return this.precio;
-  }
-  getTitulo() {
-    return this.titulo;
-  }
-  getNombre() {
-    return this.nombre;
-  }
-  getTelefono() {
-    return this.telefono;
-  }
-
-  getEmail() {
-    return this.email;
-  }
-  getMunicipio() {
-    return this.municipio;
-  }
-
-  getProvincia() {
-    return this.provincia;
-  }
-
-  getImages() {
-    return this.imagen;
-  }
-
-  getEtiqueta() {
-    return this.etiqueta;
-  }
-
-  getAccion() {
-    return this.accion;
-  }
-
-
-  getSelectaccion() {
-    return this.selectaccion;
-  }
-  getSelectprovincia() {
-    return this.selectprovincia;
-  }
-
-  getSelectmunicipio() {
-    return this.selectmunicipio;
-  }
-
-  getDestacado() {
-    return this.destacado;
-  }
-
-  getMasetiqueta() {
-    return this.masetiqueta;
-  }
-
-  getAutorrenovable() {
-    return this.autorrenovable;
-  }
-
-  getFrecuencia() {
-    return this.frecuencia;
-  }
-
-  getWeb() {
-    return this.web;
-  }
-  getUrl() {
-    return this.url;
-  }
-  getWebanuncio() {
-    return this.webanuncio;
-  }
-  getNombreimagen() {
-    return this.nombreimagen;
-  }
-
-  getImagenadicional() {
-    return this.imagenadicional;
-  }
-  getImagenbarnerinferior() {
-    return this.imagenbarnerinferior;
-  }
-  getImagenbarnersuperior() {
-    return this.imagenbarnersuperior;
-  }
-  getDiaspagardestacado() {
-    return this.diaspagardestacado;
-  }
-  getDiaspagardescribe() {
-    return this.diaspagardescribe;
-  }
-  getDiaspagarautorrenovable() {
-    return this.diaspagarautorrenovable;
-  }
-  getDiaspagarweb() {
-    return this.diaspagarweb;
-  }
-  getDiaspagarimagenadicional() {
-    return this.diaspagarimagenadicional;
-  }
-  getDiaspagarbarner() {
-    return this.diaspagarbarner;
-  }
-  getDiaspagarbarnersuperior() {
-    return this.diaspagarbarnersuperior;
-  }
 
   setAnuncioId(setAnuncioId) {
     this.anuncioId = setAnuncioId;
@@ -997,5 +546,4 @@ export class AnuncioService {
   getAnuncioId() {
     return this.anuncioId;
   }
-
 }

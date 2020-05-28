@@ -24,7 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Crop } from '@ionic-native/crop/ngx';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { RlTagInputModule } from 'angular2-tag-input';
-import { ConfiguracionesService } from './services/configuraciones.service';
+import { SettingsService } from './services/settings.service';
 import { SQLite } from '@ionic-native/sqlite/ngx';
 import { Toast } from '@ionic-native/toast/ngx';
 import { NetworkService } from './services/network.service';
@@ -86,7 +86,7 @@ import { Insomnia } from '@ionic-native/insomnia/ngx';
     Crop,
     // tslint:disable-next-line: deprecation
     FileTransfer,
-    ConfiguracionesService,
+    SettingsService,
     AnuncioService,
     SQLite,
     Toast,

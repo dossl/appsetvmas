@@ -22,15 +22,16 @@
   <ion-toolbar color="primary" *ngIf="bannersTop.length > 0">
     <ion-item color="primary" *ngIf="bannersTop.length > 0 && !  loadingBannerTop">
       <ion-slides pager page="true" [options]="slideOpts">
-        <ion-slide *ngFor="let item of bannersTop">
+        <ion-slide *ngFor="let item of bannersTop" (click)="details(item)">
           <img [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName" class="banner" alt="No Image"
-            (click)="details(item)" />
+             />
         </ion-slide>
       </ion-slides>
     </ion-item>
   </ion-toolbar>
   <ion-toolbar color="primary" style="display: contents;">
-    <ion-button size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
+    <ion-button class="notification-icon-button" size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
+      <ion-badge class="notification-badge" color="danger"><span>10</span></ion-badge>
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
     <ion-searchbar [disabled]="loading" (ionClear)="onSearch($event)" (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText"

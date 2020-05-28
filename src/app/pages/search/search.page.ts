@@ -11,7 +11,7 @@ import { Etiqueta } from '../../models/etiqueta.model';
 import { BuscarAnunciosModel } from '../../models/buscar-anuncios.model';
 import { PopoverController, LoadingController, ToastController, NavController, Platform, AlertController } from '@ionic/angular';
 import { AnuncioService } from '../../services/anuncio.service';
-import { ConfiguracionesService } from '../../services/configuraciones.service';
+import { SettingsService } from '../../services/settings.service';
 import { NetworkService } from '../../services/network.service';
 import { startWith, map } from 'rxjs/operators';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -113,7 +113,7 @@ export class SearchPage implements OnInit {
   constructor(
     private modal: PopoverController,
     private service: AnuncioService,
-    private servCo: ConfiguracionesService,
+    private servCo: SettingsService,
     public loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
     public network: Network,
@@ -150,32 +150,10 @@ export class SearchPage implements OnInit {
       this.txtBuscarAvan = '';
 
       this.buscarAnuncio.ListaEtiquetas = [];
-      this.service.updateAnuncioReciente.next(true);
-      this.service.updateAnuncioReciente.subscribe(res => {
-
-        this.ListaAnuncios = null;
-        this.filtroReciente = true;
-        this.pagActual = 1;
-        this.filtroMasVisto = false;
-        this.filtroAva = false;
-
-        this.service.getAnunciosRecientes('FechaCreacion', '', 'asc', 1, this.cantPorPagina)
-          .then((ads: AnunciosModel[]) => {
-            this.ListaAnuncios = ads;
-            this.loadingAnuncio.next(false);
-            for (const i of (this.ListaAnuncios)) {
-              if (i.ImageContent !== undefined && i.ImageContent !== null) {
-                i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
-              } else {
-                i.Imagen = i.Categoria.ImageName;
-              }
-            }
-          },
-            () => this.loadingAnuncio.next(true));
-      });
 
       this.service.getCategoriaAll('', '', 'asc', 1, 5000).then(res => this.ListaCategoria = res as Categoria[]);
       this.service.getEtiquetasByCategoria(-1).then(res => this.ListaEtiFuente = res as Etiqueta[]);
+      
       this.ListaAcciones = this.servCo.getAccionesAnuncio();
       this.service.getAnunciosCountV2('', '', 'asc', 1, 5000, 'r').
         then(res => this.totalPaginas = Math.ceil((res as number) / this.cantPorPagina));
@@ -217,7 +195,6 @@ export class SearchPage implements OnInit {
       this.filtroMasVisto = false;
       this.filtroAva = false;
       this.loadBanner();
-      debugger;
     } else if (!this.isConnected) {
       setTimeout(() => {
         this.testconnetion();
@@ -674,6 +651,10 @@ export class SearchPage implements OnInit {
   }
 
   buscarAnunciosFiltros() {
+    this.navCtrl.navigateForward('/home', {state: {filters: {
+      name: 'pepe'
+    }}});
+    return;
     this.mostrarResultados = true;
     this.txtBuscar = '';
     this.loadingAnuncio.next(true);
