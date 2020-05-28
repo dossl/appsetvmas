@@ -38,16 +38,37 @@ ion-input {
   --border-color: dimgrey;
 }
 
-
-ion-content {
-  --background: #eeeeee;
-}
-
 ionic-selectable-modal {
   ion-toolbar {
     --background: var(--ion-color-primary, #3880ff) !important;
     margin-top: -1px;
   }
+}
+
+.icon-title {
+  position: relative;
+  top: 3px;
+  margin-right: 5px;
+}
+
+ion-title {
+  --padding-start: 10px;
+  padding-left: 10px;
+}
+
+ionic-selectable {
+  .ionic-selectable-value {
+    margin-left: -65px;
+  }
+  &::ng-deep {
+    .ionic-selectable-value {
+      margin-left: -65px;
+    }
+  }
+}
+
+.ionic-selectable-value {
+  margin-left: -65px;
 }
 
 ion-card {

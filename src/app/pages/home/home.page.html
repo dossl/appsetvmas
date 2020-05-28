@@ -30,8 +30,8 @@
     </ion-item>
   </ion-toolbar>
   <ion-toolbar color="primary" style="display: contents;">
-    <ion-button class="notification-icon-button" size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
-      <ion-badge class="notification-badge" color="danger"><span>10</span></ion-badge>
+    <ion-button [disabled]="!enableFilterButton" class="notification-icon-button" size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
+      <ion-badge *ngIf="filters" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span></ion-badge>
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
     <ion-searchbar [disabled]="loading" (ionClear)="onSearch($event)" (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText"

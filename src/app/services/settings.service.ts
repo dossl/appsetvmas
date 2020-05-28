@@ -141,7 +141,7 @@ export class SettingsService {
   }
 
   getAccionesAnuncio() {
-    return ['Vendo', 'Compro', 'Alquilo', 'Busco', 'Cambio', 'Regalo', 'Servicio', 'Informaci�n'];
+    return ['Vendo', 'Compro', 'Alquilo', 'Busco', 'Cambio', 'Regalo', 'Servicio', 'Información'];
   }
 
   getRoles() {

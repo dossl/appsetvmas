@@ -23,8 +23,6 @@ import { Network } from '@ionic-native/network/ngx';
 })
 export class AppComponent {
 
-  arraycategoria: Categoria[];
-  arrayEtiqueta: Etiqueta[];
   barnerSuperior: Banner[];
   barnerInferior: Banner[];
   configuration: VariableConfiguracion[];
@@ -116,27 +114,12 @@ export class AppComponent {
 
   downloadBD() {
     this.presentLoading();
-    this.service.getCategoriaAll('', '', 'asc', 1, 5000).then(data => {
-      this.arraycategoria = data as Categoria[];
-      console.log(this.arraycategoria);
-    }).catch((error) => {
-      console.log('Error fetch', error);
-      this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-    });
 
     this.service.getTipoOpcions('', '', 'asc', 1, 5000)
       .then(res => {
         this.listaTipoOpciones = res as TipoOpcionModel[];
 
       });
-
-    this.service.getEtiquetas('Nombre', '', 'asc', 1, 5000).then(data => {
-      this.arrayEtiqueta = data as Etiqueta[];
-      console.log(this.arrayEtiqueta);
-    }).catch((error) => {
-      console.log('Error', error);
-      this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-    });
 
     this.service.getBannerSuperior().then(data => {
       this.barnerSuperior = data as Banner[];
@@ -179,36 +162,7 @@ export class AppComponent {
       name: 'setVMas.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      db.executeSql('CREATE TABLE IF NOT EXISTS Categoria(CategoriaId INTEGER PRIMARY KEY,' +
-        'Nombre TEXT, ImageContent TEXT, ImageMimeType TEXT, ImageName TEXT, ' +
-        'CantAutoRenovables INT)', [])
-        .then(res => console.log('Executed SQL'))
-        .catch(e => console.log(e));
-      this.arraycategoria.forEach(element => {
-        db.executeSql('INSERT INTO Categoria VALUES(NULL,?,?,?,?,?,?,?/)',
-          [element.Nombre, element.ImageContent, element.ImageMimeType, element.ImageName,
-          element.CantAutoRenovables])
-          .then(res => {
-            console.log(res);
-            this.toast.show('Categoria descargadas', '5000', 'center').subscribe(toast => {
-              console.log(toast);
-            });
-          });
-      });
-
-      db.executeSql('CREATE TABLE IF NOT EXISTS Etiqueta(EtiquetaId INTEGER PRIMARY KEY, Nombre TEXT, CantUsada TEXT)', [])
-        .then(res => console.log('Executed SQL'))
-        .catch(e => console.log(e));
-      this.arrayEtiqueta.forEach(element => {
-        db.executeSql('INSERT INTO Etiqueta VALUES(NULL,?,?/)', [element.Nombre, element.CantUsada])
-          .then(res => {
-            console.log(res);
-            this.toast.show('Etiquetas descargadas', '5000', 'center').subscribe(toast => {
-              console.log(toast);
-            });
-          });
-      });
-
+      
       db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY,' +
         ' Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ' +
         'ImageMimeType TEXT, ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, ' +

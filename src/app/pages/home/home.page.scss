@@ -23,6 +23,11 @@
 }
 
 // Marcos classes
+
+ion-content {
+  --background: #eeeeee;
+}
+
 #home-header {
   ion-toolbar {
     margin-bottom: -1px;
@@ -44,10 +49,6 @@
         top: 0;
         right: 0;
       }
-    }
-
-    ion-title {
-      padding-left: 10px;
     }
 
     &.custom-toolbar {

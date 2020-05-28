@@ -18,6 +18,7 @@ import { IonInfiniteScroll } from '@ionic/angular';
 import * as _ from 'lodash';
 import { BuscarAnunciosModel } from '../../models/buscar-anuncios.model';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
+import { CategoriesService } from '../../services/categories.service';
 
 
 export interface AnuncioImagen {
@@ -32,6 +33,7 @@ export interface AnuncioImagen {
 })
 export class HomePage implements OnInit, AfterViewInit {
 
+  _ = _;
   RECENTS_TAB = 'RECENTS';
   MOST_SEEN_TAB = 'MOST_SEEN';
   tab = this.RECENTS_TAB;
@@ -61,6 +63,7 @@ export class HomePage implements OnInit, AfterViewInit {
   loadingBannerTop = true;
   loadingBannerBottom = true;
   skeletorCard = [];
+  enableFilterButton = false;
   filters: BuscarAnunciosModel;
 
   currentUser: Usuario;
@@ -74,12 +77,11 @@ export class HomePage implements OnInit, AfterViewInit {
     private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
     public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
     public loadingCtrl: LoadingController, private socialSharing: SocialSharing,
-    private router: Router
-
+    private router: Router, private catsService: CategoriesService
   ) {
-    if (this.router.getCurrentNavigation().extras.state) {
-      this.filters = this.router.getCurrentNavigation().extras.state.filters;
-    }
+    //   this.platform.ready().then(()=>{
+    //     this.splashscreen.hide();
+    //  })
   }
 
   ngAfterViewInit(): void {
@@ -102,6 +104,21 @@ export class HomePage implements OnInit, AfterViewInit {
     if (this.tab === this.RECENTS_TAB && _.size(this.recents) === 0) {
       this.loadRecents();
     } else if (this.tab === this.MOST_SEEN_TAB && _.size(this.mostSeen) === 0) {
+      this.loadMostSeen();
+    }
+  }
+
+  applyFilters(page = 1) {
+    if (page === 1) {
+      this.loading = true;
+    }
+    if (this.tab === this.RECENTS_TAB) {
+      this.recents = [];
+      this.recentsPage = page;
+      this.loadRecents();
+    } else if (this.tab === this.MOST_SEEN_TAB) {
+      this.mostSeen = [];
+      this.mostSeenPage = page;
       this.loadMostSeen();
     }
   }
@@ -131,6 +148,10 @@ export class HomePage implements OnInit, AfterViewInit {
 
   ionViewWillEnter() {
     this.checkConnetion();
+    if (_.size(_.keys(this.servAnuncio.filters)) > 0 && this.servAnuncio.filters !== this.filters) {
+      this.filters = this.servAnuncio.filters;
+      this.applyFilters();
+    }
     this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
     if (this.currentUser) {
       const index = this.currentUser.Correo.indexOf('@');
@@ -154,6 +175,10 @@ export class HomePage implements OnInit, AfterViewInit {
     this.checkConnetion();
     this.loadBanner();
     this.loadAds();
+    this.catsService.getCategorias((cats) => {
+      this.enableFilterButton = true;
+      console.log(cats);
+    });
   }
 
   loadData(event) {
@@ -256,25 +281,47 @@ export class HomePage implements OnInit, AfterViewInit {
 
   loadRecents(callback = () => { }) {
     if (this.isConnected) {
-      this.servAnuncio.getAnunciosRecientes('', this.searchText, 'asc', this.recentsPage, this.pagination).then(data => {
-        this.recents = _.concat(this.recents || [], data);
-        for (const i of (this.recents as AnunciosModel[])) {
-          if (i.ImageContent !== undefined && i.ImageContent !== null) {
-            i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
-            console.log(i.Imagen);
-          } else {
-            i.Imagen = i.Categoria.ImageName;
+      if (_.size(_.keys(this.filters))) {
+        this.servAnuncio.buscarAnunciosAvanzados(this.filters, this.recentsPage, this.pagination).then(res => {
+          this.recents = _.concat(this.recents || [], res);
+          for (const i of (this.recents as AnunciosModel[])) {
+            if (i.ImageContent !== undefined && i.ImageContent !== null) {
+              i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
+              console.log(i.Imagen);
+            } else {
+              i.Imagen = i.Categoria.ImageName;
+            }
           }
-        }
-        this.loading = false;
-        callback();
-      }).catch((error) => {
-        this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-        setTimeout(() => {
           this.loading = false;
-        }, 2000);
-        callback();
-      });
+          callback();
+        }).catch((error) => {
+          this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
+          setTimeout(() => {
+            this.loading = false;
+          }, 2000);
+          callback();
+        });
+      } else {
+        this.servAnuncio.getAnunciosRecientes('', this.searchText, 'asc', this.recentsPage, this.pagination).then(data => {
+          this.recents = _.concat(this.recents || [], data);
+          for (const i of (this.recents as AnunciosModel[])) {
+            if (i.ImageContent !== undefined && i.ImageContent !== null) {
+              i.Imagen = 'data:' + i.ImageMimeType + ';base64,' + i.ImageContent;
+              console.log(i.Imagen);
+            } else {
+              i.Imagen = i.Categoria.ImageName;
+            }
+          }
+          this.loading = false;
+          callback();
+        }).catch((error) => {
+          this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
+          setTimeout(() => {
+            this.loading = false;
+          }, 2000);
+          callback();
+        });
+      }
     } else {
       this.sqlite.create({
         name: 'setVMas.db',

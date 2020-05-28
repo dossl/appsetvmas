@@ -8,6 +8,7 @@ import { Categoria } from '../models/categoria.model';
 import { PointSell } from '../models/sell-points.model';
 import { Purchase } from '../models/purchase.model';
 import { BuscarAnunciosModel } from '../models/buscar-anuncios.model';
+import * as _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class AnuncioService {
   etiquet: any;
   pointSell: PointSell;
   purchaseData: Purchase;
-
+  filters: BuscarAnunciosModel;
 
   readonly rootURL;
   constructor(private http: HttpClient, private servConfiguracion: SettingsService) {
@@ -91,19 +92,15 @@ export class AnuncioService {
     });
   }
 
-  buscarAnunciosAvanzados(buscar: BuscarAnunciosModel) {
-    if (buscar.PrecioMax === null || buscar.PrecioMax === undefined) {
-      buscar.PrecioMax = 0;
-    }
-    if (buscar.PrecioMin === null || buscar.PrecioMin === undefined) {
-      buscar.PrecioMin = 0;
-    }
-    return new Promise(resolve => {
-      this.http.post(this.rootURL + 'Anuncios/Avanzados', buscar).subscribe(data => {
+  buscarAnunciosAvanzados(buscar: BuscarAnunciosModel, indexPage = 1, sizePage = 8) {
+    const filters: BuscarAnunciosModel = _.clone(buscar);
+    filters.sizePage = sizePage;
+    filters.indexPage = indexPage;
+    filters.ListaEtiquetas = [];
+    return new Promise((resolve, reject) => {
+      this.http.post(this.rootURL + 'Anuncios/Avanzados', filters).subscribe(data => {
         resolve(data);
-      }, err => {
-        console.log(err);
-      });
+      }, reject);
     });
 
   }
@@ -118,34 +115,6 @@ export class AnuncioService {
     });
 
 
-  }
-
-  getEtiquetas(col, filter, sortDirection, pageIndex, pageSize) {
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'Etiquetas', {
-        params: new HttpParams()
-          .set('col', col.toString())
-          .set('filter', filter)
-          .set('sortDirection', sortDirection)
-          .set('pageIndex', pageIndex.toString())
-          .set('pageSize', pageSize.toString())
-      }).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
-  }
-
-  insertarEtiquetas(formData) {
-    return new Promise((resolve, reject) => {
-      this.http.post(this.rootURL + 'Etiquetas', formData)
-        .subscribe(res => {
-          resolve(res);
-        }, (err) => {
-          reject(err);
-        });
-    });
   }
 
   insertarAnuncio(data) {
@@ -198,34 +167,6 @@ export class AnuncioService {
       }, err => {
         console.log(err);
       });
-    });
-  }
-
-  getCategoriaAll(col, filter, sortDirection, pageIndex, pageSize) {
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'Categorias', {
-        params: new HttpParams()
-          .set('col', col.toString())
-          .set('filter', filter)
-          .set('sortDirection', sortDirection)
-          .set('pageIndex', pageIndex.toString())
-          .set('pageSize', pageSize.toString())
-      }).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
-  }
-
-  getCategoriaEtiquetaByCategoria(id) {
-    return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + '/CategoriaEtiquetas' + id)
-        .subscribe(res => {
-          resolve(res);
-        }, (err) => {
-          reject(err);
-        });
     });
   }
 
@@ -295,18 +236,6 @@ export class AnuncioService {
       this.http.get(this.rootURL + 'Usuarios/' + id)
         .subscribe(res => {
           resolve(res);
-        }, (err) => {
-          reject(err);
-        });
-    });
-  }
-
-  getEtiquetaById(id) {
-
-    return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + 'Etiquetas/' + id)
-        .subscribe(res => {
-          resolve(res as AnunciosModel);
         }, (err) => {
           reject(err);
         });
@@ -449,40 +378,7 @@ export class AnuncioService {
       });
   }*/
 
-  getCategoriaById(id) {
-    return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + 'Categorias/' + id)
-        .subscribe(res => {
-          resolve(res as Categoria);
-        }, (err) => {
-          reject(err);
-        });
-    });
-  }
-
-  getEtiquetasByCategoria(id) {
-
-    if (id === -1 || id === undefined) {
-      return new Promise((resolve, reject) => {
-        this.http.get(this.rootURL + 'Etiquetas/List')
-          .subscribe(res => {
-            resolve(res as Etiqueta);
-          }, (err) => {
-            reject(err);
-          });
-      });
-    } else {
-      return new Promise((resolve, reject) => {
-        this.http.get(this.rootURL + 'Categorias/Etiqueta/' + id)
-          .subscribe(res => {
-            resolve(res as Etiqueta);
-          }, (err) => {
-            reject(err);
-          });
-      });
-    }
-
-  }
+ 
 
   getAnunciosCountV2(col, filter, sortDirection, pageIndex, pageSize, metodo) {
     return new Promise(resolve => {
@@ -501,17 +397,6 @@ export class AnuncioService {
       });
     });
 
-  }
-
-  getCategoriaEtiquetaByEtiqueta(id) {
-    return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + 'CategoriaEtiquetas/Etiqueta/' + id)
-        .subscribe(res => {
-          resolve(res as Categoria);
-        }, (err) => {
-          reject(err);
-        });
-    });
   }
 
   buyPoint(formaPago, monto, tarjeta, phone, userId) {
