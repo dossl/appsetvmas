@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { LoadingController, NavController, NavParams } from '@ionic/angular';
-import { ScrollHideDirective, ScrollHideConfig } from '../../directives/scroll-hide.directive';
+import { LoadingController, NavController, NavParams, Platform } from '@ionic/angular';
+// import { ScrollHideDirective, ScrollHideConfig } from '../../directives/scroll-hide.directive';
+import { HideHeaderDirective } from '../../directives/hide-header.directive';
+import { ScrollVanishDirective } from '../../directives/scroll-vanish.directive';
 import { AnunciosModel } from '../../models/anuncios.model';
 import { SettingsService } from '../../services/settings.service';
 import { AnuncioService } from '../../services/anuncio.service';
@@ -18,8 +20,8 @@ import { IonInfiniteScroll } from '@ionic/angular';
 import * as _ from 'lodash';
 import { BuscarAnunciosModel } from '../../models/buscar-anuncios.model';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-import { CategoriesService } from '../../services/categories.service';
-
+import { LocalDataService, StaticData } from '../../services/local-data.service';
+import { environment } from '../../../environments/environment';
 
 export interface AnuncioImagen {
   Id: number;
@@ -34,12 +36,13 @@ export interface AnuncioImagen {
 export class HomePage implements OnInit, AfterViewInit {
 
   _ = _;
+  rootURL = environment.rootURL;
   RECENTS_TAB = 'RECENTS';
   MOST_SEEN_TAB = 'MOST_SEEN';
   tab = this.RECENTS_TAB;
 
-  footerScrollConfig: ScrollHideConfig = { cssProperty: 'margin-bottom', maxValue: 70 };
-  headerScrollConfig: ScrollHideConfig = { cssProperty: 'margin-top', maxValue: 112 };
+  // footerScrollConfig: ScrollHideConfig = { cssProperty: 'margin-bottom', maxValue: 70 };
+  // headerScrollConfig: ScrollHideConfig = { cssProperty: 'margin-top', maxValue: 112 };
 
   slideOpts = {
     initialSlide: 0,
@@ -73,11 +76,12 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
 
   constructor(
+    private platform: Platform,
     private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,
     private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
     public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
     public loadingCtrl: LoadingController, private socialSharing: SocialSharing,
-    private router: Router, private catsService: CategoriesService
+    private router: Router, private localService: LocalDataService, public navCtrl: NavController
   ) {
     //   this.platform.ready().then(()=>{
     //     this.splashscreen.hide();
@@ -85,12 +89,14 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.skeletorCard = [];
-    const cardCount = parseInt(((window.innerHeight - 190) / 142).toFixed(0), 0) + 1;
-    for (let index = 0; index < cardCount; index++) {
-      this.skeletorCard.push({});
-    }
-    this.loadAuto();
+    this.platform.ready().then(() => {
+      this.skeletorCard = [];
+      const cardCount = parseInt(((window.innerHeight - 190) / 142).toFixed(0), 0) + 1;
+      for (let index = 0; index < cardCount; index++) {
+        this.skeletorCard.push({});
+      }
+      this.loadAuto();
+    });
   }
 
   ngOnInit() {
@@ -172,13 +178,15 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   loadAuto() {
-    this.checkConnetion();
-    this.loadBanner();
-    this.loadAds();
-    this.catsService.getCategorias((cats) => {
-      this.enableFilterButton = true;
-      console.log(cats);
+    this.checkConnetion(() => {
+      this.loadBanner();
+      this.loadAds();
+      this.localService.getData((data: StaticData) => {
+        this.enableFilterButton = true;
+        console.log(data);
+      });
     });
+
   }
 
   loadData(event) {
@@ -203,9 +211,10 @@ export class HomePage implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  checkConnetion() {
+  checkConnetion(callback = () => { }) {
     this.networkService.getNetworkStatus().subscribe((connected: boolean) => {
       this.isConnected = connected;
+      callback();
     });
   }
 
@@ -232,38 +241,38 @@ export class HomePage implements OnInit, AfterViewInit {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
       });
     } else {
-      this.sqlite.create({
-        name: 'setVMas.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY, ' +
-          'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
-          'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
-        db.executeSql('SELECT * FROM BannerSuperior WHERE isVisible=? ORDER BY BannerId DESC', [true]).then(res => {
-          this.bannersTop = res as Banner[];
-          setTimeout(() => {
-            this.loadingBannerTop = false;
-          }, 2000);
-        }).catch(e => console.log(e));
-      });
-      this.sqlite.create({
-        name: 'setVMas.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        db.executeSql('CREATE TABLE IF NOT EXISTS BannerInferior(BannerId INTEGER PRIMARY KEY, ' +
-          'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
-          'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
-        db.executeSql('SELECT * FROM BannerInferior ORDER BY BannerId DESC', []).then(res => {
-          this.bannersBottom = res as Banner[];
-          setTimeout(() => {
-            this.loadingBannerBottom = false;
-          }, 2000);
-        }).catch(e => console.log(e));
-      });
+      // this.sqlite.create({
+      //   name: 'setVMas.db',
+      //   location: 'default'
+      // }).then((db: SQLiteObject) => {
+      //   db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY, ' +
+      //     'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
+      //     'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
+      //     .then(res => console.log('Executed SQL'))
+      //     .catch(e => console.log(e));
+      //   db.executeSql('SELECT * FROM BannerSuperior WHERE isVisible=? ORDER BY BannerId DESC', [true]).then(res => {
+      //     this.bannersTop = res as Banner[];
+      //     setTimeout(() => {
+      //       this.loadingBannerTop = false;
+      //     }, 2000);
+      //   }).catch(e => console.log(e));
+      // });
+      // this.sqlite.create({
+      //   name: 'setVMas.db',
+      //   location: 'default'
+      // }).then((db: SQLiteObject) => {
+      //   db.executeSql('CREATE TABLE IF NOT EXISTS BannerInferior(BannerId INTEGER PRIMARY KEY, ' +
+      //     'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
+      //     'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
+      //     .then(res => console.log('Executed SQL'))
+      //     .catch(e => console.log(e));
+      //   db.executeSql('SELECT * FROM BannerInferior ORDER BY BannerId DESC', []).then(res => {
+      //     this.bannersBottom = res as Banner[];
+      //     setTimeout(() => {
+      //       this.loadingBannerBottom = false;
+      //     }, 2000);
+      //   }).catch(e => console.log(e));
+      // });
     }
 
   }
@@ -323,33 +332,33 @@ export class HomePage implements OnInit, AfterViewInit {
         });
       }
     } else {
-      this.sqlite.create({
-        name: 'setVMas.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosRecientes(AnuncioId INTEGER PRIMARY KEY, ' +
-          'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, ' +
-          'Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ' +
-          'ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ' +
-          'ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
-        db.executeSql('SELECT * FROM AnunciosRecientes ORDER BY AnuncioId DESC', []).then(res => {
-          this.recents = [];
-          this.recents = res as AnunciosModel[];
-          for (const item of (this.recents as AnunciosModel[])) {
-            if (item.ImageContent !== undefined && item.ImageContent !== null) {
-              item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
-              console.log(item.Imagen);
-            }
-          }
-          this.loading = false;
-          callback();
-        }).catch(e => {
-          this.loading = false;
-          callback();
-        });
-      });
+      // this.sqlite.create({
+      //   name: 'setVMas.db',
+      //   location: 'default'
+      // }).then((db: SQLiteObject) => {
+      //   db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosRecientes(AnuncioId INTEGER PRIMARY KEY, ' +
+      //     'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, ' +
+      //     'Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ' +
+      //     'ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ' +
+      //     'ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
+      //     .then(res => console.log('Executed SQL'))
+      //     .catch(e => console.log(e));
+      //   db.executeSql('SELECT * FROM AnunciosRecientes ORDER BY AnuncioId DESC', []).then(res => {
+      //     this.recents = [];
+      //     this.recents = res as AnunciosModel[];
+      //     for (const item of (this.recents as AnunciosModel[])) {
+      //       if (item.ImageContent !== undefined && item.ImageContent !== null) {
+      //         item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
+      //         console.log(item.Imagen);
+      //       }
+      //     }
+      //     this.loading = false;
+      //     callback();
+      //   }).catch(e => {
+      //     this.loading = false;
+      //     callback();
+      //   });
+      // });
     }
   }
 
@@ -372,39 +381,39 @@ export class HomePage implements OnInit, AfterViewInit {
         callback();
       });
     } else {
-      this.sqlite.create({
-        name: 'setVMas.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosPopulares(AnuncioId INTEGER PRIMARY KEY, ' +
-          'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, ' +
-          'CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, ' +
-          'FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, ' +
-          'Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-          .then(res => console.log('Executed SQL'))
-          .catch(e => console.log(e));
-        db.executeSql('SELECT * FROM AnunciosPopulares WHERE isVisible=? ORDER BY AnuncioId DESC', [true]).then(res => {
-          this.mostSeen = [];
-          this.mostSeen = res as AnunciosModel[];
-          for (const item of (this.mostSeen as AnunciosModel[])) {
-            if (item.ImageContent !== undefined && item.ImageContent !== null) {
-              item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
-            }
-          }
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
-          callback();
-        }).catch(e => {
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
-          callback();
-        });
-      });
+      // this.sqlite.create({
+      //   name: 'setVMas.db',
+      //   location: 'default'
+      // }).then((db: SQLiteObject) => {
+      //   db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosPopulares(AnuncioId INTEGER PRIMARY KEY, ' +
+      //     'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, ' +
+      //     'CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, ' +
+      //     'FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, ' +
+      //     'Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
+      //     .then(res => console.log('Executed SQL'))
+      //     .catch(e => console.log(e));
+      //   db.executeSql('SELECT * FROM AnunciosPopulares WHERE isVisible=? ORDER BY AnuncioId DESC', [true]).then(res => {
+      //     this.mostSeen = [];
+      //     this.mostSeen = res as AnunciosModel[];
+      //     for (const item of (this.mostSeen as AnunciosModel[])) {
+      //       if (item.ImageContent !== undefined && item.ImageContent !== null) {
+      //         item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
+      //       }
+      //     }
+      //     setTimeout(() => {
+      //       this.loading = false;
+      //     }, 2000);
+      //     setTimeout(() => {
+      //       this.loading = false;
+      //     }, 2000);
+      //     callback();
+      //   }).catch(e => {
+      //     setTimeout(() => {
+      //       this.loading = false;
+      //     }, 2000);
+      //     callback();
+      //   });
+      // });
     }
   }
 
@@ -429,13 +438,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async details(ad: AnunciosModel) {
-    const modal = await this.modalController.create({
-      component: DetailsPage,
-      componentProps: { id: ad.AnuncioId, anuncio: ad },
-      animated: true,
-      backdropDismiss: false
-    });
-    return await modal.present();
+    this.navCtrl.navigateForward('/details', { state: { ad } });
   }
 
   sendShare(titulo?, id?) {

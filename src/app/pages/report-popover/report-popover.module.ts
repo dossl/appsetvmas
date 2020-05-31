@@ -2,14 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+
 import { IonicModule } from '@ionic/angular';
-import { DetailsPage } from './details.page';
-import { PhotoViewer } from '@ionic-native/photo-viewer/ngx';
+
+import { ReportPopoverPage } from './report-popover.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: DetailsPage
+    component: ReportPopoverPage
   }
 ];
 
@@ -20,8 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [DetailsPage],
-  entryComponents: [DetailsPage],
-  providers: [PhotoViewer]
+  declarations: [ReportPopoverPage]
 })
-export class DetailsPageModule {}
+export class ReportPopoverPageModule {}

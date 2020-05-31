@@ -27,7 +27,7 @@ import { InAppBrowserOptions, InAppBrowser } from '@ionic-native/in-app-browser/
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import * as _ from 'lodash';
 import { IonicSelectableComponent } from 'ionic-selectable';
-import { CategoriesService } from '../../services/categories.service';
+import { LocalDataService, StaticData } from '../../services/local-data.service';
 
 @Component({
   selector: 'app-search',
@@ -50,7 +50,7 @@ export class SearchPage implements OnInit, AfterViewInit {
     private servCo: SettingsService,
     public navCtrl: NavController,
     public platform: Platform,
-    private catsService: CategoriesService
+    private localService: LocalDataService
   ) { }
 
   ngOnInit() {
@@ -64,7 +64,7 @@ export class SearchPage implements OnInit, AfterViewInit {
       });
     });
 
-    this.catsService.getCategorias((cats) => this.categories = cats);
+    this.localService.getData((data: StaticData) => this.categories = data.categories);
     this.actions = this.servCo.getAccionesAnuncio();
   }
 

@@ -45,22 +45,22 @@ export class AppComponent {
   ) {
     this.initializeApp();
 
-    this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
-    if (this.currentUser) {
-      this.userPoint = this.currentUser.Puntos;
-      console.log(this.currentUser);
-    }
-    this.checkConnection();
+    // this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
+    // if (this.currentUser) {
+    //   this.userPoint = this.currentUser.Puntos;
+    //   console.log(this.currentUser);
+    // }
+    // this.checkConnection();
   }
 
   ionViewWillEnter() {
-    this.service.getCurrentUser().then(res => {
-      this.currentUser = res as Usuario;
-      if (this.currentUser) {
-        this.userPoint = this.currentUser.Puntos;
-        console.log(this.currentUser);
-      }
-    });
+    // this.service.getCurrentUser().then(res => {
+    //   this.currentUser = res as Usuario;
+    //   if (this.currentUser) {
+    //     this.userPoint = this.currentUser.Puntos;
+    //     console.log(this.currentUser);
+    //   }
+    // });
   }
 
   conection() {

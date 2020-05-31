@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'buy-point', loadChildren: './pages/buy-point/buy-point.module#BuyPointPageModule' },
   { path: 'sell-point', loadChildren: './pages/sell-point/sell-point.module#SellPointPageModule' },
   { path: 'qr', loadChildren: './pages/qr/qr.module#QrPageModule' },
-  { path: 'details/:id', loadChildren: './pages/details/details.module#DetailsPageModule' },
+  { path: 'details', loadChildren: './pages/details/details.module#DetailsPageModule' },
  // { path: 'masqr', loadChildren: './masqr/masqr.module#MasqrPageModule' },
   { path: 'mas-sell-point', loadChildren: './pages/mas-sell-point/mas-sell-point.module#MasSellPointPageModule' },
   { path: 'signin', loadChildren: './pages/signin/signin.module#SigninPageModule' },
@@ -20,7 +20,8 @@ const routes: Routes = [
   { path: 'restore-account', loadChildren: './pages/restore-account/restore-account.module#RestoreAccountPageModule' },
   { path: 'lector', loadChildren: './pages/lector/lector.module#LectorPageModule' },
   { path: 'buypoint', loadChildren: './pages/buypoint/buypoint.module#BuypointPageModule' },
-  { path: 'search', loadChildren: './pages/search/search.module#SearchPageModule' },
+  { path: 'search', loadChildren: './pages/search/search.module#SearchPageModule' },  { path: 'report-popover', loadChildren: './pages/report-popover/report-popover.module#ReportPopoverPageModule' },
+
 ];
 
 @NgModule({

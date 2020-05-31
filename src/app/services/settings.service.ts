@@ -4,7 +4,8 @@ import { MunicipiosModel } from '../models/municipios.model';
 
 @Injectable()
 export class SettingsService {
-  readonly rootURL = 'https://setvmas.com/api/api/'; // HOSTING NUEVO
+  // readonly rootURL = 'https://setvmas.com/api/api/'; // HOSTING NUEVO
+  readonly rootURL = 'https://62.171.171.229/api/api/'; // HOSTING NUEVO
 
   cantidadPorPaginasHome = 8;
 

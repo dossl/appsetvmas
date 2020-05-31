@@ -56,10 +56,12 @@ import { InterceptorService } from './services/interceptor.service';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx';
+import { HideHeaderDirective } from './directives/hide-header.directive';
+import { ScrollVanishDirective } from './directives/scroll-vanish.directive';
 
 @NgModule({
-  declarations: [AppComponent, MasqrPage, MasSellPointPage, DetailsPage, SellPointPage, QrPage, BuypointPage, LectorPage],
-  entryComponents: [MasqrPage, MasSellPointPage, DetailsPage, SellPointPage, QrPage, BuypointPage, LectorPage],
+  declarations: [AppComponent, MasqrPage, MasSellPointPage, SellPointPage, QrPage, BuypointPage, LectorPage],
+  entryComponents: [MasqrPage, MasSellPointPage, SellPointPage, QrPage, BuypointPage, LectorPage],
   imports: [TagInputModule,
     BrowserModule,
     RlTagInputModule,

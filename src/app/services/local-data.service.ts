@@ -5,15 +5,21 @@ import { Etiqueta } from '../models/etiqueta.model';
 import { NetworkService } from './network.service';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
+import { MotivoDenuncia } from '../models/motivo-denuncia.model';
+
+export class StaticData {
+  public categories: Array<Categoria>;
+  public reportReasons: Array<MotivoDenuncia>;
+}
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoriesService {
+export class LocalDataService {
 
   CATEGORIES_KEY = 'SETVMAS_CATEGORIES';
   readonly rootURL: string;
-  categories: Array<Categoria>;
+  data: StaticData;
   lastUpdate: number;
   isConnected: boolean;
 
@@ -25,7 +31,7 @@ export class CategoriesService {
     });
   }
 
-  async getCategorias(callback) {
+  async getData(callback) {
     this.init(callback);
   }
 
@@ -40,26 +46,32 @@ export class CategoriesService {
     });
   }
 
-  private async init(callback = (categories: Array<Categoria>) => { }) {
-    if (!this.categories) {
-      this.categories = JSON.parse(localStorage.getItem(this.CATEGORIES_KEY));
-      if (!this.categories) {
+  private async init(callback = (data: StaticData) => { }) {
+    if (!this.data) {
+      this.data = JSON.parse(localStorage.getItem(this.CATEGORIES_KEY));
+      if (!this.data) {
         await this.loadData();
       }
     }
-    callback(this.categories);
+    callback(this.data);
   }
 
   private async loadData() {
     try {
       const res = await this.getCategoriaAll('', '', 'asc', 1, 2000);
-      const cats = res as Array<Categoria>;
-      for (const cat of cats) {
+      const categories = res as Array<Categoria>;
+      for (const cat of categories) {
         const tags = await this.getEtiquetasByCategoria(cat.CategoriaId);
         cat.Etiquetas = tags as Etiqueta[];
       }
-      this.categories = cats;
-      localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(this.categories));
+
+      const reportReasons = await this.getReportReasonsAll('Nombre', '', 'asc', 1, 2000) as Array<MotivoDenuncia>;
+
+      this.data = {
+        categories,
+        reportReasons
+      };
+      localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(this.data));
     } catch (err) {
       console.log(err);
     }
@@ -68,6 +80,23 @@ export class CategoriesService {
   private getCategoriaAll(col, filter, sortDirection, pageIndex, pageSize) {
     return new Promise(resolve => {
       this.http.get(this.rootURL + 'Categorias', {
+        params: new HttpParams()
+          .set('col', col.toString())
+          .set('filter', filter)
+          .set('sortDirection', sortDirection)
+          .set('pageIndex', pageIndex.toString())
+          .set('pageSize', pageSize.toString())
+      }).subscribe(data => {
+        resolve(data);
+      }, err => {
+        console.log(err);
+      });
+    });
+  }
+
+  private getReportReasonsAll(col, filter, sortDirection, pageIndex, pageSize) {
+    return new Promise(resolve => {
+      this.http.get(this.rootURL + 'MotivoDenuncias', {
         params: new HttpParams()
           .set('col', col.toString())
           .set('filter', filter)

@@ -71,6 +71,13 @@ ionic-selectable {
   margin-left: -65px;
 }
 
+ion-alert.single-select-alert {
+  .alert-wrapper {
+    width: 90% !important;
+    max-width: 90% !important;
+  }  
+}
+
 ion-card {
   ion-item {
     --padding-start: 2px;

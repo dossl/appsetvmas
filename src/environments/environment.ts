@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   rootURL: 'https://setvmas.com/api/api/'
+  // rootURL: 'https://62.171.171.229/api/api/'
 };
 
 /*

@@ -9,12 +9,15 @@ import { PointSell } from '../models/sell-points.model';
 import { Purchase } from '../models/purchase.model';
 import { BuscarAnunciosModel } from '../models/buscar-anuncios.model';
 import * as _ from 'lodash';
+import { Denuncia } from '../models/denuncia.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnuncioService {
 
+  CURRENT_USER = 'CURRENT_USER_SETVMAS';
   anuncioId: any;
   anuncio: any;
   etiquet: any;
@@ -24,7 +27,7 @@ export class AnuncioService {
 
   readonly rootURL;
   constructor(private http: HttpClient, private servConfiguracion: SettingsService) {
-    this.rootURL = this.servConfiguracion.getRootURLApi();
+    this.rootURL = environment.rootURL;
   }
 
   /*********Api Request******** */
@@ -89,6 +92,14 @@ export class AnuncioService {
       }, err => {
         console.log(err);
       });
+    });
+  }
+
+  reportAd(denuncia: Denuncia) {
+    return new Promise((resolve, reject) => {
+      this.http.post(this.rootURL + 'Denuncias', denuncia).subscribe(data => {
+        resolve(data);
+      }, reject);
     });
   }
 
@@ -263,9 +274,8 @@ export class AnuncioService {
   login(Correo: string, Password: string) {
 
     return new Promise((resolve, reject) => {
-      this.http.post(this.rootURL + 'Usuarios/SingIn', { 'username': Correo, 'password': Password })
+      this.http.post(this.rootURL + 'Usuarios/SingIn', { username: Correo, password: Password })
         .subscribe(res => {
-          console.log('token ' + JSON.parse(JSON.stringify(res)).token);
           localStorage.setItem('token', JSON.parse(JSON.stringify(res)).token);
           this.getCurrentUser();
           resolve(res as Usuario);
@@ -276,7 +286,6 @@ export class AnuncioService {
   }
 
   getUsuarioById(id) {
-
     return new Promise((resolve, reject) => {
       this.http.get(this.rootURL + 'Usuarios/' + id)
         .subscribe(res => {
@@ -287,16 +296,28 @@ export class AnuncioService {
     });
   }
 
+  getLocalCurrentUser() {
+    return JSON.parse(localStorage.getItem(this.CURRENT_USER));
+  }
+
   getCurrentUser() {
     return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + 'Usuarios/Current')
+      if (this.getLocalCurrentUser()) {
+        resolve(this.getLocalCurrentUser());
+        return;
+      }
+      this.http.get<Usuario>(this.rootURL + 'Usuarios/Current')
         .subscribe(res => {
-          localStorage.setItem('currentuser', JSON.stringify(res));
-          resolve(res as Usuario);
+          localStorage.setItem(this.CURRENT_USER, JSON.stringify(res));
+          resolve(res);
         }, (err) => {
           reject(err);
         });
     });
+  }
+
+  getUsuarioByCorreo(correo) {
+    return this.http.get<Usuario>(this.rootURL + 'Usuarios/Correo/' + correo).toPromise();
   }
 
   logout() {
@@ -378,7 +399,7 @@ export class AnuncioService {
       });
   }*/
 
- 
+
 
   getAnunciosCountV2(col, filter, sortDirection, pageIndex, pageSize, metodo) {
     return new Promise(resolve => {

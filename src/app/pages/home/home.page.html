@@ -1,4 +1,4 @@
-<ion-header id="home-header" [scrollHide]="headerScrollConfig" [scrollContent]="pageContent">
+<ion-header id="home-header" [appScrollVanish]="scrollArea">
   <ion-toolbar color="primary" class="custom-toolbar">
     <ion-buttons slot="start">
       <ion-menu-button size="small" autoHide="false" class="toggle"></ion-menu-button>
@@ -23,19 +23,20 @@
     <ion-item color="primary" *ngIf="bannersTop.length > 0 && !  loadingBannerTop">
       <ion-slides pager page="true" [options]="slideOpts">
         <ion-slide *ngFor="let item of bannersTop" (click)="details(item)">
-          <img [src]="'https://setvmas.com/api/uploads/banners/'+item.ImageName" class="banner" alt="No Image"
-             />
+          <img [src]="rootURL + 'uploads/banners/'+item.ImageName" class="banner" alt="No Image" />
         </ion-slide>
       </ion-slides>
     </ion-item>
   </ion-toolbar>
   <ion-toolbar color="primary" style="display: contents;">
-    <ion-button [disabled]="!enableFilterButton" class="notification-icon-button" size="small" slot="start" fill="clear" [routerLink]="['/', 'search']" color="light">
-      <ion-badge *ngIf="filters" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span></ion-badge>
+    <ion-button [disabled]="!enableFilterButton" class="notification-icon-button" size="small" slot="start" fill="clear"
+      [routerLink]="['/', 'search']" color="light">
+      <ion-badge *ngIf="filters" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span>
+      </ion-badge>
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
-    <ion-searchbar [disabled]="loading" (ionClear)="onSearch($event)" (search)="onSearch($event)" mode="ios" id="custom-search" [(ngModel)]="searchText"
-      placeholder="¿Qué buscas?"></ion-searchbar>
+    <ion-searchbar [disabled]="loading" (ionClear)="onSearch($event)" (search)="onSearch($event)" mode="ios"
+      id="custom-search" [(ngModel)]="searchText" placeholder="¿Qué buscas?"></ion-searchbar>
     <ion-button size="small" slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
       <ion-icon slot="icon-only" name="megaphone"></ion-icon>
     </ion-button>
@@ -52,15 +53,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="pageContent" #pageContent fullscreen>
+<ion-content id="pageContent" hide-header #scrollArea scrollEvents="true" fullscreen>
   <div *ngIf="!loading">
     <ion-card *ngFor="let item of tab === RECENTS_TAB ? recents : mostSeen">
       <ion-item>
         <ion-thumbnail slot="start">
           <img (click)="open(item)" *ngIf="item.ImageName !== ''"
-            [src]="'https://setvmas.com/api/uploads/anuncios/mini/' + item.ImageName" />
+            [src]="rootURL + 'uploads/anuncios/mini/' + item.ImageName" />
           <img (click)="open(item)" *ngIf="item.ImageName === '' && item.Categoria.ImageName"
-            [src]="'https://setvmas.com/api/uploads/categorias/mini/' + item.Categoria.ImageName" />
+            [src]="rootURL + 'uploads/categorias/mini/' + item.Categoria.ImageName" />
         </ion-thumbnail>
         <ion-label class="ion-text-wrap">
           <p>{{item.Categoria.Nombre}}</p>
@@ -68,10 +69,10 @@
             <h2>{{item.Titulo}}</h2>
           </ion-text>
           <ion-buttons>
-            <ion-button slot="start" fill="outline" shape="round" color="primary">
+            <ion-button (click)="details(item)" slot="start" fill="outline" shape="round" color="primary">
               ${{ item.Precio.toFixed(2)}}
             </ion-button>
-            <ion-button *ngIf="item.Url" (click)="details(item)" class="eye-button" shape="round" slot="end"
+            <ion-button *ngIf="item.Url" (click)="openWeb(item)" class="eye-button" shape="round" slot="end"
               fill="clear" color="primary">
               <ion-icon name="md-eye"></ion-icon>
             </ion-button>
@@ -120,18 +121,7 @@
   </ion-infinite-scroll>
 </ion-content>
 
-<ion-footer [scrollHide]="footerScrollConfig" [scrollContent]="pageContent" *ngIf="bannersBottom.length > 0">
+<ion-footer *ngIf="bannersBottom.length > 0">
   <ion-toolbar color="primary">
-    <ion-item color="primary" *ngIf="bannersBottom.length > 0 && !loadingBannerBottom">
-      <ion-slides pager page="true" [options]="slideOpts">
-        <ion-slide class="slide" *ngFor="let index of getIndexesForSlidesBottom()">
-          <div class="contenedor">
-            <img *ngFor="let item of getImagesForSlideBottom(index)"
-              [src]="'https://setvmas.com/api/uploads/banners/inferior/'+item.ImageName" alt="No Image"
-              (click)="details(item)" />
-          </div>
-        </ion-slide>
-      </ion-slides>
-    </ion-item>
   </ion-toolbar>
 </ion-footer>
