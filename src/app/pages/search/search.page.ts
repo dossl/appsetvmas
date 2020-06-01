@@ -54,6 +54,7 @@ export class SearchPage implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
+    this.filters = this.service.filters || {};
   }
 
   ngAfterViewInit() {
@@ -91,6 +92,7 @@ export class SearchPage implements OnInit, AfterViewInit {
     this.municipioSelect.clear();
     this.categorySelect.clear();
     this.tags = [];
+    this.service.filters = this.filters;
   }
   save() {
     this.service.filters = this.filters;

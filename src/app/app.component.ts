@@ -16,6 +16,7 @@ import { MasSellPointPage } from './pages/mas-sell-point/mas-sell-point.page';
 import { Usuario } from './models/usuario.model';
 import { TipoOpcionModel } from './models/tipo-opcion.model';
 import { Network } from '@ionic-native/network/ngx';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -36,12 +37,12 @@ export class AppComponent {
   userPoint = 0;
 
   constructor(
-    private platform: Platform, private splashScreen: SplashScreen,
+    private platform: Platform,
     private statusBar: StatusBar, private networkService: NetworkService,
     private modal: PopoverController, public toastCtrl: ToastController,
     private service: AnuncioService, private sqlite: SQLite,
     public network: Network, public menus: MenuController, private toast: Toast,
-    public navCtrl: NavController, public loadingCtrl: LoadingController
+    public navCtrl: NavController, public loadingCtrl: LoadingController, private router: Router
   ) {
     this.initializeApp();
 
@@ -80,8 +81,11 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      // let status bar overlay webview
+      // this.statusBar.overlaysWebView(true);
+
+      // set status bar to white
+      this.statusBar.backgroundColorByHexString('#000030');
     });
   }
 
@@ -162,7 +166,7 @@ export class AppComponent {
       name: 'setVMas.db',
       location: 'default'
     }).then((db: SQLiteObject) => {
-      
+
       db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY,' +
         ' Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ' +
         'ImageMimeType TEXT, ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, ' +

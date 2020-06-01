@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { HomePage } from './home.page';
 import { NetworkService } from '../../services/network.service';
 import { ScrollVanishDirective } from '../../directives/scroll-vanish.directive';
+import { HideHeaderDirective } from '../../directives/hide-header.directive';
 
 @NgModule({
   imports: [
@@ -20,7 +21,7 @@ import { ScrollVanishDirective } from '../../directives/scroll-vanish.directive'
       }
     ])
   ],
-  declarations: [HomePage, ScrollVanishDirective],
+  declarations: [HomePage, ScrollVanishDirective, HideHeaderDirective],
   providers: [NetworkService]
 })
 export class HomePageModule {}

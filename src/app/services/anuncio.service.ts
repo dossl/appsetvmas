@@ -23,7 +23,7 @@ export class AnuncioService {
   etiquet: any;
   pointSell: PointSell;
   purchaseData: Purchase;
-  filters: BuscarAnunciosModel;
+  filters: BuscarAnunciosModel = {};
 
   readonly rootURL;
   constructor(private http: HttpClient, private servConfiguracion: SettingsService) {
@@ -71,6 +71,7 @@ export class AnuncioService {
           .set('pageIndex', pageIndex.toString())
           .set('pageSize', pageSize.toString())
       }).subscribe(data => {
+        console.log(data);
         resolve(data);
       }, err => {
         console.log(err);

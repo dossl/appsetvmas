@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
-import { LoadingController, NavController, NavParams, Platform } from '@ionic/angular';
+import { LoadingController, NavController, NavParams, Platform, IonRouterOutlet } from '@ionic/angular';
 // import { ScrollHideDirective, ScrollHideConfig } from '../../directives/scroll-hide.directive';
 import { HideHeaderDirective } from '../../directives/hide-header.directive';
 import { ScrollVanishDirective } from '../../directives/scroll-vanish.directive';
@@ -22,6 +22,8 @@ import { BuscarAnunciosModel } from '../../models/buscar-anuncios.model';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { LocalDataService, StaticData } from '../../services/local-data.service';
 import { environment } from '../../../environments/environment';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+
 
 export interface AnuncioImagen {
   Id: number;
@@ -33,10 +35,10 @@ export interface AnuncioImagen {
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, AfterViewInit {
+export class HomePage implements AfterViewInit {
 
   _ = _;
-  rootURL = environment.rootURL;
+  rootURL = environment.rootURLImages;
   RECENTS_TAB = 'RECENTS';
   MOST_SEEN_TAB = 'MOST_SEEN';
   tab = this.RECENTS_TAB;
@@ -51,7 +53,7 @@ export class HomePage implements OnInit, AfterViewInit {
     autoplay: true,
     enablekeyboardcontroll: true
   };
-
+  subscription;
   isConnected = false;
   bannersTop: Banner[] = [];
   bannersBottom: Banner[] = [];
@@ -68,6 +70,7 @@ export class HomePage implements OnInit, AfterViewInit {
   skeletorCard = [];
   enableFilterButton = false;
   filters: BuscarAnunciosModel;
+  lastTimeBackPress = 0;
 
   currentUser: Usuario;
   nameUser: any;
@@ -76,7 +79,7 @@ export class HomePage implements OnInit, AfterViewInit {
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
 
   constructor(
-    private platform: Platform,
+    private platform: Platform, private splashScreen: SplashScreen, private routerOutlet: IonRouterOutlet,
     private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,
     private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
     public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
@@ -87,23 +90,27 @@ export class HomePage implements OnInit, AfterViewInit {
     //     this.splashscreen.hide();
     //  })
   }
-
   ngAfterViewInit(): void {
+    this.skeletorCard = [];
+    const cardCount = parseInt(((window.innerHeight - 190) / 142).toFixed(0), 0) + 1;
+    for (let index = 0; index < cardCount; index++) {
+      this.skeletorCard.push({});
+    }
+
+  }
+
+  ionViewDidEnter() {
     this.platform.ready().then(() => {
-      this.skeletorCard = [];
-      const cardCount = parseInt(((window.innerHeight - 190) / 142).toFixed(0), 0) + 1;
-      for (let index = 0; index < cardCount; index++) {
-        this.skeletorCard.push({});
-      }
-      this.loadAuto();
+      setTimeout(() => {
+        this.splashScreen.hide();
+        this.loadAuto();
+      }, 1000);
     });
   }
 
-  ngOnInit() {
-    this.insomnia.keepAwake().then(() => {
-      console.log('success');
-    });
-  }
+  // ionViewDidLeave() {
+  //   this.subscription.unsubscribe();
+  // }
 
   segmentChanged(ev: any) {
     this.tab = ev.detail.value;
@@ -155,9 +162,9 @@ export class HomePage implements OnInit, AfterViewInit {
   ionViewWillEnter() {
     this.checkConnetion();
     if (_.size(_.keys(this.servAnuncio.filters)) > 0 && this.servAnuncio.filters !== this.filters) {
-      this.filters = this.servAnuncio.filters;
       this.applyFilters();
     }
+    this.filters = this.servAnuncio.filters || {};
     this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
     if (this.currentUser) {
       const index = this.currentUser.Correo.indexOf('@');
@@ -177,16 +184,20 @@ export class HomePage implements OnInit, AfterViewInit {
     }
   }
 
-  loadAuto() {
-    this.checkConnetion(() => {
-      this.loadBanner();
-      this.loadAds();
-      this.localService.getData((data: StaticData) => {
-        this.enableFilterButton = true;
-        console.log(data);
-      });
-    });
+  loadFirstTime = false;
 
+  loadAuto() {
+    if (!this.loadFirstTime) {
+      this.checkConnetion(() => {
+        this.loadBanner();
+        this.loadAds();
+        this.localService.getData((data: StaticData) => {
+          this.enableFilterButton = true;
+          this.loadFirstTime = true;
+          console.log(data);
+        });
+      });
+    }
   }
 
   loadData(event) {
@@ -447,11 +458,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   openWeb(url) {
-    const option: InAppBrowserOptions = {
-      zoom: 'no',
-      hardwareback: 'no'
-    };
-    const browser = this.iab.create(url, '_self', option);
+    const browser = this.iab.create(url, '_system');
     browser.show();
   }
 
@@ -477,8 +484,8 @@ export class HomePage implements OnInit, AfterViewInit {
     const images = [];
     for (let i = 0; i < 4; i++) {
       if (index + i > _.size(this.bannersBottom) - 1) {
-        const pos = (_.size(this.bannersBottom) - index + i) * -1;
-        images.push(this.bannersBottom[pos - 1]);
+        const pos = (_.size(this.bannersBottom) - index - i);
+        images.push(this.bannersBottom[pos < 0 ? pos * -1 : pos]);
       } else {
         images.push(this.bannersBottom[index + i]);
       }

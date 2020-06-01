@@ -20,7 +20,7 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar color="primary" *ngIf="bannersTop.length > 0">
-    <ion-item color="primary" *ngIf="bannersTop.length > 0 && !  loadingBannerTop">
+    <ion-item style="max-height: 52px;" color="primary" *ngIf="bannersTop.length > 0 && !  loadingBannerTop">
       <ion-slides pager page="true" [options]="slideOpts">
         <ion-slide *ngFor="let item of bannersTop" (click)="details(item)">
           <img [src]="rootURL + 'uploads/banners/'+item.ImageName" class="banner" alt="No Image" />
@@ -31,7 +31,7 @@
   <ion-toolbar color="primary" style="display: contents;">
     <ion-button [disabled]="!enableFilterButton" class="notification-icon-button" size="small" slot="start" fill="clear"
       [routerLink]="['/', 'search']" color="light">
-      <ion-badge *ngIf="filters" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span>
+      <ion-badge *ngIf="filters && _.size(_.keys(filters)) > 0" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span>
       </ion-badge>
       <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
     </ion-button>
@@ -53,9 +53,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content id="pageContent" hide-header #scrollArea scrollEvents="true" fullscreen>
+<ion-content id="pageContent" #scrollArea scrollEvents="true" fullscreen>
   <div *ngIf="!loading">
-    <ion-card *ngFor="let item of tab === RECENTS_TAB ? recents : mostSeen">
+    <ion-card *ngFor="let item of tab === RECENTS_TAB ? recents : mostSeen" [ngClass]="{relevant: item.IsDestacado}">
       <ion-item>
         <ion-thumbnail slot="start">
           <img (click)="open(item)" *ngIf="item.ImageName !== ''"
@@ -69,10 +69,10 @@
             <h2>{{item.Titulo}}</h2>
           </ion-text>
           <ion-buttons>
-            <ion-button (click)="details(item)" slot="start" fill="outline" shape="round" color="primary">
+            <ion-button (click)="open(item)" slot="start" fill="outline" shape="round" color="primary">
               ${{ item.Precio.toFixed(2)}}
             </ion-button>
-            <ion-button *ngIf="item.Url" (click)="openWeb(item)" class="eye-button" shape="round" slot="end"
+            <ion-button *ngIf="item.Url" (click)="details(item)" class="eye-button" shape="round" slot="end"
               fill="clear" color="primary">
               <ion-icon name="md-eye"></ion-icon>
             </ion-button>
@@ -121,7 +121,18 @@
   </ion-infinite-scroll>
 </ion-content>
 
-<ion-footer *ngIf="bannersBottom.length > 0">
+<ion-footer *ngIf="bannersBottom.length > 0" [appHideHeader]="scrollArea">
   <ion-toolbar color="primary">
+    <ion-item color="primary" *ngIf="bannersBottom.length > 0 && !loadingBannerBottom">
+      <ion-slides pager page="true" [options]="slideOpts">
+        <ion-slide class="slide" *ngFor="let index of getIndexesForSlidesBottom()">
+          <div class="contenedor">
+            <img *ngFor="let item of getImagesForSlideBottom(index)"
+              [src]="rootURL + 'uploads/banners/inferior/'+item.ImageName" alt="No Image"
+              (click)="details(item)" />
+          </div>
+        </ion-slide>
+      </ion-slides>
+    </ion-item>
   </ion-toolbar>
 </ion-footer>

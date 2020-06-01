@@ -1,38 +1,71 @@
-import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
-import { IonHeader } from '@ionic/angular';
+import { Directive, Input, ElementRef, Renderer2, OnInit, SimpleChanges } from '@angular/core';
+import { DomController, IonContent } from '@ionic/angular';
 
 @Directive({
   selector: '[appHideHeader]'
 })
 export class HideHeaderDirective implements OnInit {
 
-  @Input() header: IonHeader;
-  host: {
-    '(ionScroll)': 'onContentScroll($event)'
-  };
-  headerHeight;
-  scrollContent;
-  headerElement: HTMLElement;
+  @Input('appHideHeader') scrollArea: IonContent;
 
-  constructor(public element: ElementRef, public renderer: Renderer2) { }
+  private hidden = false;
+  private triggerDistance = 20;
+  scrollContent;
+  footerContent;
+  constructor(
+    private element: ElementRef,
+    private renderer: Renderer2,
+    private domCtrl: DomController
+  ) { }
+
+  // ngOnChanges(changes: SimpleChanges) {
+  //   if (this.scrollArea) {
+
+  //     this.scrollArea.getScrollElement().then(el => {
+  //       this.footerContent = el.offsetParent as HTMLElement;
+  //       // this.renderer.setStyle(this.footerContent, 'webkitTransition', '--offset-bottom 700ms');
+  //     });
+  //   }
+  // }
 
   ngOnInit() {
-    if (this.header instanceof HTMLElement) {
-      this.headerHeight = (this.header as HTMLElement).clientHeight;
-      this.renderer.setStyle(this.header, 'webkitTransition', 'top 700ms');
-      this.scrollContent = this.element.nativeElement.getElementsByClassName('scroll-content')[0];
-      this.renderer.setStyle(this.scrollContent, 'webkitTransition', 'margin-top 700ms');
-    }
+    this.initStyles();
+
+    this.scrollArea.ionScroll.subscribe(scrollEvent => {
+      const delta = scrollEvent.detail.deltaY;
+
+      if (scrollEvent.detail.currentY === 0 && this.hidden) {
+        this.show();
+      } else if (!this.hidden && delta > this.triggerDistance) {
+        this.hide();
+      } else if (this.hidden && delta < -this.triggerDistance) {
+        this.show();
+      }
+    });
   }
 
-  onContentScroll(event) {
-    if (event.scrollTop > 56) {
-      this.renderer.setStyle(this.header, 'top', '-56px');
-      this.renderer.setStyle(this.scrollContent, 'margin-top', '0px');
-    } else {
-      this.renderer.setStyle(this.header, 'top', '0px');
-      this.renderer.setStyle(this.scrollContent, 'margin-top', '56px');
-    }
+  initStyles() {
+    this.domCtrl.write(() => {
+      this.renderer.setStyle((this.element.nativeElement as HTMLElement), 'webkitTransition', 'bottom 700ms');
+    });
+  }
+
+  hide() {
+    this.domCtrl.write(() => {
+      this.renderer.setStyle((this.element.nativeElement as HTMLElement), 'bottom', '-67px');
+      // this.renderer.setStyle(this.footerContent, '--offset-bottom', '67px');
+    });
+
+    this.hidden = true;
+  }
+
+  show() {
+    this.domCtrl.write(() => {
+      this.renderer.setStyle((this.element.nativeElement as HTMLElement), 'bottom', '0px');
+      // this.renderer.setStyle(this.footerContent, '--offset-bottom', '0px');
+    });
+
+    this.hidden = false;
   }
 
 }

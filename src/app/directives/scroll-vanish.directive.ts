@@ -1,4 +1,4 @@
-import { Directive, Input, ElementRef, Renderer2, OnInit, ViewChild, SimpleChanges } from '@angular/core';
+import { Directive, Input, ElementRef, Renderer2, OnInit, SimpleChanges } from '@angular/core';
 import { DomController, IonContent } from '@ionic/angular';
 
 @Directive({

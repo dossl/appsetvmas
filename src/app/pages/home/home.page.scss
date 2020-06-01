@@ -26,6 +26,11 @@
 
 ion-content {
   --background: #eeeeee;
+  --offset-bottom: 67px !important;
+}
+
+.relevant {
+  border: 1px solid orangered;
 }
 
 #home-header {
@@ -92,6 +97,8 @@ ion-content {
 }
 
 ion-footer {
+  max-height: 65px;
+
   ion-toolbar {
     ion-item {
       --padding-end: 0;
