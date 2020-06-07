@@ -6,8 +6,8 @@ export class Almacenimagen {
     public ImageContent: string,
     public ImageMimeType: string,
     public ImageName: string,
-      public AnuncioId: number,
-      public IsFree: Boolean,
+    public AnuncioId: number,
+    public IsFree: boolean,
     //public Anuncio: AnunciosModel
   ) { }
 }

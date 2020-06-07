@@ -41,6 +41,7 @@ export class SearchPage implements OnInit, AfterViewInit {
   categories: Array<Categoria> = [];
   tags: Array<Etiqueta>;
   actions: Array<string>;
+  loading: HTMLIonLoadingElement;
 
   @ViewChild('categorySelect', { static: false }) categorySelect: IonicSelectableComponent;
   @ViewChild('municipioSelect', { static: false }) municipioSelect: IonicSelectableComponent;
@@ -50,7 +51,8 @@ export class SearchPage implements OnInit, AfterViewInit {
     private servCo: SettingsService,
     public navCtrl: NavController,
     public platform: Platform,
-    private localService: LocalDataService
+    private localService: LocalDataService,
+    public loadingCtrl: LoadingController
   ) { }
 
   ngOnInit() {
@@ -84,7 +86,21 @@ export class SearchPage implements OnInit, AfterViewInit {
     value: Categoria
   }) {
     this.filters.Categoria = event.value.Nombre;
-    this.tags = event.value.Etiquetas;
+    this.presentLoading(() => {
+      this.localService.getEtiquetasByCategoria(event.value.CategoriaId).then((tags) => {
+        this.tags = tags;
+        this.loading.dismiss();
+      });
+    });
+  }
+
+  async presentLoading(callback) {
+    this.loading = await this.loadingCtrl.create({
+      cssClass: 'my-custom-class',
+      message: 'Por favor, espere...'
+    });
+    await this.loading.present();
+    callback();
   }
 
   clear() {

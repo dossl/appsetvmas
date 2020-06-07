@@ -11,7 +11,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AutoCompleteModule } from 'ionic4-auto-complete';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { Camera } from '@ionic-native/Camera/ngx';
 import { File } from '@ionic-native/File/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
@@ -76,7 +75,6 @@ import { ScrollVanishDirective } from './directives/scroll-vanish.directive';
     Clipboard,
     BarcodeScanner,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    Camera,
     DatePipe,
     File,
     WebView,

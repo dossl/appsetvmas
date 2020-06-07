@@ -100,7 +100,11 @@ export class HomePage implements AfterViewInit {
   }
 
   ionViewDidEnter() {
-    this.platform.ready().then(() => {
+    this.platform.ready().then(async () => {
+      this.currentUser = this.servAnuncio.getLocalCurrentUser();
+      if (this.currentUser) {
+        this.currentUser = await this.servAnuncio.getGuest();
+      }
       setTimeout(() => {
         this.splashScreen.hide();
         this.loadAuto();

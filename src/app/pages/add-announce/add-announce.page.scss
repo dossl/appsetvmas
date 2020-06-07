@@ -1,73 +1,58 @@
-.round{
-    width: 45px;
-    height: 45px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 50px;
-    background-color: #000030;
-    color: #ffff;
-    float: right
+.images-form {
+  margin-top: 15px;
 }
 
-.round-label{
-    float: left;
-    margin-left: 5px;
-}
-
-ion-input{
-    --border-color: #000030!important;
-}
-.anunciarexpanded{
-    width: 130px;
-    height: 35px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 50px;
-    background-color: orangered;
-    color: #ffff;
-    float: right
-}
-
-ion-content{
-
-    --ion-background-color:#eee;
-}
-
-
-ion-item{
-
-    --ion-background-color:#ffff;
-    color: orangered;
-}
-
-
-.notificate{
-    width: 40px;
-    height: 40px;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 50px;
-    float: left;
-    //background-color: orangered;
-}
-
-
-[_nghost-c1]{
-    background-color: #eee;
-    border-radius: 40px;
-    font-size: 14px;
-    color: #fff;
-}
-
-[_nghost-c1] .ng2-tag-input-remove[_nghost-c1]{
-    color: #eee;
-    background: orangered;
-    height: 20px;
-    width: 20px;
-    line-height: 20px;
-}
-
-.example-chip-list {
-    width: 200%;
+.images-custom {
+  ion-img {
+    max-height: 100px;
+    // border: 1px solid #ddd;
+    height: 100px;
+    object-fit: contain;
+    margin: 5px 0;
+    width: -webkit-fill-available;
   }
 
+  ion-button {
+    height: auto;
+  }
+}
+
+ion-footer {
+  ion-button.save-button {
+    padding: 0 8px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+  }
+}
+
+.options-content {
+  ion-item-divider {
+    margin-top: 10px;
+    z-index: 0;
+    ion-label {
+      margin-left: 10px;
+    }
+  }
+}
+
+ion-item {
+  &.full-padding {
+    --padding-start: 0;
+    --inner-padding-start: 0;
+    --padding-end: 0;
+    --inner-padding-end: 0;
+  }
+}
+
+.tag-close{
+  vertical-align: bottom;
+}
+
+.custom {
+  --min-height: 20px;
+  text-align: center;
+
+  ion-badge {
+    margin-right: 3px;
+  }
+}

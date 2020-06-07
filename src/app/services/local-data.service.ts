@@ -6,10 +6,13 @@ import { NetworkService } from './network.service';
 import { environment } from '../../environments/environment';
 import * as _ from 'lodash';
 import { MotivoDenuncia } from '../models/motivo-denuncia.model';
+import { AnuncioService } from './anuncio.service';
+import { VariableConfiguracion } from '../models/variable-configuracion.model';
 
 export class StaticData {
   public categories: Array<Categoria>;
   public reportReasons: Array<MotivoDenuncia>;
+  public configurations?: any;
 }
 
 @Injectable({
@@ -23,7 +26,7 @@ export class LocalDataService {
   lastUpdate: number;
   isConnected: boolean;
 
-  constructor(private http: HttpClient, private network: NetworkService) {
+  constructor(private http: HttpClient, private network: NetworkService, private service: AnuncioService) {
     this.rootURL = environment.rootURL;
     network.getNetworkStatus().subscribe((connected: boolean) => {
       this.isConnected = connected;
@@ -53,6 +56,7 @@ export class LocalDataService {
         await this.loadData();
       }
     }
+    console.log(this.data);
     callback(this.data);
   }
 
@@ -60,16 +64,17 @@ export class LocalDataService {
     try {
       const res = await this.getCategoriaAll('', '', 'asc', 1, 2000);
       const categories = res as Array<Categoria>;
-      for (const cat of categories) {
-        const tags = await this.getEtiquetasByCategoria(cat.CategoriaId);
-        cat.Etiquetas = tags as Etiqueta[];
-      }
+      // for (const cat of categories) {
+      //   const tags = await this.getEtiquetasByCategoria(cat.CategoriaId);
+      //   cat.Etiquetas = tags as Etiqueta[];
+      // }
 
       const reportReasons = await this.getReportReasonsAll('Nombre', '', 'asc', 1, 2000) as Array<MotivoDenuncia>;
-
+      const configurations = await this.loadConfigVars();
       this.data = {
         categories,
-        reportReasons
+        reportReasons,
+        configurations
       };
       localStorage.setItem(this.CATEGORIES_KEY, JSON.stringify(this.data));
     } catch (err) {
@@ -111,15 +116,20 @@ export class LocalDataService {
     });
   }
 
-  private getEtiquetasByCategoria(id) {
-    return new Promise((resolve, reject) => {
-      this.http.get(this.rootURL + 'Categorias/Etiqueta/' + id)
-        .subscribe(res => {
-          resolve(res as Etiqueta);
-        }, (err) => {
-          reject(err);
-        });
-    });
+  getEtiquetasByCategoria(id) {
+    return this.http.get<Array<Etiqueta>>(this.rootURL + 'Categorias/Etiqueta/' + id).toPromise();
   }
+
+  private async loadConfigVars() {
+    const config = {};
+    const generals = await this.service.getconfiguration('', '', 'asc', 1, 100) || [];
+
+    for (const g of generals) {
+      config[g.NombreCodigo] = g.Valor;
+    }
+
+    return config;
+  }
+
 
 }

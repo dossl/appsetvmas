@@ -1,61 +1,65 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title style="color:#000030;margin-left: 100px">Registrarse</ion-title>
-    <ion-buttons class="round" style="margin-left: 140px; margin-top: 5px;margin-bottom: 5px;">
-      <ion-button>
-        <ion-icon slot="icon-only" name="contact" style="margin-left: -5px;"></ion-icon>
-      </ion-button>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="home"></ion-back-button>
     </ion-buttons>
+    <ion-title>
+      <ion-label color="primary">Registrarse</ion-label>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen class="ion-padding">
   <form>
     <ion-item>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="auto">
-            <ion-label style="color:#000030" position="floating">Tu anfitrión</ion-label>
-            <ion-input [(ngModel)]="anfitrion" name="anfitrion" type="text" #nombrev="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
-          </ion-col>
-          <ion-col size="auto">
-            <ion-icon name="qr-scanner" style="width:25px;height:25px;margin-top: 15px;" (click)="anfitrions()"></ion-icon>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+      <ion-label color="primary" position="floating">* Anfitrión</ion-label>
+      <ion-input [(ngModel)]="anfitrion" name="anfitrion" type="text" #nombrev="ngModel" spellcheck="false"
+        autocapitalize="off" required></ion-input>
+      <ion-icon name="qr-scanner" slot="end" (click)="anfitrions()" style="margin-top: 16px;"></ion-icon>
     </ion-item>
     <ion-item>
-      <ion-label style="color:#000030;margin-left: 50px;" position="floating">*Tu email</ion-label>
-      <ion-input [(ngModel)]="email" name="email" type="text" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+      <ion-label color="primary" position="floating">* Email</ion-label>
+      <ion-input [(ngModel)]="email" name="email" type="text" #puntosv="ngModel" spellcheck="false" autocapitalize="off"
+        required></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label style="color:#000030;margin-left: 50px;" position="floating">*Tu contraseña</ion-label>
-      <ion-input [(ngModel)]="password" name="password" type="password" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+      <ion-label color="primary" position="floating">* Contraseña</ion-label>
+      <ion-input [(ngModel)]="password" name="password" type="password" #puntosv="ngModel" spellcheck="false"
+        autocapitalize="off" required></ion-input>
       <div *ngIf="error" style="color:red;font-size: 80%;">
         Las contraseña no son iguales
       </div>
     </ion-item>
     <ion-item>
-      <ion-label style="color:#000030;margin-left: 50px;" position="floating">*Confirmar tu contraseña</ion-label>
-      <ion-input [(ngModel)]="confirmpassword" (change)="confirmPassword()" name="confirmpassword" type="password" #confirmpasswordv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+      <ion-label color="primary" position="floating">* Confirmar contraseña</ion-label>
+      <ion-input [(ngModel)]="confirmpassword" (change)="confirmPassword()" name="confirmpassword" type="password"
+        #confirmpasswordv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
       <div *ngIf="error" style="color:red;font-size: 80%;">
         Las contraseña no son iguales
       </div>
     </ion-item>
     <ion-item>
-      <ion-label style="color:#000030;margin-left: 50px;" position="floating">*Teléfono</ion-label>
-      <ion-input [(ngModel)]="telephone" name="telephone" type="text" #puntosv="ngModel" spellcheck="false" autocapitalize="off" required></ion-input>
+      <ion-label color="primary" position="floating">* Teléfono</ion-label>
+      <ion-input [(ngModel)]="telephone" name="telephone" type="text" #puntosv="ngModel" spellcheck="false"
+        autocapitalize="off" required></ion-input>
     </ion-item>
-    <ion-item>
-      <div class="card mt-3">
-        <div class="card-body">
-          <div #recaptcha></div>
+    <ion-item lines="none" class="captcha-item">
+      <div class="center-button">
+        <div class="card mt-3">
+          <div class="card-body">
+            <div #recaptcha></div>
+          </div>
         </div>
       </div>
     </ion-item>
-    <div style="height: 5px;"></div>
-    <ion-button class="buttons"   shape="round" fill="outline"  (click)="register()">Aceptar</ion-button>
-    <ion-button  class="buttons" shape="round" fill="outline"  (click)="cancel()">Cancelar</ion-button>
-    <div style="height: 5px;"></div>
+    <ion-item lines="none">
+      <div class="center-button">
+        <ion-button style="height: 30px;" (click)="register()" slot="start" fill="outline" shape="round"
+          color="primary">
+          <ion-icon name="md-log-in" slot="start"></ion-icon>
+          Registrarse
+        </ion-button>
+      </div>
+    </ion-item>
   </form>
 </ion-content>

@@ -11,6 +11,8 @@ import { BuscarAnunciosModel } from '../models/buscar-anuncios.model';
 import * as _ from 'lodash';
 import { Denuncia } from '../models/denuncia.model';
 import { environment } from '../../environments/environment';
+import { VariableConfiguracion } from '../models/variable-configuracion.model';
+import { TipoOpcionModel } from '../models/tipo-opcion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +26,7 @@ export class AnuncioService {
   pointSell: PointSell;
   purchaseData: Purchase;
   filters: BuscarAnunciosModel = {};
+  guest: Usuario;
 
   readonly rootURL;
   constructor(private http: HttpClient, private servConfiguracion: SettingsService) {
@@ -135,7 +138,7 @@ export class AnuncioService {
         .subscribe(res => {
           resolve(res);
         }, (err) => {
-          reject(err);
+          resolve(err);
         });
     });
   }
@@ -210,36 +213,21 @@ export class AnuncioService {
   }
 
   getconfiguration(col, filter, sortDirection, pageIndex, pageSize) {
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'VariableConfiguracions', {
-        params: new HttpParams()
-          .set('col', col.toString())
-          .set('filter', filter)
-          .set('sortDirection', sortDirection)
-          .set('pageIndex', pageIndex.toString())
-          .set('pageSize', pageSize.toString())
-      }).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
+    return this.http.get<VariableConfiguracion[]>(this.rootURL + 'VariableConfiguracions', {
+      params: new HttpParams()
+        .set('col', col.toString())
+        .set('filter', filter)
+        .set('sortDirection', sortDirection)
+        .set('pageIndex', pageIndex.toString())
+        .set('pageSize', pageSize.toString())
+    }).toPromise();
 
   }
 
   getVariableConfiguracionByCodigo(codigo) {
-
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'VariableConfiguracions/Codigo', {
-        params: new HttpParams()
-          .set('codigo', codigo)
-
-      }).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
+    return this.http.get<VariableConfiguracion>(this.rootURL + 'VariableConfiguracions/Codigo', {
+      params: new HttpParams().set('codigo', codigo)
+    }).toPromise();
   }
 
   getUsuarioByid(id) {
@@ -321,6 +309,13 @@ export class AnuncioService {
     return this.http.get<Usuario>(this.rootURL + 'Usuarios/Correo/' + correo).toPromise();
   }
 
+  async getGuest() {
+    if (!this.guest) {
+      this.guest = await this.http.get<Usuario>(this.rootURL + 'Usuarios/Correo/' + environment.guest).toPromise();
+    }
+    return this.guest;
+  }
+
   logout() {
     // remove user from local storage to log user out
     localStorage.clear();
@@ -373,20 +368,14 @@ export class AnuncioService {
   }
 
   getTipoOpcions(col, filter, sortDirection, pageIndex, pageSize) {
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'TipoOpcions', {
-        params: new HttpParams()
-          .set('col', col.toString())
-          .set('filter', filter)
-          .set('sortDirection', sortDirection)
-          .set('pageIndex', pageIndex.toString())
-          .set('pageSize', pageSize.toString())
-      }).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
+    return this.http.get<Array<TipoOpcionModel>>(this.rootURL + 'TipoOpcions', {
+      params: new HttpParams()
+        .set('col', col.toString())
+        .set('filter', filter)
+        .set('sortDirection', sortDirection)
+        .set('pageIndex', pageIndex.toString())
+        .set('pageSize', pageSize.toString())
+    }).toPromise();
   }
 
   /*getEtiquetasByCategoria(id) {

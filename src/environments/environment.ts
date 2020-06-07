@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   rootURL: 'https://setvmas.com/api/api/',
-  rootURLImages: 'https://setvmas.com/api/'
+  rootURLImages: 'https://setvmas.com/api/',
+  guest: 'invitado@gmail.com'
   // rootURL: 'https://62.171.171.229/api/api/'
 };
 
