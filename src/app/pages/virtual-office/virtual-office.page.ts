@@ -81,11 +81,6 @@ export class VirtualOfficePage implements OnInit {
     enablekeyboardcontroll: true
   };
 
-  shownGroup = null;
-  shownGroup1 = null;
-  icon = 'arrow-dropdown';
-  icon1 = 'arrow-dropdown';
-
   anunciolist: any;
   barner: any;
   barnerSuperior: Banner[];
@@ -94,14 +89,6 @@ export class VirtualOfficePage implements OnInit {
   displayImageInferior: any;
 
   anuncios: AnunciosModel[];
-  anuncioborrador: AnunciosModel[] = [];
-
-  arrow = 'arrow-dropup';
-  menus = false;
-
-  bocina = false;
-  group = false;
-  group1 = false;
 
   category: any;
 
@@ -167,7 +154,6 @@ export class VirtualOfficePage implements OnInit {
     })*/
 
     if (this.isConnected) {
-      this.actualizar();
       this.loadBanner();
     }
     this.insomnia.keepAwake().then(() => {
@@ -195,28 +181,6 @@ export class VirtualOfficePage implements OnInit {
         console.log(this.currentUser);
         this.loadOnline();
         this.precio_Puntos();
-      }
-    });
-  }
-  actualizar() {
-    this.anuncioborrador.forEach(element => {
-      if ((element.OpcionesAvanzadas.length === 0) || (element.Usuario.Puntos < 100)) {
-        this.service.insertarAnuncio(element).then(data => {
-          console.log(data);
-          this.presentToast('!!Actualizando la nube!!');
-          if (data) {
-            this.sqlite.create({
-              name: 'setVMas.db',
-              location: 'default'
-            }).then((db: SQLiteObject) => {
-              db.executeSql('DELETE * FROM anunciosborrador', [true]).then(() => {
-
-              }).catch(e => console.log(e));
-            });
-          }
-        }).catch((error) => {
-          this.presentToast(error.message);
-        });
       }
     });
   }
@@ -313,37 +277,6 @@ export class VirtualOfficePage implements OnInit {
 
   }
 
-  toggleGroup() {
-    // this.anunciolist = JSON.parse(JSON.stringify(this.anuncio));
-    if (this.group === false) {
-      this.icon = 'arrow-dropup';
-      this.group = true;
-      if (this.isConnected) {
-        this.presentLoading();
-        this.loadOnline();
-      }
-
-    } else if (this.group === true) {
-      this.icon = 'arrow-dropdown';
-      this.group = false;
-    }
-  }
-
-  toggleGroup1() {
-
-    if (this.group1 === false) {
-      this.icon1 = 'arrow-dropup';
-      this.group1 = true;
-      this.presentLoading();
-      this.loadLocal();
-
-    } else if (this.group1 === true) {
-      this.icon1 = 'arrow-dropdown';
-      this.group1 = false;
-    }
-  }
-
-
   loadOnline() {
     this.service.getAnunciosByUser('FechaModificacion', this.currentUser.UsuarioId, 'asc', 1, 100).then(data => {
       this.anuncios = data;
@@ -351,26 +284,6 @@ export class VirtualOfficePage implements OnInit {
       // this.loadingCtrl.dismiss();
     }).catch(() => {
       this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
-    });
-  }
-
-  loadLocal() {
-
-    this.sqlite.create({
-      name: 'setVMas.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      db.executeSql('CREATE TABLE IF NOT EXISTS anunciosborrador(AnuncioId INTEGER PRIMARY KEY, Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT, ListadoEtiquetas TEXT, Categoria TEXT, CategoriaImagen TEXT,Banner TEXT,OpcionAvanzadas TEXT, IsDestacado INT, Usuario TEXT, ImagenesAdicionales TEXT)', [])
-        .then(() => console.log('Executed SQL'))
-        .catch(e => console.log(e));
-      db.executeSql('SELECT * FROM anunciosborrador ORDER BY AnuncioId DESC', []).then(res => {
-        this.anuncioborrador = res as AnunciosModel[];
-        /*this.anuncioborrador = [];
-        for(var i=0; i<res.rows.length; i++) {
-          this.anuncioborrador.push({AnuncioId:res.rows.item(i).anuncioId,Titulo:res.rows.item(i).titulo,Descripcion:res.rows.item(i).descripcion,NombreContacto:res.rows.item(i).nombreContacto,TelefonoContacto:res.rows.item(i).telefonoContacto,CorreoContacto:res.rows.item(i).correoContacto,Precio:res.rows.item(i).precio,Provincia:res.rows.item(i).provincia,Municipio:res.rows.item(i).municipio,Accion:res.rows.item(i).accion,Imagen:res.rows.item(i).imagen,Categoria:res.rows.item(i).categoria})
-          this.loadingCtrl.dismiss();
-        }*/
-      }).catch(e => console.log(e));
     });
   }
 
@@ -398,25 +311,6 @@ export class VirtualOfficePage implements OnInit {
     await alert.present();
   }
 
-  isGroupShown(group) {
-    return this.shownGroup === group;
-  }
-
-  isGroupShown1(group) {
-    return this.shownGroup1 === group;
-  }
-
-  async onNotificate() {
-    if (this.bocina === false) {
-      this.bocina = true;
-    } else if (this.bocina === true) {
-      this.bocina = false;
-      await this.onAnnounce();
-    }
-    console.log(this.bocina);
-    //this.anunciolist = JSON.parse(JSON.stringify(this.anuncio));
-  }
-
   onAnnounce() {
     console.log('Announce');
     this.navCtrl.navigateForward('/add-announce');
@@ -437,20 +331,6 @@ export class VirtualOfficePage implements OnInit {
       });
       this.loadOnline();
     }
-  }
-
-  onDeleteAnnounceBorrador(anuncioId) {
-    this.sqlite.create({
-      name: 'ionicdb.db',
-      location: 'default'
-    }).then((db: SQLiteObject) => {
-      db.executeSql('DELETE FROM anunciosborrador WHERE anuncioId=?', [anuncioId])
-        .then(res => {
-          console.log(res);
-        })
-        .catch(e => console.log(e));
-    }).catch(e => console.log(e));
-    this.loadLocal();
   }
 
   compra() {
