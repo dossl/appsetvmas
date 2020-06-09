@@ -13,12 +13,15 @@ import { Camera, CameraOptions } from '@ionic-native/Camera/ngx';
 import { Almacenimagen } from '../../models/almacenimagen.model';
 import { File } from '@ionic-native/File/ngx';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-add-announce',
   templateUrl: './add-announce.page.html',
   styleUrls: ['./add-announce.page.scss'],
 })
 export class AddAnnouncePage implements OnInit, AfterViewInit {
+
+  pickAttrs = ['CantidadFrecuencia', 'MinimoComprar', 'NombreCodigo', 'TipoOpcionId', 'TextoLabel', 'Precio'];
 
   cameraOptions: CameraOptions = {
     quality: 100,
@@ -59,6 +62,51 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
   @ViewChild('categorySelectAdd', { static: false }) categorySelectAdd: IonicSelectableComponent;
   @ViewChild('municipioSelectAdd', { static: false }) municipioSelectAdd: IonicSelectableComponent;
 
+  payOptions = {
+    destacado: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'DESTACADO'
+    },
+    masEtiquetas: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'ETIQUETAS'
+    },
+    autorenovar: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'AUTO_24'
+    },
+    web: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'ENLACE_WEB'
+    },
+    masImages: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'IMG_ADI'
+    },
+    bannnerSuperior: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'BAN_SUP'
+    },
+    bannerInferior: {
+      CantidadDias: 1,
+      IsActivo: false,
+      Precio: null,
+      NombreCodigo: 'BAN_INF'
+    }
+  };
+
   constructor(
     public service: AnuncioService,
     private servCo: SettingsService,
@@ -82,13 +130,7 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
   }
 
   async presentAlertConfirm(code) {
-    const texts = {
-      destacado: {
-        header: 'Anuncio Destacado',
-        message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
-      }
-    };
-    const alert = await this.alertCtrl.create(_.merge({ buttons: ['OK'] }, texts[code]));
+    const alert = await this.alertCtrl.create(_.merge({ buttons: ['OK'] }, environment.textsOptions[code]));
     alert.present();
   }
 
@@ -120,6 +162,23 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     alert.present();
   }
 
+  changeAuto(ev) {
+    this.payOptions.autorenovar = _.merge(this.payOptions.autorenovar, _.pick(this.options[ev.detail.value],
+      this.pickAttrs));
+    console.log(this.payOptions);
+  }
+
+  changeMyWeb(ev) {
+    if (ev.detail.checked) {
+      // tslint:disable-next-line: no-string-literal
+      this.payOptions.web = _.merge(this.payOptions.web, _.pick(this.options['MI_WEB'], this.pickAttrs));
+    } else {
+      // tslint:disable-next-line: no-string-literal
+      this.payOptions.web = _.merge(this.payOptions.web, _.pick(this.options['ENLACE_WEB'], this.pickAttrs));
+    }
+    console.log(this.payOptions);
+  }
+
   async presentLoading(callback) {
     this.loading = await this.loadingCtrl.create({
       cssClass: 'my-custom-class',
@@ -128,8 +187,6 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     await this.loading.present();
     callback();
   }
-
-
 
   checkConditionsTab() {
     return true;
@@ -162,6 +219,10 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
           this.options[o.NombreCodigo] = o;
         }
         console.log(this.options);
+
+        for (let op of _.values(this.payOptions)) {
+          op = _.merge(op, _.pick(this.options[op.NombreCodigo], this.pickAttrs));
+        }
       });
     });
   }
@@ -250,7 +311,15 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     this.ad.AlmacenImagen = images;
   }
 
-
+  calculate() {
+    let total = 0;
+    for (const op of _.values(this.payOptions)) {
+      if (op.IsActivo && op.CantidadDias > 0) {
+        total += op.CantidadDias * op.Precio;
+      }
+    }
+    return total;
+  }
 
 
 }

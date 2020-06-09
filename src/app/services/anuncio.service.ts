@@ -53,15 +53,23 @@ export class AnuncioService {
 
   }
 
-  getAnunciosById(id) {
-    return new Promise(resolve => {
-      this.http.get(this.rootURL + 'Anuncios/' + id).subscribe(data => {
-        resolve(data);
-      }, err => {
-        console.log(err);
-      });
-    });
+  getAnunciosByUser(col, filter, sortDirection, pageIndex, pageSize) {
+    return this.http.get<Array<AnunciosModel>>(this.rootURL + 'Anuncios/Usuarios', {
+      params: new HttpParams()
+        .set('col', col.toString())
+        .set('filter', filter)
+        .set('sortDirection', sortDirection)
+        .set('pageIndex', pageIndex.toString())
+        .set('pageSize', pageSize.toString())
+    }).toPromise();
+  }
 
+  ocultarMostrarAnuncio(id) {
+    return this.http.get(this.rootURL + 'Anuncios/Ocultar/' + id).toPromise();
+  }
+
+  getAnunciosById(id) {
+    return this.http.get(this.rootURL + 'Anuncios/' + id).toPromise();
   }
 
   getAnunciosRecientes(col, filter, sortDirection, pageIndex, pageSize) {

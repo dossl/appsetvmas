@@ -6,7 +6,37 @@ export const environment = {
   production: false,
   rootURL: 'https://setvmas.com/api/api/',
   rootURLImages: 'https://setvmas.com/api/',
-  guest: 'invitado@gmail.com'
+  guest: 'invitado@gmail.com',
+  textsOptions: {
+    destacado: {
+      header: 'Destacar el anuncio',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    masEtiquetas: {
+      header: 'Comprar más etiquetas',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    autorenovar: {
+      header: 'Autorenovar periódicamente',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    web: {
+      header: 'Anuncie su web',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    masImages: {
+      header: 'Inserte más imágenes',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    bannerInferior: {
+      header: 'Anuncie banner inferior',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+    bannerSuperior: {
+      header: 'Anuncie banner superior',
+      message: 'Utilice esta opción para que su anuncio aparezca destacado en las listas. ¡Llame la atención!'
+    },
+  }
   // rootURL: 'https://62.171.171.229/api/api/'
 };
 
