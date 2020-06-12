@@ -71,7 +71,7 @@ export class AnunciosModel {
       ImageName: '',
       IsDestacado: false,
       Titulo: '',
-      Precio: 0,
+      Precio: null,
       CorreoContacto: '',
       NombreContacto: '',
       TelefonoContacto: ''

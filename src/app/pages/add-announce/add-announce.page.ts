@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { NavController, Platform, PopoverController, AlertController, LoadingController } from '@ionic/angular';
+import { NavController, Platform, PopoverController, AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { AnuncioService } from '../../services/anuncio.service';
 import { SettingsService } from '../../services/settings.service';
 import { Etiqueta } from '../../models/etiqueta.model';
@@ -14,6 +14,8 @@ import { Almacenimagen } from '../../models/almacenimagen.model';
 import { File } from '@ionic-native/File/ngx';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
+import { Banner } from 'src/app/models/banner.model';
+import { Opciones } from '../../models/opciones.model';
 @Component({
   selector: 'app-add-announce',
   templateUrl: './add-announce.page.html',
@@ -22,7 +24,7 @@ import { environment } from '../../../environments/environment';
 export class AddAnnouncePage implements OnInit, AfterViewInit {
 
   pickAttrs = ['CantidadFrecuencia', 'MinimoComprar', 'NombreCodigo', 'TipoOpcionId', 'TextoLabel', 'Precio'];
-
+  guestEmail = environment.guest;
   cameraOptions: CameraOptions = {
     quality: 100,
     saveToPhotoAlbum: true,
@@ -52,12 +54,18 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     Max_Img_Free: 3
   };
   tags: Array<Etiqueta>;
+  payedTags: Array<Etiqueta>;
   actionsAdd: Array<string>;
   options: any = {};
   activeOptions = false;
   currentUser: Usuario;
   mainImage: any;
   loading: HTMLIonLoadingElement;
+  payImage: Almacenimagen;
+  bannerDesktop: Banner;
+  bannerMobile: Banner;
+  isValid = false;
+  toBuy = false;
 
   @ViewChild('categorySelectAdd', { static: false }) categorySelectAdd: IonicSelectableComponent;
   @ViewChild('municipioSelectAdd', { static: false }) municipioSelectAdd: IonicSelectableComponent;
@@ -116,17 +124,26 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     private alertCtrl: AlertController,
     private camera: Camera,
     private file: File,
-    public loadingCtrl: LoadingController
+    public loadingCtrl: LoadingController,
+    public toastCtrl: ToastController
   ) { }
 
   ngOnInit() {
   }
 
   segmentChanged(ev: any) {
-    if (ev.detail.value === this.OPTIONS_TAB && !this.checkConditionsTab()) {
+    if (ev.detail.value === this.OPTIONS_TAB && !this.activeOptions) {
       return;
     }
     this.tab = ev.detail.value;
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000
+    });
+    return await toast.present();
   }
 
   async presentAlertConfirm(code) {
@@ -188,10 +205,6 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     callback();
   }
 
-  checkConditionsTab() {
-    return true;
-  }
-
   ngAfterViewInit() {
     this.presentLoading(() => {
       _.each(_.clone(this.servCo.getProviciasAll()), (prov) => {
@@ -203,7 +216,9 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
 
       this.currentUser = this.service.getLocalCurrentUser();
       if (!this.currentUser) {
-        this.service.getGuest().then(user => this.currentUser = user);
+        this.service.getGuest().then(user => {
+          this.currentUser = user;
+        });
       }
 
       this.localService.getData((data: StaticData) => {
@@ -224,6 +239,14 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
           op = _.merge(op, _.pick(this.options[op.NombreCodigo], this.pickAttrs));
         }
       });
+
+      this.service.getEtiquetasAll('CantUsada', '', 'desc', 1, 5000)
+        .then(res => {
+          for (const tag of res) {
+            tag.IsFree = false;
+          }
+          this.payedTags = res;
+        });
     });
   }
 
@@ -234,6 +257,7 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     if (event.value) {
       this.ad.Municipio = event.value.Nombre;
       this.ad.Provincia = event.value.provincia.Nombre;
+      this.validateAd();
     }
   }
 
@@ -250,6 +274,30 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
         this.loading.dismiss();
       });
     });
+    this.validateAd();
+  }
+
+  changePayedTags(event: {
+    component: IonicSelectableComponent,
+    value: Array<Etiqueta>
+  }) {
+    this.ad.Etiquetas = _.concat(this.ad.Etiquetas, event.value);
+  }
+
+  validateAd() {
+    if (!this.ad.Titulo || !this.ad.Precio || !this.ad.Accion || !this.ad.Categoria
+      || this.ad.Etiquetas.length === 0 || !this.ad.CorreoContacto || !this.ad.NombreContacto
+      || !this.ad.TelefonoContacto || !this.ad.Municipio) {
+      this.isValid = false;
+      this.activeOptions = false;
+      console.log(this.activeOptions);
+      return;
+    }
+
+    if (this.currentUser.Correo !== environment.guest) {
+      this.activeOptions = true;
+    }
+    console.log(this.activeOptions);
   }
 
   clear() {
@@ -257,15 +305,58 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     this.categorySelectAdd.clear();
     this.tags = [];
   }
+
   async save() {
+    if (this.currentUser.Correo !== environment.guest) {
+      const pointsToPay = this.calculate();
+      if (pointsToPay > 0 && pointsToPay <= this.currentUser.Puntos) {
+        this.loadPayOptionsToSave();
+      } else if (pointsToPay > 0 && pointsToPay > this.currentUser.Puntos) {
+        const toBuy = pointsToPay - this.currentUser.Puntos;
+        this.presentToast(`Debe comrpar ${toBuy.toFixed(2)} puntos para adicionar este anuncio o reajustar las opciones avanzadas.`);
+        return;
+      }
+    }
     this.ad.Usuario = this.currentUser;
     this.ad.FechaCreacion = new Date();
     this.ad.FechaModificacion = new Date();
     console.log(this.ad);
     const res = await this.service.insertarAnuncio(this.ad);
-    alert(JSON.stringify(res));
+    // alert(JSON.stringify(res));
     // alert('ok');
     this.navCtrl.navigateForward('/home');
+  }
+
+  removeUrl(event) {
+    if (!event.detail.checked) {
+      this.ad.Url = '';
+    }
+  }
+
+  loadPayOptionsToSave() {
+    for (const op of _.values(this.payOptions) as Opciones[]) {
+      if (op.IsActivo) {
+        switch (op.NombreCodigo) {
+          case 'IMG_ADI': {
+            if (this.payImage) {
+              this.ad.AlmacenImagen.push(this.payImage);
+            }
+            break;
+          }
+          case 'BAN_SUP': {
+            if (this.bannerDesktop && this.bannerMobile) {
+              this.ad.Banners.push(this.bannerDesktop);
+              this.ad.Banners.push(this.bannerMobile);
+            }
+            break;
+          }
+          default: {
+            this.ad.OpcionesAvanzadas.push(op);
+            break;
+          }
+        }
+      }
+    }
   }
 
   mainPhoto(option: CameraOptions) {
@@ -311,6 +402,39 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
     this.ad.AlmacenImagen = images;
   }
 
+  payAditionalPhoto(option, container) {
+    let customOptions = option;
+    if (container === 'bannerDesktop') {
+      customOptions = _.merge(option, {
+        targetWidth: 1170,
+        targetHeight: 166
+      });
+    } else if (container === 'bannerMobile') {
+      customOptions = _.merge(option, {
+        targetWidth: 322,
+        targetHeight: 166
+      });
+    }
+    this.camera.getPicture(customOptions).then((imageData) => {
+      const data = 'data:image/jpeg;base64,' + imageData;
+      _.set(this, container, new Almacenimagen(0, data, data, 'image/jpeg', new Date().getTime() + '.jpg', 0, false));
+    }, (err) => {
+      console.log(err);
+    });
+  }
+
+  removePayAditionalPhoto(container) {
+    _.set(this, container, null);
+  }
+
+  checkBannerInf(event) {
+    if (!this.ad.ImageName) {
+      event.stopPropagation();
+      this.presentToast('Debe insertar la imagen principal del anuncio para activar esta opción.');
+      setTimeout(() => this.payOptions.bannerInferior.IsActivo = false, 100);
+    }
+  }
+
   calculate() {
     let total = 0;
     for (const op of _.values(this.payOptions)) {
@@ -318,6 +442,7 @@ export class AddAnnouncePage implements OnInit, AfterViewInit {
         total += op.CantidadDias * op.Precio;
       }
     }
+    this.toBuy = total > 0 && this.currentUser && total > this.currentUser.Puntos;
     return total;
   }
 

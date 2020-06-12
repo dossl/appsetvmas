@@ -12,7 +12,6 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
 import { IonicStorageModule } from '@ionic/storage';
 import { NetworkService } from '../../services/network.service';
-import { BuypointPage } from '../buypoint/buypoint.page';
 import { IonicSelectableModule } from 'ionic-selectable';
 const routes: Routes = [
   {

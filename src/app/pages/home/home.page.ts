@@ -37,6 +37,19 @@ export interface AnuncioImagen {
 })
 export class HomePage implements AfterViewInit {
 
+  constructor(
+    private platform: Platform, private splashScreen: SplashScreen, private routerOutlet: IonRouterOutlet,
+    private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,
+    private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
+    public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
+    public loadingCtrl: LoadingController, private socialSharing: SocialSharing,
+    private router: Router, private localService: LocalDataService, public navCtrl: NavController
+  ) {
+    //   this.platform.ready().then(()=>{
+    //     this.splashscreen.hide();
+    //  })
+  }
+
   _ = _;
   rootURL = environment.rootURLImages;
   RECENTS_TAB = 'RECENTS';
@@ -78,18 +91,7 @@ export class HomePage implements AfterViewInit {
 
   @ViewChild(IonInfiniteScroll, { static: false }) infiniteScroll: IonInfiniteScroll;
 
-  constructor(
-    private platform: Platform, private splashScreen: SplashScreen, private routerOutlet: IonRouterOutlet,
-    private servCo: SettingsService, private servAnuncio: AnuncioService, private networkService: NetworkService,
-    private sqlite: SQLite, public toastCtrl: ToastController, private alertCtrl: AlertController,
-    public modalController: ModalController, private insomnia: Insomnia, private iab: InAppBrowser,
-    public loadingCtrl: LoadingController, private socialSharing: SocialSharing,
-    private router: Router, private localService: LocalDataService, public navCtrl: NavController
-  ) {
-    //   this.platform.ready().then(()=>{
-    //     this.splashscreen.hide();
-    //  })
-  }
+  loadFirstTime = false;
   ngAfterViewInit(): void {
     this.skeletorCard = [];
     const cardCount = parseInt(((window.innerHeight - 190) / 142).toFixed(0), 0) + 1;
@@ -102,9 +104,16 @@ export class HomePage implements AfterViewInit {
   ionViewDidEnter() {
     this.platform.ready().then(async () => {
       this.currentUser = this.servAnuncio.getLocalCurrentUser();
-      if (this.currentUser) {
+      if (!this.currentUser) {
         this.currentUser = await this.servAnuncio.getGuest();
+      } else {
+        const index = this.currentUser.Correo.indexOf('@');
+        if (index !== -1) {
+          this.nameUser = this.currentUser.Correo.substr(0, index);
+        }
+        this.servAnuncio.refreshCurrentUser((user) => this.currentUser = user, (err) => {});
       }
+
       setTimeout(() => {
         this.splashScreen.hide();
         this.loadAuto();
@@ -152,9 +161,10 @@ export class HomePage implements AfterViewInit {
           handler: () => { }
         }, {
           text: 'Aceptar',
-          handler: () => {
-            this.currentUser = null;
-            localStorage.clear();
+          handler: async () => {
+            this.servAnuncio.logout();
+            this.currentUser = await this.servAnuncio.getGuest();
+            this.nameUser = null;
           }
         }
       ]
@@ -169,26 +179,7 @@ export class HomePage implements AfterViewInit {
       this.applyFilters();
     }
     this.filters = this.servAnuncio.filters || {};
-    this.currentUser = JSON.parse(localStorage.getItem('currentuser'));
-    if (this.currentUser) {
-      const index = this.currentUser.Correo.indexOf('@');
-      if (index !== -1) {
-        this.nameUser = this.currentUser.Correo.substr(0, index);
-      }
-    } else {
-      this.servAnuncio.getCurrentUser().then(user => {
-        this.currentUser = user as Usuario;
-        if (this.currentUser) {
-          const index = this.currentUser.Correo.indexOf('@');
-          if (index !== -1) {
-            this.nameUser = this.currentUser.Correo.substr(0, index);
-          }
-        }
-      });
-    }
   }
-
-  loadFirstTime = false;
 
   loadAuto() {
     if (!this.loadFirstTime) {
@@ -255,41 +246,7 @@ export class HomePage implements AfterViewInit {
       }).catch((error) => {
         this.presentToast('La aplicación se ha detenido, vuelva a intentarlo');
       });
-    } else {
-      // this.sqlite.create({
-      //   name: 'setVMas.db',
-      //   location: 'default'
-      // }).then((db: SQLiteObject) => {
-      //   db.executeSql('CREATE TABLE IF NOT EXISTS BannerSuperior(BannerId INTEGER PRIMARY KEY, ' +
-      //     'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
-      //     'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-      //     .then(res => console.log('Executed SQL'))
-      //     .catch(e => console.log(e));
-      //   db.executeSql('SELECT * FROM BannerSuperior WHERE isVisible=? ORDER BY BannerId DESC', [true]).then(res => {
-      //     this.bannersTop = res as Banner[];
-      //     setTimeout(() => {
-      //       this.loadingBannerTop = false;
-      //     }, 2000);
-      //   }).catch(e => console.log(e));
-      // });
-      // this.sqlite.create({
-      //   name: 'setVMas.db',
-      //   location: 'default'
-      // }).then((db: SQLiteObject) => {
-      //   db.executeSql('CREATE TABLE IF NOT EXISTS BannerInferior(BannerId INTEGER PRIMARY KEY, ' +
-      //     'Nombre TEXT, Url TEXT, Tipo TEXT, CantidadDias INT, ImageContent TEXT, ImageMimeType TEXT, ' +
-      //     'ImageName TEXT, FechaCreacion TEXT,FechaUltView TEXT, FechaDesactivacion TEXT, IsActivo INT)', [])
-      //     .then(res => console.log('Executed SQL'))
-      //     .catch(e => console.log(e));
-      //   db.executeSql('SELECT * FROM BannerInferior ORDER BY BannerId DESC', []).then(res => {
-      //     this.bannersBottom = res as Banner[];
-      //     setTimeout(() => {
-      //       this.loadingBannerBottom = false;
-      //     }, 2000);
-      //   }).catch(e => console.log(e));
-      // });
     }
-
   }
 
   async loadAds() {
@@ -346,34 +303,6 @@ export class HomePage implements AfterViewInit {
           callback();
         });
       }
-    } else {
-      // this.sqlite.create({
-      //   name: 'setVMas.db',
-      //   location: 'default'
-      // }).then((db: SQLiteObject) => {
-      //   db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosRecientes(AnuncioId INTEGER PRIMARY KEY, ' +
-      //     'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, CorreoContacto TEXT, ' +
-      //     'Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, FechaModificacion TEXT, ' +
-      //     'ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, Provincia TEXT, Municipio TEXT, ' +
-      //     'ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-      //     .then(res => console.log('Executed SQL'))
-      //     .catch(e => console.log(e));
-      //   db.executeSql('SELECT * FROM AnunciosRecientes ORDER BY AnuncioId DESC', []).then(res => {
-      //     this.recents = [];
-      //     this.recents = res as AnunciosModel[];
-      //     for (const item of (this.recents as AnunciosModel[])) {
-      //       if (item.ImageContent !== undefined && item.ImageContent !== null) {
-      //         item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
-      //         console.log(item.Imagen);
-      //       }
-      //     }
-      //     this.loading = false;
-      //     callback();
-      //   }).catch(e => {
-      //     this.loading = false;
-      //     callback();
-      //   });
-      // });
     }
   }
 
@@ -395,40 +324,6 @@ export class HomePage implements AfterViewInit {
         this.loading = false;
         callback();
       });
-    } else {
-      // this.sqlite.create({
-      //   name: 'setVMas.db',
-      //   location: 'default'
-      // }).then((db: SQLiteObject) => {
-      //   db.executeSql('CREATE TABLE IF NOT EXISTS AnunciosPopulares(AnuncioId INTEGER PRIMARY KEY, ' +
-      //     'Titulo TEXT, Descripcion TEXT, NombreContacto TEXT, TelefonoContacto TEXT, ' +
-      //     'CorreoContacto TEXT, Precio INT, IsActivo INT, IsVisible INT,FechaCreacion TEXT, ' +
-      //     'FechaModificacion TEXT, ImageContent TEXT,ImageMimeType TEXT, ImageName TEXT, Url TEXT, ' +
-      //     'Provincia TEXT, Municipio TEXT, ContadorView INT, ProductoNuevo INT, Accion TEXT, Imagen TEXT)', [])
-      //     .then(res => console.log('Executed SQL'))
-      //     .catch(e => console.log(e));
-      //   db.executeSql('SELECT * FROM AnunciosPopulares WHERE isVisible=? ORDER BY AnuncioId DESC', [true]).then(res => {
-      //     this.mostSeen = [];
-      //     this.mostSeen = res as AnunciosModel[];
-      //     for (const item of (this.mostSeen as AnunciosModel[])) {
-      //       if (item.ImageContent !== undefined && item.ImageContent !== null) {
-      //         item.Imagen = 'data:' + item.ImageMimeType + ';base64,' + item.ImageContent;
-      //       }
-      //     }
-      //     setTimeout(() => {
-      //       this.loading = false;
-      //     }, 2000);
-      //     setTimeout(() => {
-      //       this.loading = false;
-      //     }, 2000);
-      //     callback();
-      //   }).catch(e => {
-      //     setTimeout(() => {
-      //       this.loading = false;
-      //     }, 2000);
-      //     callback();
-      //   });
-      // });
     }
   }
 

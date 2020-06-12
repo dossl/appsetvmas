@@ -42,9 +42,14 @@ ion-item {
     --padding-end: 0;
     --inner-padding-end: 0;
   }
+
+  .custom-checkbox {
+    margin-left: 25px;
+    margin-right: 10px;
+  }
 }
 
-.tag-close{
+.tag-close {
   vertical-align: bottom;
 }
 
@@ -54,5 +59,26 @@ ion-item {
 
   ion-badge {
     margin-right: 3px;
+  }
+}
+
+
+.notification-icon-button {
+  --overflow: visible;
+
+  ion-badge {
+    position: absolute;
+    background: #f70b0b;
+    border-radius: 50%;
+    opacity: 0.9;
+    width: auto;
+    min-width: 18px;
+    height: 18px;
+    font-size: 11px;
+    font-weight: 100;
+    line-height: normal;
+    inline-size: fit-content;
+    top: 6px;
+    right: 6px;
   }
 }

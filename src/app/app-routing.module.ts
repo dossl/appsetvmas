@@ -19,8 +19,8 @@ const routes: Routes = [
   { path: 'signup', loadChildren: './pages/signup/signup.module#SignupPageModule' },
   { path: 'restore-account', loadChildren: './pages/restore-account/restore-account.module#RestoreAccountPageModule' },
   { path: 'lector', loadChildren: './pages/lector/lector.module#LectorPageModule' },
-  { path: 'buypoint', loadChildren: './pages/buypoint/buypoint.module#BuypointPageModule' },
-  { path: 'search', loadChildren: './pages/search/search.module#SearchPageModule' },  { path: 'report-popover', loadChildren: './pages/report-popover/report-popover.module#ReportPopoverPageModule' },
+  { path: 'search', loadChildren: './pages/search/search.module#SearchPageModule' },
+  { path: 'report-popover', loadChildren: './pages/report-popover/report-popover.module#ReportPopoverPageModule' },
 
 ];
 

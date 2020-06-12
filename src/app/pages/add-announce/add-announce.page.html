@@ -6,6 +6,9 @@
     <ion-title>
       <label>Adicionar Anuncio</label>
     </ion-title>
+    <ion-badge slot="end" color="light" class="ion-margin-end ion-color-primary" *ngIf="currentUser && currentUser.Correo !== guestEmail">
+      {{currentUser.Puntos}} Pts
+    </ion-badge>
     <!-- <ion-buttons slot="end">
       <ion-button fill="clear" (click)="galeryMainPhoto()" color="warning" slot="end">
         <ion-icon size="large" slot="icon-only" name="md-save"></ion-icon>
@@ -17,7 +20,7 @@
       <ion-segment-button [value]="AD_TAB">
         <ion-label> Anuncio</ion-label>
       </ion-segment-button>
-      <ion-segment-button [value]="OPTIONS_TAB" layout="icon-start">
+      <ion-segment-button [attr.disabled]="activeOptions === false" [value]="OPTIONS_TAB" layout="icon-start">
         <ion-icon size="small" color="warning" src="/assets/icon/lock-closed.svg" *ngIf="!activeOptions"></ion-icon>
         <ion-icon size="small" color="warning" src="/assets/icon/lock-open.svg" *ngIf="activeOptions"></ion-icon>
         <ion-label> Avanzadas</ion-label>
@@ -28,32 +31,46 @@
 <ion-content fullscreen class="ion-padding">
   <div *ngIf="tab === AD_TAB" class="options-content">
     <ion-item>
-      <ion-label position="floating">Título del anuncio</ion-label>
-      <ion-input [(ngModel)]="ad.Titulo"></ion-input>
+      <ion-label color="primary" position="floating">* Título del anuncio</ion-label>
+      <ion-input [(ngModel)]="ad.Titulo" (ionChange)="validateAd()"></ion-input>
     </ion-item>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="6" class="ion-no-padding">
+          <ion-item lines="full">
+            <ion-label color="primary" position="floating">* Precio</ion-label>
+            <ion-input inputmode="numeric" type="number" (ionChange)="validateAd()" [(ngModel)]="ad.Precio"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-label color="primary">Nuevo</ion-label>
+            <ion-checkbox color="primary" class="custom-checkbox" slot="start" [(ngModel)]="ad.ProductoNuevo">
+            </ion-checkbox>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
     <ion-item>
-      <ion-label position="floating">Precio</ion-label>
-      <ion-input inputmode="numeric" type="number" [(ngModel)]="ad.Precio"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Categoria</ion-label>
+      <ion-label color="primary">* Categoria</ion-label>
       <ionic-selectable #categorySelectAdd headerColor="primary" item-content itemTextField="Nombre"
         [items]="categories" [canSearch]="true" (onChange)="categoryChange($event)">
       </ionic-selectable>
     </ion-item>
     <ion-item *ngIf="tags && tags.length > 0">
-      <ion-label>Etiquetas</ion-label>
-      <ionic-selectable headerColor="primary" item-content [(ngModel)]="ad.Etiquetas" [isMultiple]="true"
-        itemTextField="Nombre" [canClear]="true" [items]="tags" [canSearch]="true">
+      <ion-label color="primary">* Etiquetas</ion-label>
+      <ionic-selectable #tagsComponent headerColor="primary" item-content [(ngModel)]="ad.Etiquetas" [isMultiple]="true"
+        itemTextField="Nombre" [isConfirmButtonEnabled]="tagsComponent.itemsToConfirm.length >= 1 && tagsComponent.itemsToConfirm.length <= 3" [canClear]="true" (onChange)="validateAd()" [items]="tags" [canSearch]="true">
       </ionic-selectable>
     </ion-item>
     <ion-item>
-      <ion-label>Acción</ion-label>
-      <ionic-selectable headerColor="primary" item-content [(ngModel)]="ad.Accion" [items]="actionsAdd">
+      <ion-label color="primary">* Acción</ion-label>
+      <ionic-selectable (onChange)="validateAd()" headerColor="primary" item-content [(ngModel)]="ad.Accion"
+        [items]="actionsAdd">
       </ionic-selectable>
     </ion-item>
     <ion-item>
-      <ion-label>Municipio</ion-label>
+      <ion-label color="primary">* Municipio</ion-label>
       <ionic-selectable #municipioSelectAdd item-content itemValueField="Nombre" itemTextField="Nombre"
         groupValueField="provincia.Nombre" groupTextField="provincia.Nombre" [items]="localities"
         searchPlaceholder="Buscar" closeButtonText="Cerrar" closeButtonSlot="end" [canSearch]="true"
@@ -64,41 +81,24 @@
       </ionic-selectable>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Descripción</ion-label>
+      <ion-label color="primary" position="floating">Descripción</ion-label>
       <ion-textarea [(ngModel)]="ad.Descripcion" rows="6" clearOnEdit="true"></ion-textarea>
     </ion-item>
-    <ion-grid>
-      <ion-row>
-        <ion-col size="6">
-          <ion-item lines="none">
-            <ion-label>Nuevo</ion-label>
-            <ion-checkbox class="custom-checkbox" slot="start" [(ngModel)]="ad.ProductoNuevo">
-            </ion-checkbox>
-          </ion-item>
-        </ion-col>
-        <ion-col size="6">
-          <ion-item lines="none">
-            <ion-label>Web</ion-label>
-            <ion-checkbox class="custom-checkbox" slot="start" [(ngModel)]="ad.IsWeb"></ion-checkbox>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
 
     <ion-item-divider mode="ios" color="primary">
       <ion-label>Datos del Contacto</ion-label>
     </ion-item-divider>
     <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
-      <ion-input [(ngModel)]="ad.NombreContacto"></ion-input>
+      <ion-label color="primary" position="floating">* Nombre</ion-label>
+      <ion-input (ionChange)="validateAd()" [(ngModel)]="ad.NombreContacto"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Teléfono</ion-label>
-      <ion-input [(ngModel)]="ad.TelefonoContacto"></ion-input>
+      <ion-label color="primary" position="floating">* Teléfono</ion-label>
+      <ion-input (ionChange)="validateAd()" [(ngModel)]="ad.TelefonoContacto"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">Correo</ion-label>
-      <ion-input [(ngModel)]="ad.CorreoContacto"></ion-input>
+      <ion-label color="primary" position="floating">* Correo</ion-label>
+      <ion-input (ionChange)="validateAd()" [(ngModel)]="ad.CorreoContacto"></ion-input>
     </ion-item>
     <ion-item-divider mode="ios" color="primary" class="images-form">
       <ion-label>Imagen Principal</ion-label>
@@ -149,7 +149,8 @@
     <ion-item *ngIf="payOptions.destacado.IsActivo">
       <ion-label position="fixed">Días a pagar:</ion-label>
       <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.destacado.CantidadDias"></ion-input>
-      <ion-label *ngIf="payOptions.destacado.Precio" slot="end" color="warning">Pts x Día: {{payOptions.destacado.Precio}}</ion-label>
+      <ion-label *ngIf="payOptions.destacado.Precio" slot="end" color="warning">Pts x Día:
+        {{payOptions.destacado.Precio}}</ion-label>
     </ion-item>
     <ion-item-divider mode="ios" color="primary">
       <ion-checkbox [(ngModel)]="payOptions.masEtiquetas.IsActivo" slot="start"></ion-checkbox>
@@ -161,27 +162,16 @@
     <div *ngIf="payOptions.masEtiquetas.IsActivo">
       <ion-item>
         <ion-label position="fixed">Días a pagar:</ion-label>
-        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.masEtiquetas.CantidadDias"></ion-input>
-        <ion-label *ngIf="payOptions.masEtiquetas.Precio" slot="end" color="warning">Pts x Día: {{payOptions.masEtiquetas.Precio}}</ion-label>
+        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.masEtiquetas.CantidadDias">
+        </ion-input>
+        <ion-label *ngIf="payOptions.masEtiquetas.Precio" slot="end" color="warning">Pts x Día:
+          {{payOptions.masEtiquetas.Precio}}</ion-label>
       </ion-item>
-      <ion-item lines="full" class="ion-text-center custom">
-        <div style="padding: 3px 0 0;">
-          <ion-badge color="primary">Frituras <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-          <ion-badge color="primary">Harina <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-          <ion-badge color="primary">Clavo <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-          <ion-badge color="primary">Frituras <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-          <ion-badge color="primary">Pan Suave <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-          <ion-badge color="primary">Herrero <ion-icon name='close' class="tag-close"></ion-icon>
-          </ion-badge>
-        </div>
-        <ion-button fill="clear" (click)="addTag()" color="primary" slot="end">
-          <ion-icon side="large" slot="icon-only" name="add" style="width: 28px;height: 28px;"></ion-icon>
-        </ion-button>
+      <ion-item *ngIf="payedTags && payedTags.length > 0">
+        <ion-label color="primary">Etiquetas</ion-label>
+        <ionic-selectable headerColor="primary" item-content [isMultiple]="true" itemTextField="Nombre"
+          [canClear]="true" (onChange)="changePayedTags($event)" [items]="payedTags" [canSearch]="true">
+        </ionic-selectable>
       </ion-item>
     </div>
     <ion-item-divider mode="ios" color="primary">
@@ -194,12 +184,15 @@
     <div *ngIf="payOptions.autorenovar.IsActivo">
       <ion-item>
         <ion-label position="fixed">Días a pagar:</ion-label>
-        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.autorenovar.CantidadDias"></ion-input>
-        <ion-label *ngIf="payOptions.autorenovar.Precio" slot="end" color="warning">Pts x Día: {{payOptions.autorenovar.Precio}}</ion-label>
+        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.autorenovar.CantidadDias">
+        </ion-input>
+        <ion-label *ngIf="payOptions.autorenovar.Precio" slot="end" color="warning">Pts x Día:
+          {{payOptions.autorenovar.Precio}}</ion-label>
       </ion-item>
       <ion-item lines="full">
         <ion-label slot="start" style="max-width: 85px;">Frecuencia</ion-label>
-        <ion-select value="AUTO_24" (ionChange)="changeAuto($event)" cancelText="Cancelar" okText="Aceptar" style="min-width: -webkit-fill-available;">
+        <ion-select value="AUTO_24" (ionChange)="changeAuto($event)" cancelText="Cancelar" okText="Aceptar"
+          style="min-width: -webkit-fill-available;">
           <ion-select-option value="AUTO_24">Cada 24 horas</ion-select-option>
           <ion-select-option value="AUTO_6">Cada 6 horas</ion-select-option>
           <ion-select-option value="AUTO_1">Cada 1 hora</ion-select-option>
@@ -208,7 +201,7 @@
       </ion-item>
     </div>
     <ion-item-divider mode="ios" color="primary">
-      <ion-checkbox [(ngModel)]="payOptions.web.IsActivo" slot="start"></ion-checkbox>
+      <ion-checkbox (ionChange)="removeUrl($event)" [(ngModel)]="payOptions.web.IsActivo" slot="start"></ion-checkbox>
       <ion-label>Anuncie su web</ion-label>
       <ion-button fill="clear" (click)="presentAlertConfirm('web')" color="light" slot="end">
         <ion-icon slot="icon-only" name="information-circle"></ion-icon>
@@ -218,7 +211,8 @@
       <ion-item>
         <ion-label position="fixed">Días a pagar:</ion-label>
         <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.web.CantidadDias"></ion-input>
-        <ion-label *ngIf="payOptions.web.Precio" slot="end" color="warning">Pts x Día: {{payOptions.web.Precio}}</ion-label>
+        <ion-label *ngIf="payOptions.web.Precio" slot="end" color="warning">Pts x Día: {{payOptions.web.Precio}}
+        </ion-label>
       </ion-item>
       <ion-item lines="full">
         <ion-checkbox (ionChange)="changeMyWeb($event)" slot="start"></ion-checkbox>
@@ -226,7 +220,7 @@
       </ion-item>
       <ion-item lines="full">
         <ion-label position="fixed">URL:</ion-label>
-        <ion-input [(ngModel)]="ad.NombreContacto"></ion-input>
+        <ion-input [(ngModel)]="ad.Url"></ion-input>
       </ion-item>
     </div>
     <ion-item-divider mode="ios" color="primary">
@@ -236,15 +230,48 @@
         <ion-icon slot="icon-only" name="information-circle"></ion-icon>
       </ion-button>
     </ion-item-divider>
-    <div *ngIf="payOptions.masImages.IsActivo"></div>
+    <div *ngIf="payOptions.masImages.IsActivo">
+      <ion-item lines="full">
+        <ion-label position="fixed">Días a pagar:</ion-label>
+        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.masImages.CantidadDias">
+        </ion-input>
+        <ion-label *ngIf="payOptions.masImages.Precio" slot="end" color="warning">Pts x Día:
+          {{payOptions.masImages.Precio}}</ion-label>
+      </ion-item>
+      <ion-item lines="full" *ngIf="!payImage">
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="payAditionalPhoto(cameraOptions, 'payImage')" color="primary">
+            <ion-icon slot="icon-only" name="camera"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" (click)="payAditionalPhoto(galeryOptions, 'payImage')" color="primary">
+            <ion-icon slot="icon-only" name="image"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+      <ion-item *ngIf="payImage" lines="full">
+        <ion-img [src]="payImage.ImageContent"></ion-img>
+        <ion-button fill="clear" (click)="removePayAditionalPhoto('payImage')" color="primary" slot="end">
+          <ion-icon size="large" slot="icon-only" name="md-close-circle"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </div>
     <ion-item-divider mode="ios" color="primary">
-      <ion-checkbox [(ngModel)]="payOptions.bannerInferior.IsActivo" slot="start"></ion-checkbox>
+      <ion-checkbox (ionChange)="checkBannerInf($event)" [(ngModel)]="payOptions.bannerInferior.IsActivo" slot="start">
+      </ion-checkbox>
       <ion-label>Anuncie banner inferior</ion-label>
       <ion-button fill="clear" (click)="presentAlertConfirm('bannerInferior')" color="light" slot="end">
         <ion-icon slot="icon-only" name="information-circle"></ion-icon>
       </ion-button>
     </ion-item-divider>
-    <div *ngIf="payOptions.bannerInferior.IsActivo"></div>
+    <div *ngIf="payOptions.bannerInferior.IsActivo">
+      <ion-item lines="full">
+        <ion-label position="fixed">Días a pagar:</ion-label>
+        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.bannerInferior.CantidadDias">
+        </ion-input>
+        <ion-label *ngIf="payOptions.bannerInferior.Precio" slot="end" color="warning">Pts x Día:
+          {{payOptions.bannerInferior.Precio}}</ion-label>
+      </ion-item>
+    </div>
 
     <ion-item-divider mode="ios" color="primary">
       <ion-checkbox [(ngModel)]="payOptions.bannnerSuperior.IsActivo" slot="start"></ion-checkbox>
@@ -253,14 +280,53 @@
         <ion-icon slot="icon-only" name="information-circle"></ion-icon>
       </ion-button>
     </ion-item-divider>
-    <div *ngIf="payOptions.bannnerSuperior.IsActivo"></div>
+    <div *ngIf="payOptions.bannnerSuperior.IsActivo">
+      <ion-item lines="full">
+        <ion-label position="fixed">Días a pagar:</ion-label>
+        <ion-input inputmode="numeric" type="number" min="1" [(ngModel)]="payOptions.bannnerSuperior.CantidadDias">
+        </ion-input>
+        <ion-label *ngIf="payOptions.bannnerSuperior.Precio" slot="end" color="warning">Pts x Día:
+          {{payOptions.bannnerSuperior.Precio}}</ion-label>
+      </ion-item>
+      <ion-item lines="full" *ngIf="!bannerDesktop" class="ion-text-wrap">
+        <ion-text color="warning" style="margin: 5px 0; font-size: 12px;">Debes introducir un banner para escritorio con
+          las siguientes dimesiones (px): 1170x166</ion-text>
+        <ion-button fill="clear" (click)="payAditionalPhoto(galeryOptions, 'bannerDesktop')" color="primary">
+          <ion-icon size="large" name="image"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="bannerDesktop" lines="full">
+        <ion-img [src]="bannerDesktop.ImageContent"></ion-img>
+        <ion-button fill="clear" (click)="removePayAditionalPhoto('bannerDesktop')" color="primary" slot="end">
+          <ion-icon size="large" slot="icon-only" name="md-close-circle"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item lines="full" *ngIf="!bannerMobile" class="ion-text-wrap">
+        <ion-text color="warning" style="margin: 5px 0; font-size: 12px;">Debes introducir un banner para móviles con
+          las siguientes dimesiones (px): 322x166</ion-text>
+        <ion-button fill="clear" (click)="payAditionalPhoto(galeryOptions, 'bannerMobile')" color="primary">
+          <ion-icon size="large" name="image"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="bannerMobile" lines="full">
+        <ion-img [src]="bannerMobile.ImageContent"></ion-img>
+        <ion-button fill="clear" (click)="removePayAditionalPhoto('bannerMobile')" color="primary" slot="end">
+          <ion-icon size="large" slot="icon-only" name="md-close-circle"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </div>
 
   </div>
-
+  <ion-fab *ngIf="toBuy" vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button color="light" [routerLink]="['/', 'buy-point']" class="notification-icon-button">
+      <ion-icon color="warning" name="cart"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 <ion-footer>
   <ion-toolbar color="light">
-    <ion-label *ngIf="calculate() !== 0" color="warning" slot="start" style="margin-left: 5px;">Pts a Pagar: <strong> {{calculate()}} </strong> </ion-label>
+    <ion-label *ngIf="calculate() !== 0" color="warning" slot="start" style="margin-left: 5px;">Pts a Pagar: <strong>
+        {{calculate()}} </strong> </ion-label>
     <ion-buttons slot="end">
       <ion-button color="primary" [routerLink]="['/', 'home']">
         Cancelar

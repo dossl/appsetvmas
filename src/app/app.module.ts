@@ -39,13 +39,11 @@ import { QrPageModule } from './pages/qr/qr.module';
 import { SellPointPageModule } from './pages/sell-point/sell-point.module';
 import { LectorPageModule } from './pages/lector/lector.module';
 import { DetailsPageModule } from './pages/details/details.module';
-import { BuypointPageModule } from './pages/buypoint/buypoint.module';
 import { RestoreAccountPageModule } from './pages/restore-account/restore-account.module';
 import { QrPage } from './pages/qr/qr.page';
 import { SellPointPage } from './pages/sell-point/sell-point.page';
 import { LectorPage } from './pages/lector/lector.page';
 import { DetailsPage } from './pages/details/details.page';
-import { BuypointPage } from './pages/buypoint/buypoint.page';
 import { RestoreAccountPage } from './pages/restore-account/restore-account.page';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
 import { DatePipe } from '@angular/common';
@@ -59,8 +57,8 @@ import { HideHeaderDirective } from './directives/hide-header.directive';
 import { ScrollVanishDirective } from './directives/scroll-vanish.directive';
 
 @NgModule({
-  declarations: [AppComponent, MasqrPage, MasSellPointPage, SellPointPage, QrPage, BuypointPage, LectorPage],
-  entryComponents: [MasqrPage, MasSellPointPage, SellPointPage, QrPage, BuypointPage, LectorPage],
+  declarations: [AppComponent, MasqrPage, MasSellPointPage, SellPointPage, QrPage, LectorPage],
+  entryComponents: [MasqrPage, MasSellPointPage, SellPointPage, QrPage, LectorPage],
   imports: [TagInputModule,
     BrowserModule,
     RlTagInputModule,

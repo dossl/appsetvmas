@@ -313,6 +313,20 @@ export class AnuncioService {
     });
   }
 
+  refreshCurrentUser(successCallback, errorCallback) {
+    this.http.get<Usuario>(this.rootURL + 'Usuarios/Current')
+    .subscribe(res => {
+      localStorage.setItem(this.CURRENT_USER, JSON.stringify(res));
+      successCallback(res);
+    }, (err) => {
+      errorCallback(err);
+    });
+  }
+
+  logout() {
+    localStorage.setItem(this.CURRENT_USER, null);
+  }
+
   getUsuarioByCorreo(correo) {
     return this.http.get<Usuario>(this.rootURL + 'Usuarios/Correo/' + correo).toPromise();
   }
@@ -322,11 +336,6 @@ export class AnuncioService {
       this.guest = await this.http.get<Usuario>(this.rootURL + 'Usuarios/Correo/' + environment.guest).toPromise();
     }
     return this.guest;
-  }
-
-  logout() {
-    // remove user from local storage to log user out
-    localStorage.clear();
   }
 
   register(Correo: string, Password: string, Anfitrion: string, Telefono: string) {
@@ -377,6 +386,17 @@ export class AnuncioService {
 
   getTipoOpcions(col, filter, sortDirection, pageIndex, pageSize) {
     return this.http.get<Array<TipoOpcionModel>>(this.rootURL + 'TipoOpcions', {
+      params: new HttpParams()
+        .set('col', col.toString())
+        .set('filter', filter)
+        .set('sortDirection', sortDirection)
+        .set('pageIndex', pageIndex.toString())
+        .set('pageSize', pageSize.toString())
+    }).toPromise();
+  }
+
+  getEtiquetasAll(col, filter, sortDirection, pageIndex, pageSize) {
+    return this.http.get<Array<Etiqueta>>(this.rootURL + 'Etiquetas', {
       params: new HttpParams()
         .set('col', col.toString())
         .set('filter', filter)

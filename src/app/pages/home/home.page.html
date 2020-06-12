@@ -11,10 +11,10 @@
         <ion-icon *ngIf="!isConnected" slot="icon-only" name="cloud-outline"></ion-icon>
         <ion-icon *ngIf="isConnected" slot="icon-only" name="cloud-done"></ion-icon>
       </ion-button>
-      <ion-button size="small" *ngIf="!currentUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
+      <ion-button size="small" *ngIf="!nameUser" fill="clear" [routerLink]="['/', 'signin']" color="light">
         <ion-icon slot="icon-only" name="ios-log-in"></ion-icon>
       </ion-button>
-      <ion-button size="small" *ngIf="currentUser" fill="clear" (click)="presentAlertConfirm()" color="light">
+      <ion-button size="small" *ngIf="nameUser" fill="clear" (click)="presentAlertConfirm()" color="light">
         {{ nameUser }}
       </ion-button>
     </ion-buttons>
@@ -33,12 +33,12 @@
       [routerLink]="['/', 'search']" color="light">
       <ion-badge *ngIf="filters && _.size(_.keys(filters)) > 0" class="notification-badge" color="danger"><span>{{_.size(_.keys(filters))}}</span>
       </ion-badge>
-      <ion-icon slot="icon-only" name="ios-funnel"></ion-icon>
+      <ion-icon name="ios-funnel"></ion-icon>
     </ion-button>
     <ion-searchbar [disabled]="loading" (ionClear)="onSearch($event)" (search)="onSearch($event)" mode="ios"
       id="custom-search" [(ngModel)]="searchText" placeholder="¿Qué buscas?"></ion-searchbar>
-    <ion-button size="small" slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
-      <ion-icon slot="icon-only" name="megaphone"></ion-icon>
+    <ion-button class="notification-icon-button" size="small" slot="end" fill="clear" [routerLink]="['/', 'add-announce']" color="warning">
+      <ion-icon name="megaphone"></ion-icon>
     </ion-button>
   </ion-toolbar>
   <ion-toolbar color="primary" style="height: 29px;">

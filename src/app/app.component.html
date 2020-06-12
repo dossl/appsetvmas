@@ -16,39 +16,50 @@
     </ion-header>
     <ion-content color="primary">
       <ion-list mode="ios" lines="full">
-        <ion-item [routerLink]="['/', 'home']" color="primary">
-          <ion-label>Inicio</ion-label>
-        </ion-item>
-        <ion-item [routerLink]="['/', 'virtual-office']" color="primary">
-          <ion-label>Oficina</ion-label>
-        </ion-item>
-        <ion-item *ngIf="!active" [routerLink]="['/', 'add-announce']" color="primary">
-          <ion-label>Adicionar Anuncio</ion-label>
-        </ion-item>
-        <ion-item *ngIf="!active" (click)="downloadBD()" color="primary">
-          <ion-label>Descargar DB</ion-label>
-        </ion-item>
-        <ion-item [routerLink]="['/', 'contact']" color="primary">
-          <ion-label>Contáctenos</ion-label>
-        </ion-item>
-        <ion-item [routerLink]="['/', 'help']" color="primary">
-          <ion-label>Ayuda</ion-label>
-        </ion-item>
+        <ion-menu-toggle>
+          <ion-item [routerLink]="['/', 'home']" color="primary">
+            <ion-label>Inicio</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item [routerLink]="['/', 'virtual-office']" color="primary">
+            <ion-label>Oficina</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item [routerLink]="['/', 'add-announce']" color="primary">
+            <ion-label>Adicionar Anuncio</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item [routerLink]="['/', 'contact']" color="primary">
+            <ion-label>Contáctenos</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item [routerLink]="['/', 'help']" color="primary">
+            <ion-label>Ayuda</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
 
       </ion-list>
       <div class="secondary-menu">
         <ion-list lines="full" mode="ios">
-          <ion-item-divider *ngIf="active && currentUser" color="primary">
+          <ion-item-divider *ngIf="currentUser" color="primary">
             <ion-label>Acumulado de Puntos: <strong>{{ userPoint }}</strong></ion-label>
           </ion-item-divider>
-          <ion-item *ngIf="currentUser" (click)="qr()" color="primary">
-            <ion-icon slot="start" name="qr-scanner"></ion-icon>
-            <ion-label>Mostrar Código de Referido</ion-label>
-          </ion-item>
-          <ion-item *ngIf="active && currentUser" (click)="sell()" color="primary">
-            <ion-icon slot="start" src="/assets/icon/money.svg"></ion-icon>
-            <ion-label>Vender Puntos</ion-label>
-          </ion-item>
+          <ion-menu-toggle>
+            <ion-item *ngIf="currentUser" (click)="qr()" color="primary">
+              <ion-icon slot="start" name="qr-scanner"></ion-icon>
+              <ion-label>Mostrar Código de Referido</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item *ngIf="currentUser" (click)="sell()" color="primary">
+              <ion-icon slot="start" src="/assets/icon/money.svg"></ion-icon>
+              <ion-label>Vender Puntos</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
         </ion-list>
       </div>
     </ion-content>

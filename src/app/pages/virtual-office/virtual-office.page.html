@@ -1,8 +1,8 @@
 <ion-header id="ad-header">
   <ion-toolbar color="primary" class="custom-toolbar">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="home"></ion-back-button>
-    </ion-buttons>
+    <ion-buttons  slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+  </ion-buttons>
     <ion-title>
       <label>Mi Oficina Virtual</label>
     </ion-title>
@@ -42,7 +42,7 @@
           <ion-label color="warning">{{ acumuladoPuntos }} </ion-label>
         </ion-col>
         <ion-col size="12" class="ion-text-center" style="font-size: 12px;">
-          <ion-label *ngIf="precio_Punto" color="medium">1 pto. equivale a {{ precio_Punto }} CUP</ion-label>
+          <ion-label *ngIf="precioPunto" color="medium">1 pto. equivale a {{ precioPunto }} CUP</ion-label>
         </ion-col>
       </ion-row>
       <ion-row class="ion-margin-top">
@@ -82,12 +82,12 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-    <ion-grid>
+    <ion-grid *ngIf="messageAdmin">
       <ion-row>
         <ion-col class="ion-text-wrap"
-          style="background-color: rgb(141, 201, 224);color: #000030; border-radius: 10px;">
+          style="background-color: rgb(141, 201, 224);color: #000030; border-radius: 10px;margin: 10px;">
           <p style="margin: 0; text-align: center;">
-            !!!Rebaja de precios en las compras directas del 16 al 18, no pierdas esta oportunidad!!!
+            {{messageAdmin}}
           </p>
         </ion-col>
       </ion-row>
@@ -95,18 +95,18 @@
   </div>
   <div *ngIf="tab === AD_TAB">
     <ion-list class="list-ad">
-      <ion-item lines="full"  *ngFor="let item of anuncios">
+      <ion-item lines="full" *ngFor="let item of anuncios">
         <ion-label color="primary" slot="start">
           <h2>{{item.Titulo}}</h2>
           <p style="font-size: 12px;color:#888">{{moment(item.FechaModificacion).format('DD-MM-YYYY HH:mm:ss')}}</p>
         </ion-label>
         <ion-buttons slot="end">
           <ion-button fill="clear" (click)="onEditAnnounce(item.AnuncioId)" color="primary">
-            <ion-icon  name="create"></ion-icon>
+            <ion-icon name="create"></ion-icon>
           </ion-button>
           <ion-button fill="clear" (click)="changeStatusAd(item)" color="primary">
-            <ion-icon *ngIf="item.IsActivo"  name="eye"></ion-icon>
-            <ion-icon *ngIf="!item.IsActivo"  name="eye-off"></ion-icon>
+            <ion-icon *ngIf="item.IsActivo" name="eye"></ion-icon>
+            <ion-icon *ngIf="!item.IsActivo" name="eye-off"></ion-icon>
           </ion-button>
           <ion-button fill="clear" (click)="onDeleteAnnounce(item.AnuncioId)" color="danger">
             <ion-icon name="trash"></ion-icon>

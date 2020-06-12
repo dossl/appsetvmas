@@ -39,7 +39,14 @@ ion-content {
 
     .notification-icon-button {
       --overflow: visible;
+      position: relative;
+      top: -7px;
 
+      ion-icon {
+        width: 24px;
+        height: 24px;
+      }
+      
       ion-badge {
         position: absolute;
         background: #f70b0b;

@@ -98,7 +98,8 @@ export class VirtualOfficePage implements OnInit {
   codigo: any;
   cantReferidos: any;
   iduser: any;
-  precio_Punto: any;
+  precioPunto: string;
+  messageAdmin: string;
   clase: any;
   acumuladoPuntos: any;
   nameUser: any;
@@ -180,7 +181,8 @@ export class VirtualOfficePage implements OnInit {
         }
         console.log(this.currentUser);
         this.loadOnline();
-        this.precio_Puntos();
+        this.precioPuntos();
+        this.loadMessageAdmin();
       }
     });
   }
@@ -190,11 +192,17 @@ export class VirtualOfficePage implements OnInit {
   }
 
 
-  precio_Puntos() {
-    const valor = 'Precio_Puntos';
-    this.service.getVariableConfiguracionByCodigo(valor).then(res => {
-      this.precio_Punto = parseFloat(res.Valor).toFixed(2);
-      console.log(this.precio_Punto);
+  precioPuntos() {
+    this.service.getVariableConfiguracionByCodigo('Precio_Puntos').then(res => {
+      this.precioPunto = parseFloat(res.Valor).toFixed(2);
+      console.log(this.precioPunto);
+    }).catch((error) => {
+      this.presentToast(error);
+    });
+  }
+  loadMessageAdmin() {
+    this.service.getVariableConfiguracionByCodigo('MEN_ADM_OV').then(res => {
+      this.messageAdmin = res.Valor;
     }).catch((error) => {
       this.presentToast(error);
     });

@@ -31,7 +31,6 @@ import { AnuncioetiquetaModel } from '../../models/anuncioetiqueta.model';
 import { TipoOpcionModel } from '../../models/tipo-opcion.model';
 import { Opciones } from '../../models/opciones.model';
 import { Categoria } from '../../models/categoria.model';
-import { BuypointPage } from '../buypoint/buypoint.page';
 import { DatePipe } from '@angular/common'
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { element } from 'protractor';
@@ -39,6 +38,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx'
 import { Banner } from '../../models/banner.model';
 import { Almacenimagen } from '../../models/almacenimagen.model';
+import { BuyPointPage } from '../buy-point/buy-point.page';
 
 const STORAGE_KEY = 'my_images';
 
@@ -1085,7 +1085,7 @@ export class EditAnnouncePage implements OnInit {
   async compra() {
     this.navCtrl.navigateForward('/buypoint')
     const modal = await this.modal.create({
-      component: BuypointPage,
+      component: BuyPointPage,
       animated: true,
       backdropDismiss: false
     });
